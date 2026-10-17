@@ -596,6 +596,7 @@ function seeded(seed){ let s = (seed * 2654435761) >>> 0 || 1; return () => { s 
 const cv = $('scene'); let ctx = cv.getContext('2d'); let ART = false;
 let W = 1600, S = 1, DPR = 1, CW = 0, CH = 0, T = 0;
 const lite = () => CW < 700;
+let dprCap = 2, perfEma = 1 / 60, perfT = 0;
 
 /* ---------- theme ---------- */
 const mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : { matches:false };
@@ -1257,6 +1258,8 @@ const DIVER_LINES = ['Off to explore!', 'Have you seen the clownfish?', 'Just ch
 function swimDiver(){ audio(); const d = diver; d.wave = 2.4; SFX.squish(); say('diver', 'Hi!'); }
 
 function floorY(x){
+  if (!lite()) { if (x < V[0]) return FB - 64 * (1 - Math.exp(-(V[0] - x) / 300)); if (x > V[1]) return FB - 64 * (1 - Math.exp(-(x - V[1]) / 300));
+    const d = Math.min(x - V[0], V[1] - x); return FB - 30 * (1 - Math.exp(-d / 120)); }
   if (x < V[0]) return FB - 165 * (1 - Math.exp(-(V[0] - x) / 260));
   if (x > V[1]) return FB - 165 * (1 - Math.exp(-(x - V[1]) / 260));
   return FB - 74 * Math.sin(Math.PI * (x - V[0]) / (V[1] - V[0]));
@@ -1392,7 +1395,8 @@ const SP = {
 };
 let GID = 0;
 function spawnGroup(name, o = {}){
-  const sp = SP[name], g = ++GID, n = sp.n[0] + ((Math.random() * (sp.n[1] - sp.n[0] + 1)) | 0);
+  if (lite() && !o.home && fish.length > 46) return;
+  const sp = SP[name], g = ++GID, n0 = sp.n[0] + ((Math.random() * (sp.n[1] - sp.n[0] + 1)) | 0), n = lite() ? Math.max(1, Math.round(n0 * .6)) : n0;
   const side = o.side || (Math.random() < .5 ? -1 : 1);
   const d0 = o.depth != null ? o.depth : (sp.kind === 'school' ? frand(.12, 1) : frand(.5, 1));
   let x0 = o.inside ? frand(80, W - 80) : (side < 0 ? -70 : W + 70);
@@ -1483,6 +1487,7 @@ function field(x, y){
 function addParcel(p){ if (parcels.length < 260) parcels.push(Object.assign({ s:1, life0:p.life, hit:false }, p)); }
 
 /* ---------- input ---------- */
+let turtleKnown = false, turtleHintT = -99; try { turtleKnown = localStorage.getItem('ww.turtle') === '1'; } catch(e) {}
 const ptr = { x:-999, y:-999, t:-9, down:false, lx:0, ly:0, lt:0 };
 const ptrFade = () => { const a = T - ptr.t; return a < .25 ? 1 : Math.max(0, 1 - (a - .25) / .55); };
 let grassT = 0;
@@ -1703,6 +1708,7 @@ function stepWorld(dt){
   if (Math.random() < dt * .15) tu.ty = clamp(tu.ty + frand(-80, 80), SURF + 200, FB - 160);
   if ((tu.dir > 0 && tu.x > W + 100) || (tu.dir < 0 && tu.x < -100)) { tu.dir *= -1; tu.ty = frand(SURF + 220, FB - 170); }
   tu.ft += (tu.dir - tu.ft) * Math.min(1, dt * 2.5);
+  if (!turtleKnown && !speech && !sheetOn && T > 6 && T - turtleHintT > 40 && tu.x > 80 && tu.x < W - 80) { turtleHintT = T; say('turtle', pick(['Psst! Tap me for a fun fact about ' + city.name + '.', 'I know secrets about ' + city.name + '. Tap me!', 'Tap me and I will tell you something about ' + city.name + '.'])); }
   if (speech) { speech.t -= dt; if (speech.t <= 0) speech = null; }
   stepDiver(dt);
   for (const s of stars) { s.flex = Math.max(0, s.flex - dt * .5); s.crawl = Math.max(0, s.crawl - dt); if (s.crawl > 0) { s.x += (s.tx - s.x) * dt * .5; s.y = floorY(s.x) - 3; } }
@@ -1756,7 +1762,7 @@ function stepKelp(dt){
     k.wig = Math.max(0, k.wig - dt * .9);
   }
 }
-function bubble(x, y, r, vy){ if (bubbles.length < 340) bubbles.push({ x, y, r:r || frand(1.5, 4), vx:0, vy:vy || -30, ph:frand(0, TAU) }); }
+function bubble(x, y, r, vy){ if (bubbles.length < (lite() ? 120 : 340)) bubbles.push({ x, y, r:r || frand(1.5, 4), vx:0, vy:vy || -30, ph:frand(0, TAU) }); }
 function sparkle(x, y, col, n, slow){ for (let i = 0; i < (n || 10); i++) { const a = frand(0, TAU), s = frand(30, 100); sparks.push({ x, y, vx:Math.cos(a) * s, vy:Math.sin(a) * s, life:1, col, slow }); } }
 
 /* ---------- drawing helpers ---------- */
@@ -2470,7 +2476,8 @@ let last = performance.now(), acc = 0; const STEP = 1 / 120;
 let errN = 0; function frameErr(e){ if (errN++ < 5) console.error('Wanderwater frame error:', e); }
 function healItems(){ for (const it of items) if (it.hooked < 0 && !it.carried) if (!Number.isFinite(it.x) || !Number.isFinite(it.y) || !Number.isFinite(it.vx) || !Number.isFinite(it.vy)) { const v = V[(Math.random() * 2) | 0]; it.x = v; it.y = floorY(v) - 20; it.vx = it.vy = 0; if ('a' in it) { it.a = 0; it.va = 0; } } if (!Number.isFinite(tilt)) tilt = 0; if (!Number.isFinite(cur)) cur = 0; }
 function frame(now){
-  let dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
+  const rawDt = (now - last) / 1000; let dt = Math.min(.05, rawDt); last = now; T += dt;
+  if (rawDt < .2) { perfEma += (rawDt - perfEma) * .05; perfT += rawDt; if (perfT > 3 && perfEma > 1 / 42 && DPR > 1) { perfT = 0; dprCap = Math.max(1, DPR - .25); DPR = dprCap; cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); } }
   try {
     try { acc += dt; let n = 0; while (acc >= STEP && n < 8) { stepItems(STEP); acc -= STEP; n++; } if (n === 8) acc = 0; healItems(); stepFish(dt); stepWorld(dt); } catch(e) { frameErr(e); }
     try { draw(); } catch(e) { frameErr(e); try { ctx.restore(); } catch(_) {} }
@@ -2495,7 +2502,7 @@ function tap(x, y){
   if (best) { const a = Math.atan2(best.y - y, best.x - x) || frand(0, TAU); best.vx = Math.cos(a) * 260; best.vy = Math.sin(a) * 200; best.dart = .8;
     for (const f of fish) { if (f === best || (f.g !== best.g && Math.hypot(f.x - x, f.y - y) > 60)) continue; const dx = f.x - x, dy = f.y - y, dd = Math.hypot(dx, dy) || 1; if (dd < 130) { f.vx += dx / dd * 140; f.vy += dy / dd * 100; f.dart = .5; } }
     SFX.blip(); return; }
-  const tu = turtle; if (Math.abs(tu.x - x) < 55 && Math.abs(tu.y - 6 - y) < 34) { say('turtle', city.facts[factIdx % city.facts.length]); factIdx++; tu.hop = 1; SFX.squish(); return; }
+  const tu = turtle; if (Math.abs(tu.x - x) < 55 && Math.abs(tu.y - 6 - y) < 34) { say('turtle', city.facts[factIdx % city.facts.length]); factIdx++; if (!turtleKnown) { turtleKnown = true; try { localStorage.setItem('ww.turtle', '1'); } catch(e) {} } tu.hop = 1; SFX.squish(); return; }
   for (const m of mantas) { if (m.wait > 0) continue; const sc = (.62 + .6 * m.depth) * 1.05; if (Math.abs(m.x - x) < 60 * sc && Math.abs(m.y - y) < 58 * sc) { if (m.roll <= 0) { m.roll = 2.8; SFX.glide(); } return; } }
   for (const j of jellies) if (Math.hypot(j.x - x, j.y + 6 - y) < 26 * j.s) { j.glow = 1; j.kick = 2.4; j.ph = Math.floor(j.ph) + .98; SFX.note(j.hue > 250 ? 1046.5 : 783.99); return; }
   for (const it of items) { if (it.carried) continue;
@@ -2934,12 +2941,12 @@ function populateHomes(){ fish = fish.filter(f => !f.home); anemones.forEach(a =
 
 /* ---------- boot ---------- */
 function resize(){
-  CW = window.innerWidth; CH = window.innerHeight; DPR = Math.min(1.75, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
+  CW = window.innerWidth; CH = window.innerHeight; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
   cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); layout(oldW); populateHomes(); renderTickets(); $('hints').style.bottom = ($('dock').offsetHeight + 10) + 'px';
 }
 let startCity = 0; try { startCity = clamp(parseInt(localStorage.getItem('ww.city') || '0', 10) || 0, 0, CITIES.length - 1); } catch(e) {}
 cityIdx = startCity; city = CITIES[startCity]; dayNo = computeDay();
-CW = window.innerWidth; CH = window.innerHeight; S = CH / H; W = CW / S; DPR = Math.min(1.75, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
+CW = window.innerWidth; CH = window.innerHeight; S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
 layout(0); buildPegs(); initCreatures(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0;
 renderTickets(); updateUI(); $('hints').style.bottom = ($('dock').offsetHeight + 10) + 'px';
 window.addEventListener('resize', resize);
