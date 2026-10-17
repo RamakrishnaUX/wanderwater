@@ -414,6 +414,33 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) #hud .ctl.arrow{background:linear-gradient(rgba(120,190,210,.22), rgba(120,190,210,.08)); border-color:rgba(150,215,235,.25); box-shadow:none} }
 @media (max-width: 640px){ #hud .ctl.arrow{width:80px; height:56px} #hud{padding:5px; gap:5px} }
 @media (hover: hover) and (pointer: fine){ #tiltBtn{display:none} }
+
+/* one game controller: pumps and currents together in a single console, centred */
+#dock{display:flex; justify-content:center; align-items:flex-end; gap:0}
+#pad{position:relative; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:48px;
+  background:linear-gradient(180deg, #2c4a55 0%, #1a323b 55%, #12262e 100%);
+  box-shadow:0 14px 30px rgba(3,20,28,.38), 0 3px 0 #0a1a20, inset 0 1px 0 rgba(255,255,255,.16), inset 0 -2px 6px rgba(0,0,0,.35)}
+#pad::before{content:""; position:absolute; inset:4px; border-radius:44px; border:1px solid rgba(255,255,255,.06); pointer-events:none}
+#pad .well{display:grid; place-items:center; width:92px; height:92px; border-radius:50%;
+  background:radial-gradient(circle at 50% 42%, #0c1d24 0%, #0f242c 62%, #17323c 100%); box-shadow:inset 0 3px 8px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.1)}
+#pad .pump{width:76px; height:76px; margin-top:-6px; box-shadow:0 6px 0 var(--pump-d), 0 8px 12px rgba(0,0,0,.35), inset 0 -3px 6px rgba(0,0,0,.12), inset 0 2px 0 rgba(255,255,255,.5)}
+#pad .pump.down, #pad .pump:active{transform:translateY(5px); box-shadow:0 1px 0 var(--pump-d), 0 2px 4px rgba(0,0,0,.3), inset 0 -2px 4px rgba(0,0,0,.12)}
+#pad #hud{display:flex; flex-direction:row; align-items:center; gap:8px; padding:0; margin:0; width:auto; max-width:none; border:0; border-radius:0; background:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; animation:none}
+#pad #hud .ctl.arrow{width:78px; height:62px; margin-top:-4px; border-radius:16px; color:#dff3f6; border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg, #3d6472, #26475300 140%), #284753; box-shadow:0 5px 0 #0b1c23, 0 7px 10px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.22)}
+#pad #hud .ctl.arrow:hover{background:linear-gradient(180deg, #46707f, #2c4f5c)}
+#pad #hud .ctl.arrow small{opacity:.75}
+#pad #hud .ctl.arrow.on, #pad #hud .ctl.arrow:active{transform:translateY(4px); background:linear-gradient(180deg, #4fd0d8, #2fa3b3); color:#06232b; border-color:rgba(255,255,255,.25);
+  box-shadow:0 1px 0 #0b1c23, 0 2px 4px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.35)}
+@media (max-width: 640px){
+  #pad{gap:8px; padding:8px 10px; border-radius:42px}
+  #pad::before{border-radius:38px}
+  #pad .well{width:80px; height:80px}
+  #pad .pump{width:66px; height:66px}
+  #pad #hud{gap:6px}
+  #pad #hud .ctl.arrow{width:64px; height:56px}
+}
+@media (max-width: 360px){ #pad .well{width:72px; height:72px} #pad .pump{width:60px; height:60px} #pad #hud .ctl.arrow{width:56px} }
 </style>
 </head>
 <body>
@@ -444,14 +471,14 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
   </div>
   </div>
 </div>
-<div id="dock">
-  <button class="pump" id="pumpL" aria-label="Left pump, key A"><span class="pk">A</span><small>PUMP</small></button>
-  <div id="hud" class="glass">
+<div id="dock"><div id="pad">
+  <span class="well"><button class="pump" id="pumpL" aria-label="Left pump, key A"><span class="pk">A</span><small>PUMP</small></button></span>
+  <div id="hud">
     <button class="ctl arrow" id="curL" aria-label="Hold for a current to the left" title="Hold for a current to the left"><svg class="ca fl" viewBox="0 0 32 24" aria-hidden="true"><path d="M4 5.5c2.4-1.8 4.8-1.8 7.2 0s4.8 1.8 7.2 0" opacity=".6"/><path d="M4 16h22"/><path d="M21 11l5 5-5 5"/></svg><small>current</small></button>
     <button class="ctl arrow" id="curR" aria-label="Hold for a current to the right" title="Hold for a current to the right"><svg class="ca" viewBox="0 0 32 24" aria-hidden="true"><path d="M4 5.5c2.4-1.8 4.8-1.8 7.2 0s4.8 1.8 7.2 0" opacity=".6"/><path d="M4 16h22"/><path d="M21 11l5 5-5 5"/></svg><small>current</small></button>
   </div>
-  <button class="pump" id="pumpR" aria-label="Right pump, key L"><span class="pk">L</span><small>PUMP</small></button>
-</div>
+  <span class="well"><button class="pump" id="pumpR" aria-label="Right pump, key L"><span class="pk">L</span><small>PUMP</small></button></span>
+</div></div>
 <div id="shBack"></div>
 <div id="sheet" class="glass" role="dialog" aria-labelledby="shT">
   <div class="grab" id="shGrab" aria-hidden="true"></div>
