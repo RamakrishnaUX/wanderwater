@@ -441,6 +441,20 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
   #pad #hud .ctl.arrow{width:64px; height:56px}
 }
 @media (max-width: 360px){ #pad .well{width:72px; height:72px} #pad .pump{width:60px; height:60px} #pad #hud .ctl.arrow{width:56px} }
+
+/* short screens (phones in landscape): a compact controller so the tank stays visible */
+@media (max-height: 520px){
+  #dock{padding-bottom:max(6px, env(safe-area-inset-bottom, 0px))}
+  #pad{gap:6px; padding:5px 8px; border-radius:34px}
+  #pad::before{border-radius:30px; inset:3px}
+  #pad .well{width:58px; height:58px}
+  #pad .pump{width:48px; height:48px; margin-top:-4px; box-shadow:0 4px 0 var(--pump-d), 0 5px 8px rgba(0,0,0,.3), inset 0 -2px 4px rgba(0,0,0,.12)}
+  #pad .pump small{font-size:8px}
+  #pad .pump .pk{font-size:16px}
+  #pad #hud .ctl.arrow{width:54px; height:44px; border-radius:12px; box-shadow:0 3px 0 #0b1c23, inset 0 1px 0 rgba(255,255,255,.22)}
+  #pad #hud .ctl.arrow .ca{width:24px; height:18px}
+  #pad #hud .ctl.arrow small{font-size:7.5px}
+}
 </style>
 </head>
 <body>
@@ -2453,11 +2467,15 @@ function placeFloaters(){
 
 /* ---------- loop ---------- */
 let last = performance.now(), acc = 0; const STEP = 1 / 120;
+let errN = 0; function frameErr(e){ if (errN++ < 5) console.error('Wanderwater frame error:', e); }
+function healItems(){ for (const it of items) if (it.hooked < 0 && !it.carried) if (!Number.isFinite(it.x) || !Number.isFinite(it.y) || !Number.isFinite(it.vx) || !Number.isFinite(it.vy)) { const v = V[(Math.random() * 2) | 0]; it.x = v; it.y = floorY(v) - 20; it.vx = it.vy = 0; if ('a' in it) { it.a = 0; it.va = 0; } } if (!Number.isFinite(tilt)) tilt = 0; if (!Number.isFinite(cur)) cur = 0; }
 function frame(now){
   let dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
-  acc += dt; let n = 0; while (acc >= STEP && n < 8) { stepItems(STEP); acc -= STEP; n++; } if (n === 8) acc = 0;
-  stepFish(dt); stepWorld(dt); draw(); placeFloaters(); drawSheetArt(dt);
-  requestAnimationFrame(frame);
+  try {
+    try { acc += dt; let n = 0; while (acc >= STEP && n < 8) { stepItems(STEP); acc -= STEP; n++; } if (n === 8) acc = 0; healItems(); stepFish(dt); stepWorld(dt); } catch(e) { frameErr(e); }
+    try { draw(); } catch(e) { frameErr(e); try { ctx.restore(); } catch(_) {} }
+    try { placeFloaters(); drawSheetArt(dt); } catch(e) { frameErr(e); }
+  } finally { requestAnimationFrame(frame); }
 }
 
 /* ---------- taps ---------- */
@@ -2635,7 +2653,7 @@ let tiltOn = true, tiltRaw = 0, tiltSeen = false; try { tiltOn = localStorage.ge
 const tiltNeedsAsk = typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function';
 let tiltAsked = false;
 function onOrient(e){ if (e.gamma == null) return; tiltSeen = true; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
-  let v = ang === 90 ? e.beta : (ang === -90 || ang === 270) ? -e.beta : ang === 180 ? -e.gamma : e.gamma; tiltRaw = clamp((v || 0) / 32, -1, 1); }
+  let v = ang === 90 ? e.beta : (ang === -90 || ang === 270) ? -e.beta : ang === 180 ? -e.gamma : e.gamma; const tv = clamp((Number(v) || 0) / 32, -1, 1); tiltRaw = Number.isFinite(tv) ? tv : 0; }
 function tiltListen(){ window.removeEventListener('deviceorientation', onOrient); if (tiltOn) window.addEventListener('deviceorientation', onOrient); else tiltRaw = 0; }
 function tiltAsk(){ if (!tiltOn || !tiltNeedsAsk || tiltAsked) return; tiltAsked = true; DeviceOrientationEvent.requestPermission().then(r => { if (r !== 'granted') { tiltOn = false; updateTiltBtn(); } tiltListen(); }).catch(() => {}); }
 window.addEventListener('pointerdown', tiltAsk, { capture:true });
