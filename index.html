@@ -2019,21 +2019,45 @@ function drawStar(s){
   ctx.fillStyle = '#ffb35c'; E(R0 * .12, -R0 * .1, R0 * .07, R0 * .07);
   ctx.restore();
 }
+function mixc(a, b, t){ return mix(a, b, clamp(t, 0, 1)); }
 function drawShell(s){
   ctx.save(); ctx.translate(s.x, s.y); ctx.scale(s.s, s.s);
   ctx.fillStyle = 'rgba(0,15,25,.25)'; E(1, 1, 14, 3);
   if (s.kind === 'scallop') {
-    const bg = ctx.createLinearGradient(0, -4, 0, 4); bg.addColorStop(0, '#f0b9a0'); bg.addColorStop(1, '#c97b5e'); ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(-13, -1); ctx.quadraticCurveTo(0, 7, 13, -1); ctx.lineTo(-13, -1); ctx.fill();
-    if (s.open > .05) { const ig = ctx.createLinearGradient(0, -3, 0, 2); ig.addColorStop(0, '#ffe6ef'); ig.addColorStop(1, '#f2a6bf'); ctx.fillStyle = ig; ctx.beginPath(); ctx.ellipse(0, -1, 12, 3.2 * s.open + .5, 0, Math.PI, TAU); ctx.fill();
-      const pg = ctx.createRadialGradient(-1, -3.6, .4, 0, -2.6, 3.6); pg.addColorStop(0, '#ffffff'); pg.addColorStop(.6, '#eef0ff'); pg.addColorStop(1, '#b9bfe0'); ctx.fillStyle = pg; E(0, -2.6, 3.4 * s.open, 3.4 * s.open); }
-    ctx.save(); ctx.translate(-13, -1); ctx.rotate(-s.open * .75); ctx.translate(13, 1);
-    ctx.beginPath(); ctx.moveTo(-13, -1);
-    for (let k = 0; k <= 10; k++) { const a = Math.PI + k / 10 * Math.PI, r = 13 + (k % 2 ? 0 : 1.2); ctx.lineTo(Math.cos(a) * r, -1 + Math.sin(a) * r * .95); }
-    ctx.closePath(); const tg = ctx.createRadialGradient(-2, -8, 1, 0, -1, 15); tg.addColorStop(0, '#ffe3cc'); tg.addColorStop(.6, '#f5a37f'); tg.addColorStop(1, '#c4613f'); ctx.fillStyle = tg; ctx.fill();
-    ctx.strokeStyle = 'rgba(150,60,35,.35)'; ctx.lineWidth = .7; ctx.beginPath(); for (let k = 1; k < 10; k++) { const a = Math.PI + k / 10 * Math.PI; ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * 13, -1 + Math.sin(a) * 12.4); } ctx.stroke();
-    ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.ellipse(0, -1, 8, 7.6, 0, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
-    ctx.fillStyle = '#e8956f'; P([[-5, -1], [-2, -1], [-2.5, 1.8], [-6, 1.8]]); P([[5, -1], [2, -1], [2.5, 1.8], [6, 1.8]]);
-    ctx.restore();
+    // front view: hinge at the bottom, the upper valve lifts up behind like a fan, the pearl sits in the middle facing you
+    const o = clamp(s.open, 0, 1), HY = -3, R = 14, fan = (r, h, bumps) => { ctx.beginPath(); ctx.moveTo(-3, HY); for (let k = 0; k <= 24; k++) { const a = Math.PI + k / 24 * Math.PI, rr = r + (bumps && k % 2 ? -1 : 0); ctx.lineTo(Math.cos(a) * rr, HY + Math.sin(a) * rr * h); } ctx.lineTo(3, HY); ctx.closePath(); };
+    const h = .28 + .72 * o;
+    // upper valve (behind): outside when shut, glossy nacre inside when open
+    fan(R, h, true); const ug = ctx.createLinearGradient(0, HY - R * h, 0, HY);
+    ug.addColorStop(0, mixc('#f7b89a', '#f9cfe0', o)); ug.addColorStop(.55, mixc('#ea8e6c', '#ec9fbe', o)); ug.addColorStop(1, mixc('#b9573a', '#a36b98', o)); ctx.fillStyle = ug; ctx.fill();
+    if (o > .1) { ctx.save(); fan(R - 1.6, h, false); ctx.clip(); ctx.globalAlpha = .35 * o; const sg = ctx.createLinearGradient(-R, 0, R, 0); sg.addColorStop(0, '#9fe7ff'); sg.addColorStop(.35, '#ffd1f0'); sg.addColorStop(.65, '#fff6c9'); sg.addColorStop(1, '#c6b6ff'); ctx.fillStyle = sg; ctx.fillRect(-R, HY - R, R * 2, R); ctx.restore(); ctx.globalAlpha = 1; }
+    ctx.strokeStyle = o > .5 ? 'rgba(170,110,140,.28)' : 'rgba(140,55,30,.35)'; ctx.lineWidth = .55; ctx.beginPath(); for (let k = 1; k < 12; k++) { const a = Math.PI + k / 12 * Math.PI; ctx.moveTo(0, HY); ctx.lineTo(Math.cos(a) * (R - 1), HY + Math.sin(a) * (R - 1) * h); } ctx.stroke();
+    // inside of the lower valve, a shallow nacre dish
+    if (o > .05) { const dg = ctx.createRadialGradient(0, HY - 2, .5, 0, HY - 1, 13); dg.addColorStop(0, '#fff4f7'); dg.addColorStop(.6, '#f4cfe0'); dg.addColorStop(1, '#c79ab8'); ctx.fillStyle = dg; ctx.beginPath(); ctx.ellipse(0, HY - 1, 12.5, 1.2 + 3.4 * o, 0, 0, TAU); ctx.fill(); }
+    // the pearl
+    if (o > .15) {
+      const pr = 4.1 * Math.min(1, (o - .15) / .5 + .3), px = 0, py = HY - 4.2, tw = T;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; const halo = ctx.createRadialGradient(px, py, pr * .8, px, py, pr * 2.3); halo.addColorStop(0, `rgba(255,236,248,${.18 + .08 * Math.sin(tw * 2)})`); halo.addColorStop(1, 'rgba(255,236,248,0)'); ctx.fillStyle = halo; E(px, py, pr * 2.3, pr * 2.3); ctx.restore();
+      const b = ctx.createRadialGradient(px - pr * .38, py - pr * .42, pr * .05, px, py, pr); b.addColorStop(0, '#ffffff'); b.addColorStop(.35, '#fbf6f0'); b.addColorStop(.72, '#ecdfe6'); b.addColorStop(.92, '#c9bdd6'); b.addColorStop(1, '#a99cbc'); ctx.fillStyle = b; E(px, py, pr, pr);
+      ctx.save(); ctx.beginPath(); ctx.ellipse(px, py, pr, pr, 0, 0, TAU); ctx.clip();
+      if (ctx.createConicGradient) { const cg = ctx.createConicGradient(tw * .6, px, py); cg.addColorStop(0, 'rgba(255,170,220,.32)'); cg.addColorStop(.25, 'rgba(170,240,255,.3)'); cg.addColorStop(.5, 'rgba(255,245,180,.28)'); cg.addColorStop(.75, 'rgba(200,180,255,.32)'); cg.addColorStop(1, 'rgba(255,170,220,.32)'); ctx.fillStyle = cg; ctx.globalCompositeOperation = 'soft-light'; ctx.fillRect(px - pr, py - pr, pr * 2, pr * 2); ctx.globalCompositeOperation = 'source-over'; }
+      const rim = ctx.createRadialGradient(px + pr * .35, py + pr * .45, pr * .2, px + pr * .3, py + pr * .4, pr * 1.2); rim.addColorStop(0, 'rgba(255,214,236,.55)'); rim.addColorStop(1, 'rgba(255,214,236,0)'); ctx.fillStyle = rim; ctx.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+      ctx.restore();
+      ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.beginPath(); ctx.ellipse(px - pr * .38, py - pr * .42, pr * .26, pr * .17, -.6, 0, TAU); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; E(px + pr * .42, py + pr * .38, pr * .14, pr * .09);
+      // twinkles: four point stars that breathe around the pearl
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      for (let k = 0; k < 4; k++) { const ph = tw * (1.3 + k * .27) + k * 1.9, a = (Math.sin(ph) + 1) / 2; if (a < .25) continue; const ang = k * 1.6 + .4, d = pr * (1.55 + (k % 2) * .6), sx = px + Math.cos(ang) * d, sy = py - Math.abs(Math.sin(ang)) * d * .85, L = pr * (.3 + .32 * a);
+        ctx.fillStyle = `rgba(255,255,255,${a * .95 * o})`; ctx.beginPath(); ctx.moveTo(sx, sy - L); ctx.quadraticCurveTo(sx, sy, sx + L * .28, sy); ctx.quadraticCurveTo(sx, sy, sx, sy + L); ctx.quadraticCurveTo(sx, sy, sx - L * .28, sy); ctx.quadraticCurveTo(sx, sy, sx, sy - L); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(sx - L * .7, sy); ctx.quadraticCurveTo(sx, sy, sx, sy - L * .2); ctx.quadraticCurveTo(sx, sy, sx + L * .7, sy); ctx.quadraticCurveTo(sx, sy, sx, sy + L * .2); ctx.quadraticCurveTo(sx, sy, sx - L * .7, sy); ctx.fill(); }
+      ctx.restore();
+    }
+    // lower valve front lip, ribbed and scalloped, covering the bottom of the pearl
+    ctx.beginPath(); ctx.moveTo(-R + .5, HY - 1); ctx.quadraticCurveTo(0, HY + .6 - 2 * o, R - .5, HY - 1);
+    for (let k = 0; k <= 16; k++) { const a = k / 16 * Math.PI, rr = (R - .5) + (k % 2 ? -.8 : 0); ctx.lineTo(Math.cos(a) * rr, HY - 1 + Math.sin(a) * 6.4); }
+    ctx.closePath(); const lg = ctx.createLinearGradient(0, HY - 2, 0, HY + 6); lg.addColorStop(0, '#ffd8c4'); lg.addColorStop(.5, '#f29a76'); lg.addColorStop(1, '#b65a3b'); ctx.fillStyle = lg; ctx.fill();
+    ctx.strokeStyle = 'rgba(150,60,35,.22)'; ctx.lineWidth = .5; ctx.beginPath(); for (let k = 1; k < 12; k++) { const a = k / 12 * Math.PI; ctx.moveTo(Math.cos(a) * 1.5, HY + 5.2); ctx.quadraticCurveTo(Math.cos(a) * (R * .6), HY + 3, Math.cos(a) * (R - 1.4), HY - .4 + Math.sin(a) * 5.4); } ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(-R + 1.5, HY - .8); ctx.quadraticCurveTo(0, HY + .6 - 2 * o, R - 1.5, HY - .8); ctx.stroke();
   } else if (s.kind === 'conch') {
     ctx.scale(s.dir < 0 ? -1 : 1, 1);
     if (s.crab > 0) { const out = Math.min(1, s.crab * 2, (5 - s.crab) * 2) * (s.crab < 5 ? 1 : 0); const st = Math.sin(s.walk);
@@ -2651,9 +2675,7 @@ function drawSheetArt(dt){
       const g = ctx.createLinearGradient(0, 0, 0, VH), c = pal(); g.addColorStop(0, c[0]); g.addColorStop(1, c[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
       ctx.fillStyle = city.sand; ctx.beginPath(); ctx.moveTo(0, 196); for (let x = 0; x <= VW; x += 10) ctx.lineTo(x, 196 + Math.sin(x * .03) * 4); ctx.lineTo(VW, VH); ctx.lineTo(0, VH); ctx.fill();
       ctx.fillStyle = 'rgba(255,255,255,.12)'; for (let k = 0; k < 5; k++) E((k * 97 + T * 12) % VW, 30 + k * 26, 30, 3);
-      const sh = a.shell; sh.x = mid + 10; sh.y = 196; sh.open = .85 + Math.sin(T * 1.2) * .15; drawShell(sh);
-      const px = sh.x, py = sh.y - 2.6 * sh.s, gl = ctx.createRadialGradient(px, py, 0, px, py, 46); gl.addColorStop(0, `rgba(255,255,255,${.35 + .15 * Math.sin(T * 2)})`); gl.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gl; E(px, py, 46, 46);
-      ctx.fillStyle = 'rgba(255,255,255,.9)'; const tw = (Math.sin(T * 3) + 1) / 2; ctx.save(); ctx.translate(px + 9, py - 10); ctx.rotate(T * .5); ctx.fillRect(-6 * tw, -.7, 12 * tw, 1.4); ctx.fillRect(-.7, -6 * tw, 1.4, 12 * tw); ctx.restore();
+      const sh = a.shell; sh.x = mid; sh.y = 190; sh.open = .9 + Math.sin(T * 1.2) * .1; drawShell(sh);
       if (Math.random() < .05) bubble;
     } else if (a.kind === 'paint') {
       const wall = ctx.createLinearGradient(0, 0, 0, VH); wall.addColorStop(0, night ? '#2a2f38' : '#ece6da'); wall.addColorStop(1, night ? '#1d2129' : '#ddd4c4'); ctx.fillStyle = wall; ctx.fillRect(0, 0, VW, VH);
