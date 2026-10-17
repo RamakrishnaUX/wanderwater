@@ -86,7 +86,8 @@ button.chip{cursor:pointer; border-color:var(--glass-line)}
 @media (max-width: 640px){
   #dock{gap:8px}
   .pump{width:58px; height:58px; font-size:18px}
-  .pump small{font-size:8px}
+  .pump small{font-size:10px; letter-spacing:.16em; margin-top:0; font-weight:600}
+  .pump .pk{display:none}
   #hud{padding:6px 6px; gap:5px; border-radius:16px}
   .row{flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch}
   .row::-webkit-scrollbar{display:none}
@@ -404,7 +405,7 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 <canvas id="scene" aria-label="An underwater museum. Pump water to loop rings onto landmarks. Tap anything in the sea." role="img"></canvas>
 <button id="ttl" aria-label="Wanderwater"><span class="lt">W</span><span class="lt">a</span><span class="lt">n</span><span class="lt">d</span><span class="lt">e</span><span class="lt">r</span><span class="lt acc">w</span><span class="lt acc">a</span><span class="lt acc">t</span><span class="lt acc">e</span><span class="lt acc">r</span></button>
 <div id="tix" role="group" aria-label="Galleries"></div>
-<div id="hints" class="glass"><kbd>A</kbd> <kbd>L</kbd> pumps · <kbd>← →</kbd> current · <kbd>Space</kbd> fish · <kbd>M</kbd> manta · <kbd>B</kbd> bubbles · <kbd>D</kbd> diver swim · <kbd>C</kbd> next city · drag to stir the water</div>
+<div id="hints" class="glass"><kbd>A</kbd> <kbd>L</kbd> pumps · <kbd>← →</kbd> current · <kbd>Space</kbd> fish · <kbd>M</kbd> manta · <kbd>B</kbd> bubbles · <kbd>D</kbd> say hi to the diver · <kbd>C</kbd> next city · drag to stir the water</div>
 <div id="top">
   <div class="pills glass">
     <span class="pill" id="chipLoop" title="Landmarks with a ring on them"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" stroke-width="3"/></svg><b><span id="loopN">0</span>/3</b> <span class="lbl">looped</span></span>
@@ -425,12 +426,12 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
   </div>
 </div>
 <div id="dock">
-  <button class="pump" id="pumpL" aria-label="Left pump, key A">A<small>PUMP</small></button>
+  <button class="pump" id="pumpL" aria-label="Left pump, key A"><span class="pk">A</span><small>PUMP</small></button>
   <div id="hud" class="glass">
     <button class="ctl arrow" id="curL" aria-label="Hold for a current to the left" title="Hold for a current to the left">◀<small>current</small></button>
     <button class="ctl arrow" id="curR" aria-label="Hold for a current to the right" title="Hold for a current to the right">▶<small>current</small></button>
   </div>
-  <button class="pump" id="pumpR" aria-label="Right pump, key L">L<small>PUMP</small></button>
+  <button class="pump" id="pumpR" aria-label="Right pump, key L"><span class="pk">L</span><small>PUMP</small></button>
 </div>
 <div id="shBack"></div>
 <div id="sheet" class="glass" role="dialog" aria-labelledby="shT">
@@ -534,6 +535,7 @@ const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / .87;
 function seeded(seed){ let s = (seed * 2654435761) >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
 const cv = $('scene'); let ctx = cv.getContext('2d'); let ART = false;
 let W = 1600, S = 1, DPR = 1, CW = 0, CH = 0, T = 0;
+const lite = () => CW < 700;
 
 /* ---------- theme ---------- */
 const mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : { matches:false };
@@ -1267,13 +1269,13 @@ function buildDecor(){
   if (outerL < 30) { addKelp(10, 9); addKelp(W - 10, 10); }
   anemones = [cx - Z * .42, cx + Z * .46].map((x, i) => ({ x, y:floorY(x) - 2, ret:0, ph:r() * TAU, hue:i ? 300 : 18 }));
   const sx = [cx - Z * .22, cx + Z * .25, cx - Z * .92, cx + Z * .94, V[0] - 130, V[1] + 150, 34, W - 40].filter(x => x > 14 && x < W - 14);
-  stars = sx.map((x, i) => ({ x, y:floorY(x) - 3, r:9 + r() * 4, rot:r() * TAU, sp:STAR_SP[i % STAR_SP.length], crawl:0, tx:x, flex:0, note:NOTES[i % NOTES.length], v:[0, 1, 2, 3, 4].map(() => .9 + r() * .2) }));
+  stars = []; void sx.map((x, i) => ({ x, y:floorY(x) - 3, r:9 + r() * 4, rot:r() * TAU, sp:STAR_SP[i % STAR_SP.length], crawl:0, tx:x, flex:0, note:NOTES[i % NOTES.length], v:[0, 1, 2, 3, 4].map(() => .9 + r() * .2) }));
   shells = [
     { kind:'scallop', x:cx - Z * .3, open:0, target:0, s:1.25 },
     { kind:'conch', x:cx + Z * .6, s:1.1, crab:0, walk:0, dir:1 },
     { kind:'cowrie', x:cx + Z * .09, s:1, glint:0 },
     { kind:'scallop', x:cx - Z * .62, open:0, target:0, s:.95 }
-  ].map(s => (s.y = floorY(s.x) - 1, s.hx = s.x, s));
+  ].filter((s, i) => !lite() || i === 0).map(s => (s.y = floorY(s.x) - 1, s.hx = s.x, s));
   corals = []; rocks = []; sponges = []; grass = []; reef = [];
   const cc = ['#ff7a8a', '#ffa64d', '#c77dff', '#ff5f7e', '#f2d15c', '#5fd3c4'];
   const addCoral = (x, type) => { type = type || ['staghorn', 'fan', 'brain', 'table', 'soft'][(r() * 5) | 0]; const y = floorY(x) + 3, col = cc[(r() * cc.length) | 0]; const segs = [];
@@ -1289,9 +1291,10 @@ function buildDecor(){
   for (let x = 90; x < outerL; x += 140 + r() * 120) addSponge(x);
   for (let x = W - 90; x > outerR; x -= 140 + r() * 120) addSponge(x);
   addSponge(cx + Z * .74);
+  if (lite()) sponges = [];
   for (let x = 6; x < W; x += 11 + r() * 16) { if (Math.abs(x - V[0]) < 46 || Math.abs(x - V[1]) < 46 || Math.abs(x - cx) < 30) continue; const n = 3 + ((r() * 5) | 0);
     grass.push({ x, y:floorY(x) + 4, blades:Array.from({ length:n }, () => ({ dx:r() * 8 - 4, h:12 + r() * (x < outerL || x > outerR ? 30 : 18), lean:r() * .5 - .25, ph:r() * TAU, c:r() })) }); }
-  for (let x = 0; x < W; x += 140 + r() * 140) if (Math.abs(x - V[0]) > 70 && Math.abs(x - V[1]) > 70 && Math.abs(x - cx) > 80) rocks.push({ x, y:floorY(x) + 4, w:20 + r() * 22, h:12 + r() * 10, c:r() * .2 - .1 });
+  for (let x = 0; x < W; x += 140 + r() * 140) if (!lite() && Math.abs(x - V[0]) > 70 && Math.abs(x - V[1]) > 70 && Math.abs(x - cx) > 80) rocks.push({ x, y:floorY(x) + 4, w:20 + r() * 22, h:12 + r() * 10, c:r() * .2 - .1 });
   for (let L = 0; L < 2; L++) { const pts = []; const a1 = r() * 6, a2 = r() * 6, a3 = r() * 6; for (let x = -20; x <= W + 20; x += 12) pts.push([x, FB - (L ? 150 : 230) - 50 * Math.sin(x * .004 + a1) - 26 * Math.sin(x * .011 + a2) - 10 * Math.sin(x * .031 + a3)]);
     const plants = []; for (let k = 0; k < W / (L ? 22 : 30); k++) { const x = r() * W, i = clamp(Math.round((x + 20) / 12), 0, pts.length - 1); plants.push({ x, y:pts[i][1] + 4, h:20 + r() * (L ? 60 : 90), type:r() < .3 ? 'fan' : 'kelp', ph:r() * TAU }); }
     reef.push({ pts, plants, L }); }
@@ -1419,6 +1422,8 @@ function addParcel(p){ if (parcels.length < 260) parcels.push(Object.assign({ s:
 
 /* ---------- input ---------- */
 const ptr = { x:-999, y:-999, t:-9, down:false, lx:0, ly:0, lt:0 };
+const ptrFade = () => { const a = T - ptr.t; return a < .25 ? 1 : Math.max(0, 1 - (a - .25) / .55); };
+let grassT = 0;
 function pump(i){
   audio(); SFX.pump(); pumps++; updateUI();
   for (let k = 0; k < 14; k++) jetQ.push({ at:T + k * .014, i, k });
@@ -1653,7 +1658,7 @@ function stepWorld(dt){
   for (const g of gulls) { g.t += dt; g.x += g.vx * dt; g.y += Math.sin(g.t * .5) * 3 * dt + g.vy * dt; g.vy *= .985; }
   gulls = gulls.filter(g => g.x > -80 && g.x < W + 80 && g.y > -60);
   for (const it of items) if (it.type === 'ring' && it.hooked < 0 && !it.carried && (Math.abs(it.vph) > 3.5 || Math.hypot(it.vx, it.vy) > 170) && Math.random() < dt * 14) bubble(it.x + Math.cos(it.a) * RX * (Math.random() < .5 ? -1 : 1), it.y, frand(1, 2.4));
-  if (Math.random() < dt * 4) { const x = frand(20, W - 20); bubble(x, floorY(x) - 2, frand(1, 2.4)); }
+  if (!lite() && Math.random() < dt * 1.5) { const x = frand(20, W - 20); bubble(x, floorY(x) - 2, frand(1, 2.4)); }
   for (const b of bubbles) { b.ph += dt * 5; let ux = cur * 55, uy = 0; if (parcels.length && b.r > 2.5) { field(b.x, b.y); ux = FX; uy = FY; }
     const rise = -(30 + b.r * 22); b.vy += (rise + uy * .5 - b.vy) * 3 * dt; b.vx += (ux * .6 - b.vx) * 2 * dt; b.x += (b.vx + Math.sin(b.ph) * 10) * dt; b.y += b.vy * dt; }
   bubbles = bubbles.filter(b => { if (b.y < surfY(b.x) + 2) { if (b.r > 3) splash(b.x, -b.r * 1.2); return false; } return true; });
@@ -1670,15 +1675,16 @@ function stepWorld(dt){
 }
 function mkGull(x, y){ return { x, y, vx:(x < W / 2 ? 1 : -1) * frand(9, 15), vy:0, t:frand(0, 5), s:frand(.8, 1.2) }; }
 function stepKelp(dt){
-  const ptrLive = T - ptr.t < .25;
+  const ptrLive = T - ptr.t < .8;
   for (const k of kelps) {
     const n = k.nodes;
     for (let i = 1; i < n.length; i++) {
       const q = n[i]; let vx = (q.x - q.px) / dt, vy = (q.y - q.py) / dt;
       let ux = cur * 55, uy = 0; if (parcels.length) { field(q.x, q.y); ux = FX; uy = FY; }
       const sway = Math.sin(T * 1.05 + k.ph + i * .32) * 9 + Math.sin(T * 13 + i) * k.wig * 40;
-      vx += ((ux + sway) - vx) * 2.4 * dt; vy += (uy - vy) * 2.4 * dt - 85 * dt; q.px = q.x; q.py = q.y; q.x += vx * dt; q.y += vy * dt;
-      if (ptrLive) { const dx = q.x - ptr.x, dy = q.y - ptr.y, d = Math.hypot(dx, dy); if (d < 28 && d > 0) { q.x += dx / d * (28 - d) * .5; q.y += dy / d * (28 - d) * .3; } }
+      vx += ((ux + sway) - vx) * 2.4 * dt; vy += (uy - vy) * 2.4 * dt - 85 * dt;
+      if (ptrLive) { const dx = q.x - ptr.x, dy = q.y - ptr.y, d = Math.hypot(dx, dy), R0 = 70; if (d < R0 && d > 0) { const f = (1 - d / R0), w = f * f * (3 - 2 * f) * ptrFade(); vx += dx / d * w * 900 * dt; vy += dy / d * w * 380 * dt; } }
+      q.px = q.x; q.py = q.y; q.x += vx * dt; q.y += vy * dt;
     }
     for (let it = 0; it < 3; it++) for (let i = 1; i < n.length; i++) { const a = n[i - 1], b = n[i], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, df = (d - k.L) / d;
       if (i === 1) { b.x -= dx * df; b.y -= dy * df; } else { a.x += dx * df * .5; a.y += dy * df * .5; b.x -= dx * df * .5; b.y -= dy * df * .5; } }
@@ -1791,6 +1797,7 @@ function drawPegs(){
 function drawWater(){
   const c = pal(), g = ctx.createLinearGradient(0, SURF - 20, 0, H); g.addColorStop(0, c[0]); g.addColorStop(.32, c[1]); g.addColorStop(1, c[2]);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  if (lite()) return;
   ctx.save(); ctx.globalAlpha = night ? .035 : .085; ctx.fillStyle = '#ffffff';
   for (let i = 0; i < Math.ceil(W / 260); i++) { const x0 = (i + .3) * 260 + Math.sin(T * .25 + i * 1.7) * 30; ctx.beginPath(); ctx.moveTo(x0 - 10, SURF); ctx.lineTo(x0 + 26, SURF); ctx.lineTo(x0 + 140, H * .92); ctx.lineTo(x0 + 30, H * .92); ctx.closePath(); ctx.fill(); }
   ctx.restore();
@@ -1808,7 +1815,7 @@ function drawReef(){
   }
 }
 function drawFog(){ const c = pal(); ctx.fillStyle = rgba(c[1], night ? .3 : .24); ctx.fillRect(0, 0, W, H); }
-function drawSnow(near){ ctx.fillStyle = night ? 'rgba(170,240,255,.5)' : 'rgba(255,255,255,.55)'; for (const s of snow) { if ((s.d > .6) !== near) continue; ctx.globalAlpha = .25 + s.d * .5; E(s.x, s.y, s.r * (.6 + s.d), s.r * (.6 + s.d)); } ctx.globalAlpha = 1; }
+function drawSnow(near){ ctx.fillStyle = night ? 'rgba(170,240,255,.5)' : 'rgba(255,255,255,.55)'; const sk = lite() ? 4 : 1; for (let i = 0; i < snow.length; i += sk) { const s = snow[i]; if ((s.d > .6) !== near) continue; ctx.globalAlpha = .25 + s.d * .5; E(s.x, s.y, s.r * (.6 + s.d), s.r * (.6 + s.d)); } ctx.globalAlpha = 1; }
 function drawParcels(){ for (const p of parcels) { if (p.s < .05) continue; const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 1.3); g.addColorStop(0, `rgba(255,255,255,${.1 * p.s})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(p.x - p.r * 1.3, p.y - p.r * 1.3, p.r * 2.6, p.r * 2.6); } }
 function drawFloor(){
   ctx.beginPath(); ctx.moveTo(0, H); for (let x = 0; x <= W + 6; x += 6) ctx.lineTo(x, floorY(x)); ctx.lineTo(W, H); ctx.closePath();
@@ -1828,9 +1835,12 @@ function drawFloor(){
 }
 function drawGrass(){
   ctx.lineCap = 'round';
+  const gdt = Math.min(.05, Math.max(0, T - grassT)); grassT = T; const pf = ptrFade();
   for (const t of grass) for (const b of t.blades) {
-    let sw = Math.sin(T * 1.3 + t.x * .05 + b.ph) * 3 + cur * 7 + b.lean * b.h;
-    if (T - ptr.t < .4) { const dx = t.x - ptr.x, dy = t.y - b.h - ptr.y; if (dx * dx + dy * dy < 900) sw += (dx > 0 ? 1 : -1) * 8; }
+    let tgt = 0;
+    if (pf > 0) { const dx = t.x + b.dx - ptr.x, dy = t.y - b.h * .6 - ptr.y, d = Math.hypot(dx, dy), R0 = 60; if (d < R0) { const f = 1 - d / R0; tgt = (dx >= 0 ? 1 : -1) * 14 * f * f * (3 - 2 * f) * pf; } }
+    b.pv = (b.pv || 0) + ((tgt - (b.pu || 0)) * 38 - (b.pv || 0) * 7) * gdt; b.pu = (b.pu || 0) + b.pv * gdt;
+    const sw = Math.sin(T * 1.3 + t.x * .05 + b.ph) * 3 + cur * 7 + b.lean * b.h + b.pu;
     ctx.strokeStyle = night ? mix('#1f5a3c', '#2e7350', b.c) : mix('#3d9a55', '#7cc46a', b.c); ctx.lineWidth = 2.2;
     ctx.beginPath(); ctx.moveTo(t.x + b.dx, t.y); ctx.quadraticCurveTo(t.x + b.dx + sw * .3, t.y - b.h * .55, t.x + b.dx + sw, t.y - b.h); ctx.stroke();
   }
