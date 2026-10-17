@@ -334,7 +334,7 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 @media (max-width: 640px) and (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .icons{background:rgba(8,26,38,.97)} }
 @keyframes pop{from{opacity:0; transform:translateY(-6px) scale(.97)}to{opacity:1; transform:none}}
 
-.book.closed /* gallery picker on phones */
+/* gallery picker on phones */
 .galgrid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px}
 .galgrid button{position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; padding:10px 12px; border-radius:12px; border:1.5px dashed var(--tk-line); background:linear-gradient(var(--tk-top) 0 50%, var(--tk-bot) 50%); cursor:pointer}
 .galgrid button[aria-pressed="true"]{border-style:solid; border-color:var(--ink); box-shadow:3px 3px 0 var(--ink)}
@@ -362,6 +362,40 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 #tix.tight .tk{padding-left:7px; padding-right:7px}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @media (prefers-reduced-motion: reduce){ #hud{animation:none} }
+
+/* phones: every popup (except the passport book) is a bottom sheet with a fixed title and a fixed action bar */
+.sx{display:none}
+@media (max-width: 640px){
+  :root{--sheetbg:rgb(246,252,252)}
+  :root[data-theme="dark"]{--sheetbg:rgb(9,28,40)}
+  .modal:not(#pass){place-items:end stretch; padding:0; animation:ppFade .25s ease both}
+  .modal:not(#pass) > .sheet{width:100%; max-height:88vh; max-height:88dvh; border-radius:24px 24px 0 0; border-bottom:0; padding:0 20px; gap:12px; background:var(--sheetbg);
+    -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 -12px 40px rgba(4,30,44,.28); overscroll-behavior:contain; animation:sheetUp .34s cubic-bezier(.2,.8,.2,1) both}
+  .modal.out:not(#pass){animation:ppFadeOut .26s ease both}
+  .modal.out:not(#pass) > .sheet{animation:sheetDown .26s ease-in both}
+  .sheet > h2, .sheet > .shHead{position:sticky; top:0; z-index:2; margin:0 -20px; padding:26px 20px 10px; background:var(--sheetbg); flex:none}
+  .sheet > .shHead{padding-right:60px}
+  .sheet > h2::before, .sheet > .shHead::before{content:""; position:absolute; top:9px; left:50%; width:42px; height:5px; margin-left:-21px; border-radius:3px; background:var(--ink-soft); opacity:.45}
+  .sheet > .eb{padding-top:28px; margin-bottom:-12px; position:relative}
+  .sheet > .eb::before{content:""; position:absolute; top:9px; left:50%; width:42px; height:5px; margin-left:-21px; border-radius:3px; background:var(--ink-soft); opacity:.45}
+  .sheet > .eb + h2{padding-top:4px}
+  .sheet > .eb + h2::before{display:none}
+  .sheet .sub{margin:-8px 0 0}
+  .sx{display:grid; place-items:center; position:absolute; top:18px; right:14px; left:auto; width:36px; height:36px; border-radius:50%; padding:0; font-size:22px; color:var(--ink); background:rgba(120,160,170,.16)}
+  .sheet > .btns{position:sticky; bottom:0; z-index:2; margin:0 -20px; padding:12px 20px max(14px, env(safe-area-inset-bottom, 0px)); background:var(--sheetbg); border-top:1px solid var(--glass-line); flex:none}
+  .sheet > .btns .ctl{flex:1 1 auto; justify-content:center; text-align:center; padding-top:11px; padding-bottom:11px}
+  #how .btns .ctl{flex-basis:100%}
+  .sheet > .btns .ctl:not(.pri){border-color:color-mix(in srgb, var(--ink) 22%, transparent); background:color-mix(in srgb, var(--ink) 5%, transparent)}
+  #gal .btns{display:none}
+  #gal .galgrid{padding-bottom:max(18px, env(safe-area-inset-bottom, 0px))}
+  .galgrid{gap:10px}
+  .galgrid button{padding:12px 14px; min-height:64px; width:100%}
+  .galgrid .n{font-size:16px}
+  .steps li.howkeys{display:none}
+}
+@media (max-width: 640px) and (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--sheetbg:rgb(9,28,40)} }
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes sheetDown{from{transform:none}to{transform:translateY(100%)}}
 </style>
 </head>
 <body>
@@ -425,7 +459,7 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
       <li><div><b>Pump the water</b>Press A and L, or the yellow buttons. Water shoots straight up from the two vents on the seabed and fans out as it rises, carrying everything with it. Hold Current ◀ or ▶ (arrow keys) to push things sideways.</div></li>
       <li><div><b>Loop the landmarks</b>Let a ring drop onto the tip of a landmark. It slides down and stays. Loop all three landmarks to earn the city's passport stamp, in as few pumps as you can.</div></li>
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
-      <li><div><b>Explore</b>Tap a landmark to light it up, hear its sound and read its story. Tap the diver and he swims off to explore. Tap anything else in the sea too, and drag to stir the water.</div></li>
+      <li><div><b>Explore</b>Tap a landmark to light it up, hear its sound and read its story. Tap the diver to say hi. Tap anything else in the sea too, and drag to stir the water.</div></li>
     </ol>
     <div class="btns"><button class="ctl pri" id="howGo">Start</button></div>
   </div>
@@ -433,7 +467,7 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 
 <div id="gal" class="modal" hidden>
   <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="galT">
-    <h2 id="galT">Choose a gallery</h2>
+    <div class="shHead"><h2 id="galT">Choose a gallery</h2><button class="x sx" id="galX" aria-label="Close">×</button></div>
     <p class="sub">Ten cities, three landmarks each. A tick means you already have the stamp.</p>
     <div class="galgrid" id="galGrid"></div>
     <div class="btns"><button class="ctl" id="galClose">Close</button></div>
@@ -2531,9 +2565,9 @@ $('nextBtn').addEventListener('click', () => { closeModal('done'); daily = false
 $('copyBtn').addEventListener('click', () => { const text = resultText(), box = $('copyBox'); const ok = () => { $('copyBtn').textContent = 'Copied'; setTimeout(() => $('copyBtn').textContent = 'Copy result', 1800); };
   try { navigator.clipboard.writeText(text).then(ok, () => { box.hidden = false; box.value = text; box.select(); }); } catch(e) { box.hidden = false; box.value = text; box.select(); } });
 $('saveBtn').addEventListener('click', savePostcard);
-['how', 'pass', 'done', 'gal'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) closeModal(id); })); $('galClose').addEventListener('click', () => closeModal('gal'));
-function openModal(id){ $(id).hidden = false; const b = $(id).querySelector('.pri, .ctl'); if (b) b.focus(); }
-function closeModal(id){ if (id === 'pass' && !$(id).hidden) { const el = $(id); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.classList.remove('out'); }, 270); return; } $(id).hidden = true; }
+['how', 'pass', 'done', 'gal'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) closeModal(id); })); $('galClose').addEventListener('click', () => closeModal('gal')); $('galX').addEventListener('click', () => closeModal('gal'));
+function openModal(id){ clearTimeout($(id)._t); $(id).classList.remove('out'); $(id).hidden = false; const b = $(id).querySelector('.pri, .ctl'); if (b) b.focus({ focusVisible: false }); }
+function closeModal(id){ if (!$(id).hidden && (id === 'pass' || innerWidth <= 640)) { const el = $(id); el.classList.add('out'); el._t = setTimeout(() => { el.hidden = true; el.classList.remove('out'); }, 270); return; } $(id).hidden = true; }
 let hintT = null, hintsDone = false; try { hintsDone = localStorage.getItem('ww.hints') === '1'; } catch(e) {} if (hintsDone) $('hints').hidden = true;
 function hideHints(){ $('hints').style.opacity = '0'; setTimeout(() => { $('hints').hidden = true; }, 700); hintsDone = true; try { localStorage.setItem('ww.hints', '1'); } catch(e) {} }
 function hintsSeen(){ if (hintT || hintsDone) return; hintT = setTimeout(hideHints, 9000); }
