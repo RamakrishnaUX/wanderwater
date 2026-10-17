@@ -397,6 +397,23 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 @media (max-width: 640px) and (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--sheetbg:rgb(9,28,40)} }
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 @keyframes sheetDown{from{transform:none}to{transform:translateY(100%)}}
+
+/* current buttons: larger, tactile tiles */
+#hud{padding:6px; gap:6px; border-radius:22px}
+#hud .ctl.arrow{width:92px; height:58px; padding:0; border-radius:17px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--ink);
+  background:linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.22)); border:1px solid rgba(255,255,255,.7); box-shadow:0 2px 0 rgba(10,50,65,.12), inset 0 1px 0 rgba(255,255,255,.8);
+  transition:transform .12s, background .2s, color .2s, box-shadow .12s}
+#hud .ctl.arrow .ca{width:30px; height:22px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
+#hud .ctl.arrow .ca.fl{transform:scaleX(-1)}
+#hud .ctl.arrow small{font-size:9.5px; letter-spacing:.14em; opacity:.7}
+#hud .ctl.arrow:hover{background:linear-gradient(rgba(255,255,255,.75), rgba(255,255,255,.35))}
+#hud .ctl.arrow.on{background:var(--ink); color:var(--sky); border-color:transparent; transform:translateY(2px) scale(.97); box-shadow:none}
+#hud .ctl.arrow.on .ca path:first-child{animation:flow .6s linear infinite}
+@keyframes flow{from{transform:translateX(0)}to{transform:translateX(3px)}}
+:root[data-theme="dark"] #hud .ctl.arrow{background:linear-gradient(rgba(120,190,210,.22), rgba(120,190,210,.08)); border-color:rgba(150,215,235,.25); box-shadow:none}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) #hud .ctl.arrow{background:linear-gradient(rgba(120,190,210,.22), rgba(120,190,210,.08)); border-color:rgba(150,215,235,.25); box-shadow:none} }
+@media (max-width: 640px){ #hud .ctl.arrow{width:80px; height:56px} #hud{padding:5px; gap:5px} }
+@media (hover: hover) and (pointer: fine){ #tiltBtn{display:none} }
 </style>
 </head>
 <body>
@@ -420,6 +437,8 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
     <button class="ib" id="fishBtn" aria-label="Release a school of fish" title="Release fish"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12c3.2-5 9.5-6 13.5-1.6L21 7v10l-5-3.4C12 18 5.7 17 2.5 12z"/><circle cx="8" cy="11.3" r=".9" fill="currentColor"/></svg><span class="ibl">Release fish</span></button>
     <button class="ib" id="musicBtn" aria-label="Music" aria-pressed="true" title="Music"><span class="ibl">Music</span></button>
     <button class="ib" id="soundBtn" aria-label="Sound" aria-pressed="true" title="Sound"><span class="ibl">Sound</span></button>
+    <button class="ib" id="themeBtn" aria-pressed="false" title="Dark mode"><span class="ibl">Dark mode</span></button>
+    <button class="ib" id="tiltBtn" aria-pressed="false" title="Tilt to move"><span class="ibl">Tilt to move</span></button>
     <button class="ib" id="resetBtn" aria-label="Reset the tank" title="Reset the tank"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4v4.5H9"/></svg><span class="ibl">Reset the tank</span></button>
     <button class="ib" id="howBtn" aria-label="How to play" title="How to play"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="16.8" r=".5" fill="currentColor"/></svg><span class="ibl">How to play</span></button>
   </div>
@@ -428,8 +447,8 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 <div id="dock">
   <button class="pump" id="pumpL" aria-label="Left pump, key A"><span class="pk">A</span><small>PUMP</small></button>
   <div id="hud" class="glass">
-    <button class="ctl arrow" id="curL" aria-label="Hold for a current to the left" title="Hold for a current to the left">◀<small>current</small></button>
-    <button class="ctl arrow" id="curR" aria-label="Hold for a current to the right" title="Hold for a current to the right">▶<small>current</small></button>
+    <button class="ctl arrow" id="curL" aria-label="Hold for a current to the left" title="Hold for a current to the left"><svg class="ca fl" viewBox="0 0 32 24" aria-hidden="true"><path d="M4 5.5c2.4-1.8 4.8-1.8 7.2 0s4.8 1.8 7.2 0" opacity=".6"/><path d="M4 16h22"/><path d="M21 11l5 5-5 5"/></svg><small>current</small></button>
+    <button class="ctl arrow" id="curR" aria-label="Hold for a current to the right" title="Hold for a current to the right"><svg class="ca" viewBox="0 0 32 24" aria-hidden="true"><path d="M4 5.5c2.4-1.8 4.8-1.8 7.2 0s4.8 1.8 7.2 0" opacity=".6"/><path d="M4 16h22"/><path d="M21 11l5 5-5 5"/></svg><small>current</small></button>
   </div>
   <button class="pump" id="pumpR" aria-label="Right pump, key L"><span class="pk">L</span><small>PUMP</small></button>
 </div>
@@ -1183,12 +1202,14 @@ let cx = 800, Z = 520, V = [0, 0], FB = H - 62;
 const SURF = 150;
 let SX = 800, ST = 322, SB = 374, SHW = 64;
 let pegs = [], items = [], route = [], fish = [], groups = {}, parcels = [], jetQ = [];
+let shooters = [];
+function shootStar(x, y){ const dir = x > W / 2 ? -1 : 1, a = frand(.14, .3), sp = frand(280, 380); shooters.push({ x, y, vx:Math.cos(a) * sp * dir, vy:Math.sin(a) * sp, t:0, life:frand(.8, 1.1), w:frand(1.6, 2.4) }); }
 let kelps = [], anemones = [], stars = [], shells = [], corals = [], rocks = [], snow = [], skyStars = [], grass = [], sponges = [], reef = [];
 let horizon = [], mantas = [], jellies = [], turtle = null, boat = null, gulls = [], diver = null, speech = null;
 let bubbles = [], sparks = [], ripples = [], sand = [], waves = [];
 let wh = new Float32Array(2), wv = new Float32Array(2), WN = 2, WSP = 8;
 let loopDone = false, packedDone = false, lastPacked = 0, factIdx = 0, stampFx = null, wipe = 0, suitLid = 0, easelWob = 0;
-let cur = 0, curHold = 0, curKeys = { l:0, r:0 };
+let cur = 0, curHold = 0, curKeys = { l:0, r:0 }, tilt = 0;
 let pumps = 0, daily = false, dayNo = 1, dives = 3, diverArmed = false, tipShown = false;
 function inSuitcase(o){ return false; }
 const DIVER_LINES = ['Off to explore!', 'Have you seen the clownfish?', 'Just checking on the reef.', 'Back in a bit.', 'This water is lovely today.'];
@@ -1498,7 +1519,7 @@ function stepItems(dt){
     it.onFloor = false;
     const rvx = ux - it.vx, rvy = uy - it.vy, rel = Math.hypot(rvx, rvy);
     const c = (ring ? 2.4 : 2.0) + (ring ? .011 : .008) * rel;
-    let ax = rvx * c, ay = rvy * c + (ring ? 120 : 110);
+    let ax = rvx * c + tilt * (ring ? 150 : 130), ay = rvy * c + (ring ? 120 : 110);
     if (ring) {
       if (it.vy > 0) ax += Math.sin(it.a) * it.vy * 1.3;
       it.va += (-it.a * 5.5 - it.va * 1.7 - rvx * .006 + (rel > 140 ? frand(-1, 1) * rel * .025 : 0)) * dt;
@@ -1621,7 +1642,8 @@ function stepWorld(dt){
     if (!p.hit && p.y < surfY(p.x) + 12) { p.hit = true; splash(p.x, -Math.abs(p.vy) * .05 * p.s); p.vy *= .25; }
   }
   parcels = parcels.filter(p => p.life > 0);
-  cur += ((curHold || (curKeys.r - curKeys.l)) - cur) * Math.min(1, dt * 1.6);
+  tilt += (((typeof tiltOn !== 'undefined' && tiltOn) ? tiltRaw : 0) - tilt) * Math.min(1, dt * 6);
+  cur += ((curHold || (curKeys.r - curKeys.l) || tilt * .35) - cur) * Math.min(1, dt * 1.6);
   const k = 26, dmp = 1.4, c2 = 2400 / (WSP * WSP);
   for (let i = 0; i < WN; i++) { const l = wh[Math.max(0, i - 1)], r = wh[Math.min(WN - 1, i + 1)]; wv[i] += (-k * wh[i] - dmp * wv[i] + c2 * (l + r - 2 * wh[i])) * dt; }
   for (let i = 0; i < WN; i++) wh[i] = clamp(wh[i] + wv[i] * dt, -40, 40);
@@ -1655,6 +1677,8 @@ function stepWorld(dt){
   boat.x += boat.dir * boat.spd * dt; if (boat.x < -120) boat.dir = 1; if (boat.x > W + 120) boat.dir = -1; boat.horn = Math.max(0, boat.horn - dt * .3);
   if (!night && Math.random() < dt * .03 && gulls.length < 3) { gulls.push(mkGull(Math.random() < .5 ? -30 : W + 30, frand(30, SURF - 50))); SFX.gull(); }
   if (Math.random() < dt / 30) SFX.whale();
+  for (const m of shooters) { m.t += dt; m.x += m.vx * dt; m.y += m.vy * dt; m.vy += 12 * dt; } shooters = shooters.filter(m => m.t < m.life);
+  if (night && Math.random() < dt / 9 && shooters.length < 2) shootStar(frand(W * .15, W * .85), frand(10, SURF * .45));
   for (const g of gulls) { g.t += dt; g.x += g.vx * dt; g.y += Math.sin(g.t * .5) * 3 * dt + g.vy * dt; g.vy *= .985; }
   gulls = gulls.filter(g => g.x > -80 && g.x < W + 80 && g.y > -60);
   for (const it of items) if (it.type === 'ring' && it.hooked < 0 && !it.carried && (Math.abs(it.vph) > 3.5 || Math.hypot(it.vx, it.vy) > 170) && Math.random() < dt * 14) bubble(it.x + Math.cos(it.a) * RX * (Math.random() < .5 ? -1 : 1), it.y, frand(1, 2.4));
@@ -2340,6 +2364,10 @@ function drawSky(){
   drawSil(LM[city.lms[0]], W * .62, SURF + 4, .5, hc); drawSil(LM[city.lms[2]], W * .36, SURF + 4, .38, hc);
   if (night) { ctx.fillStyle = 'rgba(255,214,120,.8)'; for (const b of horizon) if (b[3] > .55) R(b[0] + b[1] * .4, SURF - b[2] + 4, 1.6, 1.6); }
   for (const s of sparks) if (s.sky) { ctx.globalAlpha = Math.max(0, s.life); ctx.fillStyle = s.col; E(s.x, s.y, 1.6, 1.6); } ctx.globalAlpha = 1;
+  for (const m of shooters) { const k = m.t / m.life, fade = k < .15 ? k / .15 : 1 - Math.max(0, (k - .55) / .45), sp = Math.hypot(m.vx, m.vy), tl = Math.min(120, 30 + m.t * 220), tx = m.x - m.vx / sp * tl, ty = m.y - m.vy / sp * tl;
+    const tg = ctx.createLinearGradient(m.x, m.y, tx, ty); tg.addColorStop(0, `rgba(255,252,235,${.95 * fade})`); tg.addColorStop(.25, `rgba(190,225,255,${.5 * fade})`); tg.addColorStop(1, 'rgba(160,200,255,0)');
+    ctx.strokeStyle = tg; ctx.lineWidth = m.w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
+    const hg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 9); hg.addColorStop(0, `rgba(255,255,245,${fade})`); hg.addColorStop(1, 'rgba(255,255,245,0)'); ctx.fillStyle = hg; E(m.x, m.y, 9, 9); }
   drawBoat(); drawGulls(); ctx.restore();
   ctx.strokeStyle = night ? 'rgba(170,220,240,.55)' : 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.beginPath(); for (let x = 0; x <= W + WSP; x += WSP) { const y = surfY(x); x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
   const ug = ctx.createLinearGradient(0, SURF, 0, SURF + 50); ug.addColorStop(0, `rgba(255,255,255,${night ? .06 : .2})`); ug.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = ug; ctx.fillRect(0, SURF - 10, W, 60);
@@ -2370,7 +2398,7 @@ function draw(){
   for (const s of shells) drawShell(s);
   for (const s of stars) drawStar(s);
   for (const f of fish) if (f.depth >= .45 && f.depth < .8) drawFish(f);
-  drawRoute(); drawPegs();
+  drawPegs();
   for (const it of items) if (it.hooked < 0) { if (it.type === 'ring') drawRing(it, 'all'); else drawOrb(it); }
   for (const f of fish) if (f.depth >= .8) drawFish(f);
   drawTurtle(); drawDiver(); drawBubbles(); drawSnow(true);
@@ -2412,7 +2440,7 @@ function tap(x, y){
   for (let i = bubbles.length - 1; i >= 0; i--) { const b = bubbles[i]; if (Math.hypot(b.x - x, b.y - y) < b.r + 7) { bubbles.splice(i, 1); sparkle(b.x, b.y, '#ffffff', 5); SFX.pop(); return; } }
   if (y < surfY(x) - 4) {
     const bs = boat.sc || 1; if (Math.abs(x - boat.x) < 82 * bs && y > surfY(boat.x) - 70 * bs) { if (boat.horn < .5) { boat.horn = 1; SFX.horn(); splash(boat.x, -22); toast('The liner sounds its horn as it sails into harbour.'); } return; }
-    if (night) { for (let i = 0; i < 16; i++) sparks.push({ x:x + i * 7, y:y + i * 3, vx:200, vy:90, life:.5 + i * .03, col:'#fff7d6', sky:true }); SFX.note(1568); }
+    if (night) { shootStar(x, y); SFX.note(1568); setTimeout(() => SFX.note(2093), 120); }
     else { const g = mkGull(x, y); g.vy = -6; gulls.push(g); SFX.gull(); }
     return;
   }
@@ -2566,6 +2594,27 @@ soundBtn.addEventListener('click', () => { muted = !muted; updateSoundBtn(); aud
 $('musicBtn').addEventListener('click', () => { audio(); musicOn = !musicOn; try { localStorage.setItem('ww.music', musicOn ? '1' : '0'); } catch(e) {} updateMusicBtn(); musicGain(); toast(musicOn ? 'Now playing: ' + STYLES[city.id].name + '.' : 'Music off.'); });
 function updateMusicBtn(){ const b = $('musicBtn'); b.innerHTML = (musicOn ? IC.music : IC.musicOff) + '<span class="ibl">' + (musicOn ? 'Music is on' : 'Music is off') + '</span>'; b.setAttribute('aria-pressed', String(musicOn)); b.title = musicOn ? 'Music on' : 'Music off'; b.setAttribute('aria-label', b.title); }
 updateMusicBtn();
+
+/* ---------- dark mode ---------- */
+const IC2 = { moon:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/></svg>', sun:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>',
+  tilt:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.2" transform="rotate(-14 12 12)"/><path d="M3 9a9 9 0 0 0 0 6M21 9a9 9 0 0 1 0 6"/></svg>' };
+try { const th = localStorage.getItem('ww.theme'); if (th) document.documentElement.setAttribute('data-theme', th); readTheme(); } catch(e) {}
+function updateThemeBtn(){ const b = $('themeBtn'); b.innerHTML = (night ? IC2.sun : IC2.moon) + '<span class="ibl">' + (night ? 'Dark mode is on' : 'Dark mode is off') + '</span>'; b.setAttribute('aria-pressed', String(night)); b.title = night ? 'Dark mode on' : 'Dark mode off'; b.setAttribute('aria-label', 'Dark mode'); }
+$('themeBtn').addEventListener('click', () => { audio(); const t = night ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); readTheme(); try { localStorage.setItem('ww.theme', t); } catch(e) {} updateThemeBtn(); toast(night ? 'Night falls over the museum.' : 'Morning light returns.'); });
+updateThemeBtn();
+
+/* ---------- tilt the phone to move the rings ---------- */
+let tiltOn = true, tiltRaw = 0, tiltSeen = false; try { tiltOn = localStorage.getItem('ww.tilt') !== '0'; } catch(e) {}
+const tiltNeedsAsk = typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function';
+let tiltAsked = false;
+function onOrient(e){ if (e.gamma == null) return; tiltSeen = true; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+  let v = ang === 90 ? e.beta : (ang === -90 || ang === 270) ? -e.beta : ang === 180 ? -e.gamma : e.gamma; tiltRaw = clamp((v || 0) / 32, -1, 1); }
+function tiltListen(){ window.removeEventListener('deviceorientation', onOrient); if (tiltOn) window.addEventListener('deviceorientation', onOrient); else tiltRaw = 0; }
+function tiltAsk(){ if (!tiltOn || !tiltNeedsAsk || tiltAsked) return; tiltAsked = true; DeviceOrientationEvent.requestPermission().then(r => { if (r !== 'granted') { tiltOn = false; updateTiltBtn(); } tiltListen(); }).catch(() => {}); }
+window.addEventListener('pointerdown', tiltAsk, { capture:true });
+function updateTiltBtn(){ const b = $('tiltBtn'); b.innerHTML = IC2.tilt + '<span class="ibl">' + (tiltOn ? 'Tilt to move is on' : 'Tilt to move is off') + '</span>'; b.setAttribute('aria-pressed', String(tiltOn)); b.title = tiltOn ? 'Tilt to move on' : 'Tilt to move off'; b.setAttribute('aria-label', 'Tilt to move'); }
+$('tiltBtn').addEventListener('click', () => { audio(); tiltOn = !tiltOn; try { localStorage.setItem('ww.tilt', tiltOn ? '1' : '0'); } catch(e) {} if (tiltOn) { tiltAsked = false; tiltAsk(); } tiltListen(); updateTiltBtn(); toast(tiltOn ? 'Tilt your phone to slide the rings.' : 'Tilt to move is off.'); });
+updateTiltBtn(); tiltListen();
 $('dailyBtn').addEventListener('click', () => { audio(); if (daily) { daily = false; setCity(cityIdx); toast('Free play.'); } else startDaily(); });
 $('howBtn').addEventListener('click', () => openModal('how'));
 $('howGo').addEventListener('click', () => { closeModal('how'); introToast(); try { localStorage.setItem('ww.how', '1'); } catch(e) {} audio(); });
@@ -2852,7 +2901,7 @@ window.addEventListener('resize', resize);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); });
 let seen = false; try { seen = localStorage.getItem('ww.how') === '1'; } catch(e) {}
 if (!seen) openModal('how'); else introToast();
-window.__ww = { items:() => items, pegs:() => pegs, pump, setCity, get T(){ return T; }, diver:() => diver, openLandmark, boat:() => boat, openPassport, openPainting, easel:() => [EX(), floorY(EX())], shells:() => shells, jellies:() => jellies, mantas:() => mantas, turtle:() => turtle, speech:() => speech };
+window.__ww = { items:() => items, pegs:() => pegs, pump, setCity, get T(){ return T; }, diver:() => diver, openLandmark, boat:() => boat, openPassport, openPainting, easel:() => [EX(), floorY(EX())], shells:() => shells, jellies:() => jellies, mantas:() => mantas, turtle:() => turtle, speech:() => speech, shooters:() => shooters };
 requestAnimationFrame(t => { last = t; requestAnimationFrame(frame); });
 })();
 </script>
