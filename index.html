@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Wanderwater: an underwater museum ring toss game. Pump water to loop rings onto famous landmarks from ten cities.">
 <meta name="theme-color" content="#3398ad">
 <title>Wanderwater</title>
@@ -462,6 +462,23 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 .book.open .leaf{cursor:pointer}
 .book.drag .leaf, .book.drag .card3d{cursor:grabbing}
 @media (max-width: 699px){ .ppnav{gap:8px} }
+
+html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-adjust:100%}
+/* passport back cover */
+.bcov{position:absolute; inset:0; border-radius:16px 5px 5px 16px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4cqw; text-align:center; padding:12cqw 12cqw 12cqw 9cqw;
+  background:radial-gradient(130% 90% at 70% 15%, rgba(255,255,255,.10), transparent 55%), linear-gradient(200deg, #6b1f2b, #4a121c 55%, #330b13);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.4), inset 0 0 26px rgba(0,0,0,.45), -1px 0 0 #e9e0c7, -3px 1px 0 #d7cdb0, -5px 2px 0 #e6dcc2, 0 22px 50px rgba(0,0,0,.45)}
+.bcov::before{content:""; position:absolute; top:0; bottom:0; right:0; width:7cqw; background:linear-gradient(270deg, rgba(0,0,0,.55), rgba(0,0,0,.15) 60%, rgba(255,255,255,.07) 85%, rgba(0,0,0,.25))}
+.bcov::after{content:""; position:absolute; top:4.2cqw; bottom:4.2cqw; right:10cqw; left:4.2cqw; border:1px solid rgba(226,192,106,.32); border-radius:10px 2px 2px 10px}
+.bcov .bt{font-family:var(--mono); font-size:3cqw; letter-spacing:.28em; color:rgba(240,215,150,.8); text-transform:uppercase; line-height:1.7}
+.bcov svg{width:22cqw; height:22cqw}
+.bcov .bar{width:44cqw; height:9cqw; background:repeating-linear-gradient(90deg, rgba(240,215,150,.75) 0 1.2px, transparent 1.2px 3px, rgba(240,215,150,.75) 3px 5px, transparent 5px 6.5px); opacity:.7; margin-top:4cqw}
+.pg.endpaper.blankend{background:#ede4cc}
+.book.ended{transform:translateX(calc(var(--pw) * .5))}
+.book.closing{transform:translateX(calc(var(--pw) * -.5))}
+.book.ended .leaf.R{visibility:hidden}
+.pp, .book{-webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
+.book input{-webkit-user-select:text; user-select:text}
 </style>
 </head>
 <body>
@@ -617,10 +634,21 @@ function rgba(h, a){ const c = hex2(h); return `rgba(${c[0]},${c[1]},${c[2]},${a
 /* ---------- audio ---------- */
 let AC = null, master = null, muted = false, noiseBuf = null, hum = null;
 function audio(){
-  if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = .5; master.connect(AC.destination); startAmbient(); musicSwitch(city.id); } catch(e) { AC = null; } }
+  if (!AC) {
+    try { const AX = window.AudioContext || window.webkitAudioContext; if (!AX) return; AC = new AX(); } catch(e) { AC = null; return; }
+    try { master = AC.createGain(); master.gain.value = .5; master.connect(AC.destination); } catch(e) {}
+    try { startAmbient(); } catch(e) { console.error(e); }
+    try { musicSwitch(city.id); } catch(e) { console.error(e); }
+  }
   if (AC && AC.state !== 'running') { try { AC.resume(); } catch(e) {} }
 }
 /* iOS: start audio from a real tap (touchend/click), play a silent media loop so the ring/silent switch does not mute the game, and prod the context awake */
+
+/* no page zoom on phones: block pinch and double tap zoom */
+['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive:false }));
+document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive:false });
+let lastTouchEnd = 0; document.addEventListener('touchend', e => { const now = Date.now(); if (now - lastTouchEnd < 350 && !(e.target.closest && e.target.closest('input, textarea'))) e.preventDefault(); lastTouchEnd = now; }, { passive:false });
+document.addEventListener('dblclick', e => e.preventDefault(), { passive:false });
 let unlockEl = null;
 function silentWav(){ const n = 4000, b = new ArrayBuffer(44 + n), v = new DataView(b), w = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
   w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true); for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
@@ -631,7 +659,7 @@ function unlockAudio(){
   try { if (!unlockEl) { unlockEl = new Audio(silentWav()); unlockEl.loop = true; unlockEl.setAttribute('playsinline', ''); unlockEl.volume = .01; } if (unlockEl.paused) { const pr = unlockEl.play(); if (pr && pr.catch) pr.catch(() => {}); } } catch(e) {}
   try { const b = AC.createBuffer(1, 1, 22050), src = AC.createBufferSource(); src.buffer = b; src.connect(AC.destination); src.start(0); } catch(e) {}
 }
-['touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio, { capture:true, passive:true }));
+['touchend', 'pointerup', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio, { capture:true, passive:true }));
 document.addEventListener('visibilitychange', () => { if (!document.hidden && AC && AC.state !== 'running') { try { AC.resume(); } catch(e) {} } });
 function noise(){ if (!noiseBuf) { noiseBuf = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate); const d = noiseBuf.getChannelData(0); let b = 0; for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; d[i] = w; } } return noiseBuf; }
 function startAmbient(){
@@ -1876,8 +1904,7 @@ function drawPegs(){
     drawLandmark(p);
     const pg = ctx.createLinearGradient(p.x - 24, 0, p.x + 24, 0); pg.addColorStop(0, '#efe9dd'); pg.addColorStop(.5, '#d8d0bf'); pg.addColorStop(1, '#a9a08d');
     ctx.fillStyle = pg; RR(p.x - 24, p.base, 48, 18, 2); ctx.fill(); ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(p.x - 24, p.bot - 4, 48, 4); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(p.x - 24, p.base, 48, 1.2);
-    const bg = ctx.createLinearGradient(0, p.base + 5, 0, p.base + 11); bg.addColorStop(0, '#f2d27a'); bg.addColorStop(1, '#a8801f'); ctx.fillStyle = bg; RR(p.x - 12, p.base + 5, 24, 6.5, 1); ctx.fill();
-    ctx.fillStyle = 'rgba(70,50,10,.8)'; ctx.font = '600 4.2px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillText(p.lm.name.toUpperCase().slice(0, 16), p.x, p.base + 9.6);
+    ctx.fillStyle = 'rgba(40,44,48,.85)'; ctx.font = '600 4.4px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillText(p.lm.name.toUpperCase().slice(0, 16), p.x, p.base + 9.6);
     for (const r of p.stack) drawRing(r, 'front');
   }
 }
@@ -2509,7 +2536,7 @@ function toWorld(e){ const r = cv.getBoundingClientRect(); return { x:(e.clientX
 function tap(x, y){
   for (let i = bubbles.length - 1; i >= 0; i--) { const b = bubbles[i]; if (Math.hypot(b.x - x, b.y - y) < b.r + 7) { bubbles.splice(i, 1); sparkle(b.x, b.y, '#ffffff', 5); SFX.pop(); return; } }
   if (y < surfY(x) - 4) {
-    const bs = boat.sc || 1; if (Math.abs(x - boat.x) < 82 * bs && y > surfY(boat.x) - 70 * bs) { if (boat.horn < .5) { boat.horn = 1; SFX.horn(); splash(boat.x, -22); toast('The liner sounds its horn as it sails into harbour.'); } return; }
+    const bs = boat.sc || 1; if (Math.abs(x - boat.x) < 82 * bs && y > surfY(boat.x) - 70 * bs) { if (boat.horn < .5) { boat.horn = 1; SFX.horn(); splash(boat.x, -22); } return; }
     if (night) { shootStar(x, y); SFX.note(1568); setTimeout(() => SFX.note(2093), 120); }
     else { const g = mkGull(x, y); g.vy = -6; gulls.push(g); SFX.gull(); }
     return;
@@ -2810,7 +2837,9 @@ function stampSVG(c, i){
 }
 const WM = '<svg class="wm" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="50" cy="50" r="34"/><ellipse cx="50" cy="50" rx="15" ry="34"/><path d="M16 50h68M20 33h60M20 67h60"/><path d="M22 76c6-4 10-4 14 0s8 4 14 0 8-4 14 0 8 4 14 0" stroke-width="2.2"/></svg>';
 function mrzLine(t){ return (t + '<'.repeat(44)).slice(0, 44).replace(/</g, '&lt;'); }
-const PP = { idx:0, open:false, busy:false, single:false, slam:-1, pages:[] };
+const PP = { idx:0, open:false, busy:false, single:false, slam:-1, pages:[], ended:false };
+const BCOV = `<div class="bcov"><svg viewBox="0 0 100 100" fill="none" stroke="url(#gold)" stroke-width="2"><circle cx="50" cy="50" r="30"/><ellipse cx="50" cy="50" rx="13" ry="30"/><path d="M20 50h60M24 36h52M24 64h52"/></svg><div class="bt">This passport remains<br>the property of the<br>Wanderwater Museum</div><div class="bt">If found, please return<br>it to the nearest reef</div><div class="bar"></div></div>`;
+const ENDP = `<div class="pg endpaper blankend"></div>`;
 function ppPageHTML(n){
   const nm = (store.name || '').trim(), got = CITIES.filter(c => store.stamps[c.id]).length, iss = ppDate(new Date(store.issued)), no = `<div class="no">${String(n + 1).padStart(2, '0')}</div>`;
   if (n === 0) return `<div class="pg">${WM}<div class="hd"><span>Wanderwater</span><span>Underwater Museum</span></div><h3>To whom it may concern</h3>
@@ -2843,12 +2872,12 @@ function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return;
 function ppPaint(){
   const [l, r] = ppView();
   // in a spread, page 1 of the book is the inside of the cover itself
-  $('lfL').innerHTML = l == null || l === 0 ? '' : ppPageHTML(l);
-  $('lfR').innerHTML = r != null && r < PP_N ? ppPageHTML(r) : '';
+  if (PP.ended) { $('lfL').innerHTML = BCOV; $('lfR').innerHTML = ''; }
+  else { $('lfL').innerHTML = l == null || l === 0 ? '' : ppPageHTML(l); $('lfR').innerHTML = r != null && r < PP_N ? ppPageHTML(r) : ''; }
   $('coverIn').innerHTML = ppPageHTML(0).replace('class="pg"', 'class="pg endpaper"');
   bindName();
   const step = PP.single ? 1 : 2, open = PP.open;
-  $('ppPrev').disabled = !open || PP.idx === 0; $('ppNext').disabled = !open || PP.idx + step >= PP_N;
+  $('ppPrev').disabled = !open; $('ppNext').disabled = !open || PP.ended;
   const nSp = Math.ceil(PP_N / step); $('ppDots').innerHTML = Array.from({ length:nSp }, (_, i) => `<i class="${i === Math.floor(PP.idx / step) ? 'on' : ''}"></i>`).join('');
 }
 function turn3d(el, from, to, origin, dur){
@@ -2864,8 +2893,32 @@ function ppPrep(dir){
   F.style.left = '0px'; pageOn(fr, PP.idx, 1); pageOn(bk, ni + 1, 1); $('lfL').innerHTML = ni === 0 ? '' : ppPageHTML(ni); F.style.transformOrigin = 'right center'; return { F, ni, to:180 };
 }
 function ppCleanup(){ const F = $('lfF'); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = true; F.querySelector('.front').innerHTML = ''; F.querySelector('.back').innerHTML = ''; PP.busy = false; }
+function ppEdge(dir){ const step = PP.single ? 1 : 2; if (PP.ended) return dir < 0 ? 'unend' : null; if (dir < 0 && PP.idx === 0) return 'close'; if (dir > 0 && PP.idx + step >= PP_N) return 'end'; return null; }
+async function ppEdgeTurn(kind){
+  if (PP.busy) return; const F = $('lfF'), fr = F.querySelector('.front'), bk = F.querySelector('.back'), book = $('book');
+  if (kind === 'close') return ppCloseBook();
+  PP.busy = true; pageSound(kind === 'end' ? 1 : -1); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = false;
+  if (kind === 'end') {
+    F.style.left = 'var(--pw)'; F.style.transformOrigin = 'left center'; fr.innerHTML = ppPageHTML(PP.idx + 1) + '<div class="shade"></div>'; bk.innerHTML = BCOV + '<div class="shade"></div>'; $('lfR').innerHTML = ENDP;
+    book.classList.add('ended'); await turn3d(F, 0, -180, 'left center', 1100); PP.ended = true;
+  } else {
+    F.style.left = '0px'; F.style.transformOrigin = 'right center'; fr.innerHTML = BCOV + '<div class="shade"></div>'; bk.innerHTML = ppPageHTML(PP.idx + 1) + '<div class="shade"></div>';
+    PP.ended = false; $('lfL').innerHTML = PP.idx === 0 ? '' : ppPageHTML(PP.idx); $('lfR').innerHTML = ENDP; book.classList.remove('ended');
+    await turn3d(F, 0, 180, 'right center', 1100);
+  }
+  ppPaint(); ppCleanup();
+}
+function ppCloseBook(){
+  return new Promise(res => {
+    if (!PP.open || PP.busy) return res(); PP.busy = true; const bk = $('book');
+    if (AC && !muted) { swoosh(1.1, 1100, 300, .08, 1); noiseHit(AC.currentTime + 1.05, .08, .05, master, 'lowpass', 700, 1); }
+    bk.classList.remove('settled', 'ended'); PP.ended = false;
+    requestAnimationFrame(() => { bk.classList.remove('open'); bk.classList.add('closing'); });
+    setTimeout(() => { bk.classList.add('closed'); bk.classList.remove('closing'); PP.open = false; PP.busy = false; PP.idx = 0; ppPaint(); res(); }, 1250);
+  });
+}
 async function ppTurn(dir){
-  if (PP.busy || !PP.open) return; const t = ppPrep(dir); if (!t) return;
+  if (PP.busy || !PP.open) return; const edge = ppEdge(dir); if (edge) return ppEdgeTurn(edge); const t = ppPrep(dir); if (!t) return;
   PP.busy = true; pageSound(dir); await turn3d(t.F, 0, t.to, t.F.style.transformOrigin, 950); PP.idx = t.ni; ppPaint(); ppCleanup();
 }
 /* grab a page and flip it by hand, or tap a page to turn it */
@@ -2878,7 +2931,7 @@ async function ppTurn(dir){
   });
   book.addEventListener('pointermove', e => {
     if (!g) return; const dx = e.clientX - g.x0;
-    if (!g.on) { if (Math.abs(dx) < 8) return; if ((g.dir > 0 && dx > 0) || (g.dir < 0 && dx < 0)) { g = null; return; } const t = ppPrep(g.dir); if (!t) { g = null; return; } g.t = t; g.on = true; PP.busy = true; book.classList.add('drag'); try { book.setPointerCapture(g.id); } catch(_) {} }
+    if (!g.on) { if (Math.abs(dx) < 8) return; if ((g.dir > 0 && dx > 0) || (g.dir < 0 && dx < 0)) { g = null; return; } const edge = ppEdge(g.dir); if (edge) { g = null; ppEdgeTurn(edge); return; } const t = ppPrep(g.dir); if (!t) { g = null; return; } g.t = t; g.on = true; PP.busy = true; book.classList.add('drag'); try { book.setPointerCapture(g.id); } catch(_) {} }
     const p = clamp(Math.abs(dx) / (pw() * 1.6), 0, 1); g.ang = g.t.to * p; g.p = p; g.t.F.style.transform = `rotateY(${g.ang}deg)`;
     g.t.F.querySelectorAll('.shade').forEach(sh => sh.style.opacity = String(Math.sin(p * Math.PI)));
   });
@@ -2898,7 +2951,7 @@ function ppOpenBook(){
   return new Promise(res => {
     if (PP.open || PP.busy) return res(); PP.busy = true; const bk = $('book'), C = $('ppCover');
     if (AC && !muted) { swoosh(1.1, 300, 1100, .08, 1); noiseHit(AC.currentTime + .05, .08, .04, master, 'lowpass', 900, 1); }
-    PP.open = true; ppPaint(); bk.classList.remove('closed'); bk.classList.add('open');
+    PP.open = true; PP.ended = false; ppPaint(); bk.classList.remove('closed', 'closing', 'ended'); bk.classList.add('open');
     const sh = C.querySelector('.shade'); if (sh) sh.animate([{ opacity:0 }, { opacity:1, offset:.5 }, { opacity:0 }], { duration:1200 });
     setTimeout(() => { bk.classList.add('settled'); PP.busy = false; ppPaint(); res(); }, 1250);
   });
@@ -2910,7 +2963,7 @@ function openPassport(gi){
   ppSize(); const step = PP.single ? 1 : 2, target = gi != null ? 2 + (gi >> 1) : (PP.single ? 1 : 0);
   PP.idx = Math.floor(target / step) * step; PP.open = false; PP.busy = false; PP.slam = -1;
   if (gi != null && PP.single) PP.idx = 2 + (gi >> 1);
-  const bk = $('book'); bk.classList.add('closed'); bk.classList.remove('open', 'settled'); $('lfF').hidden = true;
+  PP.ended = false; const bk = $('book'); bk.classList.add('closed'); bk.classList.remove('open', 'settled', 'ended', 'closing'); $('lfF').hidden = true;
   ppPaint(); $('pass').classList.remove('out'); openModal('pass'); $('ppCover').focus({ preventScroll:true });
   if (gi != null) setTimeout(async () => { await ppOpenBook(); PP.slam = gi; ppPaint(); SFX.thud(); setTimeout(() => { PP.slam = -1; }, 800); }, 750);
 }
