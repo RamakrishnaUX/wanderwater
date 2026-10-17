@@ -133,7 +133,6 @@ button.chip{cursor:pointer; border-color:var(--glass-line)}
 .pill.on b{color:var(--accent)}
 button.pill{cursor:pointer}
 button.pill:hover,.ib:hover{background:rgba(255,255,255,.28)}
-#chipDaily b{color:var(--accent); font-family:var(--body); font-weight:700; font-size:13px}
 .icons{margin-left:auto}
 .ib{width:34px; height:34px; border-radius:50%; border:0; background:none; display:grid; place-items:center; cursor:pointer; color:var(--ink); padding:0; touch-action:manipulation}
 .ib svg{width:19px; height:19px}
@@ -455,6 +454,14 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
   #pad #hud .ctl.arrow .ca{width:24px; height:18px}
   #pad #hud .ctl.arrow small{font-size:7.5px}
 }
+
+/* passport: closed book sits centred, then glides as it opens so the open spread is centred too */
+.book{transition:transform 1.15s cubic-bezier(.45,.05,.25,1)}
+.book.closed{transform:translateX(calc(var(--pw) * -.5))}
+.book{touch-action:none}
+.book.open .leaf{cursor:pointer}
+.book.drag .leaf, .book.drag .card3d{cursor:grabbing}
+@media (max-width: 699px){ .ppnav{gap:8px} }
 </style>
 </head>
 <body>
@@ -468,13 +475,11 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
   <div class="pills glass">
     <span class="pill" id="chipLoop" title="Landmarks with a ring on them"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" stroke-width="3"/></svg><b><span id="loopN">0</span>/3</b> <span class="lbl">looped</span></span>
     <span class="pill" title="Pump presses this round"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 5 6.5 8 6.5 11.2a6.5 6.5 0 0 1-13 0C5.5 11 8 8 12 3z"/></svg><b id="pumpN">0</b> <span class="lbl">pumps</span></span>
-    <span class="pill" id="chipDaily" hidden><b>Daily #<span id="dayN">1</span></b></span>
     <button class="pill" id="passBtn" aria-label="Open your passport" title="Passport"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M9 17h6"/></svg><b><span id="passN">0</span>/10</b></button>
   </div>
   <div class="menuWrap">
   <button class="ib glass" id="gearBtn" aria-label="Settings" aria-expanded="false" aria-controls="icons" title="Settings"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></button>
   <div class="icons glass" id="icons">
-    <button class="ib" id="dailyBtn" aria-label="Daily challenge" title="Daily challenge"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span class="ibl">Daily challenge</span></button>
     <button class="ib" id="fishBtn" aria-label="Release a school of fish" title="Release fish"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12c3.2-5 9.5-6 13.5-1.6L21 7v10l-5-3.4C12 18 5.7 17 2.5 12z"/><circle cx="8" cy="11.3" r=".9" fill="currentColor"/></svg><span class="ibl">Release fish</span></button>
     <button class="ib" id="musicBtn" aria-label="Music" aria-pressed="true" title="Music"><span class="ibl">Music</span></button>
     <button class="ib" id="soundBtn" aria-label="Sound" aria-pressed="true" title="Sound"><span class="ibl">Sound</span></button>
@@ -613,8 +618,21 @@ function rgba(h, a){ const c = hex2(h); return `rgba(${c[0]},${c[1]},${c[2]},${a
 let AC = null, master = null, muted = false, noiseBuf = null, hum = null;
 function audio(){
   if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = .5; master.connect(AC.destination); startAmbient(); musicSwitch(city.id); } catch(e) { AC = null; } }
-  if (AC && AC.state === 'suspended') AC.resume();
+  if (AC && AC.state !== 'running') { try { AC.resume(); } catch(e) {} }
 }
+/* iOS: start audio from a real tap (touchend/click), play a silent media loop so the ring/silent switch does not mute the game, and prod the context awake */
+let unlockEl = null;
+function silentWav(){ const n = 4000, b = new ArrayBuffer(44 + n), v = new DataView(b), w = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true); for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  return URL.createObjectURL(new Blob([b], { type:'audio/wav' })); }
+function unlockAudio(){
+  audio(); if (!AC) return;
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e) {}
+  try { if (!unlockEl) { unlockEl = new Audio(silentWav()); unlockEl.loop = true; unlockEl.setAttribute('playsinline', ''); unlockEl.volume = .01; } if (unlockEl.paused) { const pr = unlockEl.play(); if (pr && pr.catch) pr.catch(() => {}); } } catch(e) {}
+  try { const b = AC.createBuffer(1, 1, 22050), src = AC.createBufferSource(); src.buffer = b; src.connect(AC.destination); src.start(0); } catch(e) {}
+}
+['touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio, { capture:true, passive:true }));
+document.addEventListener('visibilitychange', () => { if (!document.hidden && AC && AC.state !== 'running') { try { AC.resume(); } catch(e) {} } });
 function noise(){ if (!noiseBuf) { noiseBuf = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate); const d = noiseBuf.getChannelData(0); let b = 0; for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; d[i] = w; } } return noiseBuf; }
 function startAmbient(){
   const len = AC.sampleRate * 4, buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0); let last = 0;
@@ -2667,7 +2685,6 @@ window.addEventListener('pointerdown', tiltAsk, { capture:true });
 function updateTiltBtn(){ const b = $('tiltBtn'); b.innerHTML = IC2.tilt + '<span class="ibl">' + (tiltOn ? 'Tilt to move is on' : 'Tilt to move is off') + '</span>'; b.setAttribute('aria-pressed', String(tiltOn)); b.title = tiltOn ? 'Tilt to move on' : 'Tilt to move off'; b.setAttribute('aria-label', 'Tilt to move'); }
 $('tiltBtn').addEventListener('click', () => { audio(); tiltOn = !tiltOn; try { localStorage.setItem('ww.tilt', tiltOn ? '1' : '0'); } catch(e) {} if (tiltOn) { tiltAsked = false; tiltAsk(); } tiltListen(); updateTiltBtn(); toast(tiltOn ? 'Tilt your phone to slide the rings.' : 'Tilt to move is off.'); });
 updateTiltBtn(); tiltListen();
-$('dailyBtn').addEventListener('click', () => { audio(); if (daily) { daily = false; setCity(cityIdx); toast('Free play.'); } else startDaily(); });
 $('howBtn').addEventListener('click', () => openModal('how'));
 $('howGo').addEventListener('click', () => { closeModal('how'); introToast(); try { localStorage.setItem('ww.how', '1'); } catch(e) {} audio(); });
 $('passBtn').addEventListener('click', () => openPassport()); $('passClose').addEventListener('click', () => closeModal('pass'));
@@ -2711,7 +2728,6 @@ let store = { stamps:{}, best:{}, daily:{}, stampAt:{} };
 try { const s = JSON.parse(localStorage.getItem('ww.store') || 'null'); if (s) store = Object.assign(store, s); const old = JSON.parse(localStorage.getItem('ww.stamps') || 'null'); if (old) Object.assign(store.stamps, old); } catch(e) {}
 function save(){ try { localStorage.setItem('ww.store', JSON.stringify(store)); } catch(e) {} }
 function computeDay(){ const now = new Date(), a = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()), b = Date.UTC(2026, 9, 17); return Math.max(1, Math.floor((a - b) / 864e5) + 1); }
-function startDaily(){ dayNo = computeDay(); daily = true; const ci = seeded(dayNo * 13)() * CITIES.length | 0; setCity(ci); toast('Daily #' + dayNo + ' · ' + CITIES[ci].name + '. Same layout for everyone today.'); }
 function pad2(n){ return String(n).padStart(2, '0'); }
 function renderTickets(){
   tix.innerHTML = '';
@@ -2817,8 +2833,8 @@ function ppPageHTML(n){
 }
 const PP_N = 8;
 function ppSize(){
-  const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = vw < 700;
-  let pw = Math.min(380, (vh - 110) / 1.42, single ? vw - 40 : (vw - 48) / 2); pw = Math.max(200, Math.floor(pw));
+  const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = false;
+  let pw = Math.min(380, (vh - 130) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
   PP.single = single; bk.classList.toggle('single', single); bk.style.setProperty('--pw', pw + 'px'); bk.style.setProperty('--ph', Math.round(pw * 1.42) + 'px'); bk.style.setProperty('--n', single ? 1 : 2);
 }
 function ppView(){ return PP.single ? [null, PP.idx] : [PP.idx, PP.idx + 1]; }
@@ -2841,22 +2857,43 @@ function turn3d(el, from, to, origin, dur){
   return el.animate([{ transform:`rotateY(${from}deg)` }, { transform:`rotateY(${to}deg)` }], { duration:dur, easing:'cubic-bezier(.45,.05,.25,1)', fill:'forwards' }).finished.catch(() => {});
 }
 function pageSound(dir){ if (!AC || muted) return; swoosh(.5, dir > 0 ? 700 : 1500, dir > 0 ? 1700 : 600, .06, 1.6); noiseHit(AC.currentTime + .38, .05, .03, master, 'highpass', 3000, 1); }
-async function ppTurn(dir){
-  if (PP.busy || !PP.open) return; const step = PP.single ? 1 : 2, ni = PP.idx + dir * step; if (ni < 0 || ni >= PP_N) return;
-  PP.busy = true; pageSound(dir); const F = $('lfF'), fr = F.querySelector('.front'), bk = F.querySelector('.back'), D = 950;
-  F.style.left = ''; F.hidden = false;
-  if (PP.single) {
-    if (dir > 0) { F.style.left = '0px'; pageOn(fr, PP.idx, 1); pageOn(bk, null, 1); PP.idx = ni; ppPaint(); await turn3d(F, 0, -180, 'left center', D); }
-    else { F.style.left = '0px'; pageOn(fr, ni, 1); pageOn(bk, null, 1); await turn3d(F, -180, 0, 'left center', D); PP.idx = ni; ppPaint(); }
-  } else if (dir > 0) {
-    F.style.left = 'var(--pw)'; pageOn(fr, PP.idx + 1, 1); pageOn(bk, ni, 1); $('lfR').innerHTML = ppPageHTML(ni + 1);
-    await turn3d(F, 0, -180, 'left center', D); PP.idx = ni; ppPaint();
-  } else {
-    F.style.left = '0px'; pageOn(fr, PP.idx, 1); pageOn(bk, ni + 1, 1); $('lfL').innerHTML = ni === 0 ? '' : ppPageHTML(ni);
-    await turn3d(F, 0, 180, 'right center', D); PP.idx = ni; ppPaint();
-  }
-  F.getAnimations().forEach(a => a.cancel()); F.hidden = true; fr.innerHTML = ''; bk.innerHTML = ''; PP.busy = false;
+function ppPrep(dir){
+  const step = PP.single ? 1 : 2, ni = PP.idx + dir * step; if (ni < 0 || ni >= PP_N) return null;
+  const F = $('lfF'), fr = F.querySelector('.front'), bk = F.querySelector('.back'); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = false;
+  if (dir > 0) { F.style.left = 'var(--pw)'; pageOn(fr, PP.idx + 1, 1); pageOn(bk, ni, 1); $('lfR').innerHTML = ppPageHTML(ni + 1); F.style.transformOrigin = 'left center'; return { F, ni, to:-180 }; }
+  F.style.left = '0px'; pageOn(fr, PP.idx, 1); pageOn(bk, ni + 1, 1); $('lfL').innerHTML = ni === 0 ? '' : ppPageHTML(ni); F.style.transformOrigin = 'right center'; return { F, ni, to:180 };
 }
+function ppCleanup(){ const F = $('lfF'); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = true; F.querySelector('.front').innerHTML = ''; F.querySelector('.back').innerHTML = ''; PP.busy = false; }
+async function ppTurn(dir){
+  if (PP.busy || !PP.open) return; const t = ppPrep(dir); if (!t) return;
+  PP.busy = true; pageSound(dir); await turn3d(t.F, 0, t.to, t.F.style.transformOrigin, 950); PP.idx = t.ni; ppPaint(); ppCleanup();
+}
+/* grab a page and flip it by hand, or tap a page to turn it */
+(() => {
+  const book = $('book'); let g = null;
+  const pw = () => $('lfR').offsetWidth || 300;
+  book.addEventListener('pointerdown', e => {
+    if (!PP.open || PP.busy || e.target.closest('input')) return; const r = book.getBoundingClientRect(), dir = e.clientX > r.left + r.width / 2 ? 1 : -1;
+    g = { x0:e.clientX, t0:performance.now(), dir, on:false, ang:0, id:e.pointerId };
+  });
+  book.addEventListener('pointermove', e => {
+    if (!g) return; const dx = e.clientX - g.x0;
+    if (!g.on) { if (Math.abs(dx) < 8) return; if ((g.dir > 0 && dx > 0) || (g.dir < 0 && dx < 0)) { g = null; return; } const t = ppPrep(g.dir); if (!t) { g = null; return; } g.t = t; g.on = true; PP.busy = true; book.classList.add('drag'); try { book.setPointerCapture(g.id); } catch(_) {} }
+    const p = clamp(Math.abs(dx) / (pw() * 1.6), 0, 1); g.ang = g.t.to * p; g.p = p; g.t.F.style.transform = `rotateY(${g.ang}deg)`;
+    g.t.F.querySelectorAll('.shade').forEach(sh => sh.style.opacity = String(Math.sin(p * Math.PI)));
+  });
+  const end = async e => {
+    if (!g) return; const d = g; g = null; book.classList.remove('drag');
+    if (!d.on) { if (e.type === 'pointerup' && Math.abs(e.clientX - d.x0) < 8 && !e.target.closest('input, .cover3d')) ppTurn(d.dir); return; }
+    const F = d.t.F, fast = (performance.now() - d.t0) < 260 && d.p > .08, commit = d.p > .35 || fast;
+    F.querySelectorAll('.shade').forEach(sh => sh.style.opacity = '');
+    const target = commit ? d.t.to : 0, dur = Math.max(220, 700 * Math.abs(target - d.ang) / 180);
+    if (commit) pageSound(d.dir);
+    await F.animate([{ transform:`rotateY(${d.ang}deg)` }, { transform:`rotateY(${target}deg)` }], { duration:dur, easing:'cubic-bezier(.3,.6,.3,1)', fill:'forwards' }).finished.catch(() => {});
+    if (commit) PP.idx = d.t.ni; ppPaint(); ppCleanup();
+  };
+  book.addEventListener('pointerup', end); book.addEventListener('pointercancel', end);
+})();
 function ppOpenBook(){
   return new Promise(res => {
     if (PP.open || PP.busy) return res(); PP.busy = true; const bk = $('book'), C = $('ppCover');
@@ -2881,7 +2918,6 @@ window.addEventListener('resize', () => { if (!$('pass').hidden) { ppSize(); ppP
 $('ppCover').addEventListener('click', () => ppOpenBook()); $('ppCover').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ppOpenBook(); } });
 $('ppPrev').addEventListener('click', () => ppTurn(-1));
 $('ppNext').addEventListener('click', () => ppTurn(1));
-(() => { let x0 = null; const bk = $('book'); bk.addEventListener('pointerdown', e => { x0 = e.target.tagName === 'INPUT' ? null : e.clientX; }); bk.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) ppTurn(dx < 0 ? 1 : -1); }); })();
 $('seeStamp').addEventListener('click', () => { closeModal('done'); if (lastResult) openPassport(lastResult.gi); });
 function renderStampsOld(){
   const el = $('stamps'); el.innerHTML = '';
@@ -2892,7 +2928,7 @@ function updateUI(){
   const looped = pegs.filter(p => p.stack.some(r => r.landed)).length;
   $('loopN').textContent = looped; $('pumpN').textContent = pumps; $('passN').textContent = Object.keys(store.stamps).length;
   $('chipLoop').classList.toggle('on', looped > 0);
-  $('dailyBtn').classList.toggle('on', daily); $('dailyBtn').setAttribute('aria-pressed', String(daily)); $('chipDaily').hidden = !daily; $('dayN').textContent = dayNo;
+
 }
 let lastResult = null;
 function celebrate(){
