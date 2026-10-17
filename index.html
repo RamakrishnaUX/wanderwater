@@ -3041,7 +3041,7 @@ function savePostcard(){
   drawStampOn(c2, 1010, 690, 1.25, r.city, r.date, r.daily ? 'DAILY #' + r.day : 'WANDERWATER MUSEUM');
   c.toBlob(blob => { if (!blob) return; downloads.save({ filename:'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png', data:blob }).then(() => toast('Postcard saved.'), err => { if (err && (err.code === 'unavailable' || err.code === 'not_granted')) $('saveBtn').hidden = true; }); }, 'image/png');
 }
-function introToast(){ toast((daily ? 'Daily #' + dayNo : 'Gallery ' + pad2(cityIdx + 1)) + ' · ' + city.name + '. Loop all three landmarks for a stamp. Tap one to learn its story.'); }
+function introToast(){ toast('Loop all three landmarks for a stamp. Tap any one to learn its story.'); }
 function setCity(i){
   cityIdx = i; city = CITIES[i]; buildPegs(); buildDecor(); populateHomes(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0; wipe = 1.1;
   for (let k = 0; k < 80; k++) { const x = frand(10, W - 10); bubble(x, floorY(x) - frand(0, 40), frand(2, 6)); }
