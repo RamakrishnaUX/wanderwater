@@ -929,7 +929,7 @@ function seeded(seed){ let s = (seed * 2654435761) >>> 0 || 1; return () => { s 
 const cv = $('scene'); let ctx = cv.getContext('2d'); let ART = false;
 let W = 1600, S = 1, DPR = 1, CW = 0, CH = 0, T = 0;
 const lite = () => CW < 700;
-let dprCap = 2, perfEma = 1 / 60, perfT = 0;
+let dprCap = 2, perfEma = 0, perfT = 0;
 
 /* ---------- theme ---------- */
 const mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : { matches:false };
@@ -2907,12 +2907,16 @@ let errN = 0; function frameErr(e){ if (errN++ < 5) console.error('Wanderwater f
 function healItems(){ for (const it of items) if (it.hooked < 0 && !it.carried) if (!Number.isFinite(it.x) || !Number.isFinite(it.y) || !Number.isFinite(it.vx) || !Number.isFinite(it.vy)) { const v = V[(Math.random() * 2) | 0]; it.x = v; it.y = floorY(v) - 20; it.vx = it.vy = 0; if ('a' in it) { it.a = 0; it.va = 0; } } if (!Number.isFinite(tilt)) tilt = 0; if (!Number.isFinite(cur)) cur = 0; }
 function frame(now){
   const rawDt = (now - last) / 1000; let dt = Math.min(.05, rawDt); if (slowT > 0) { slowT -= dt; dt *= .35; } last = now; T += dt;
-  if (rawDt < .2) { perfEma += (rawDt - perfEma) * .05; perfT += rawDt; if (perfT > 3 && perfEma > 1 / 42 && DPR > 1) { perfT = 0; dprCap = Math.max(1, DPR - .25); DPR = dprCap; cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); } }
+  const w0 = performance.now();
   try {
     try { acc += dt; let n = 0; while (acc >= STEP && n < 8) { stepItems(STEP); acc -= STEP; n++; } if (n === 8) acc = 0; healItems(); stepFish(dt); stepWorld(dt); } catch(e) { frameErr(e); }
     try { draw(); } catch(e) { frameErr(e); try { ctx.restore(); } catch(_) {} }
     try { placeFloaters(); drawSheetArt(dt); } catch(e) { frameErr(e); }
-  } finally { requestAnimationFrame(frame); }
+  } finally {
+    // resolution governor: judge the real work per frame, not the frame interval (browsers cap rAF at 30Hz in low power mode)
+    if (rawDt < .2 && !document.hidden) { perfEma += ((performance.now() - w0) / 1000 - perfEma) * .05; perfT += rawDt; const floor = Math.min(1.5, window.devicePixelRatio || 1); if (perfT > 4 && perfEma > 1 / 45 && DPR > floor) { perfT = 0; dprCap = Math.max(floor, DPR - .25); DPR = dprCap; cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); } }
+    requestAnimationFrame(frame);
+  }
 }
 
 /* ---------- taps ---------- */
@@ -3456,12 +3460,12 @@ function stageH(){ return $('stage').clientHeight || window.innerHeight; }
 function track(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch(e) {} }
 function buzz(pattern){ try { if (navigator.vibrate && !muted) navigator.vibrate(pattern); } catch(e) {} }
 function resize(){
-  setToy(); H = toyOn() ? 770 : 900; CW = stageW(); CH = stageH() - toyBase(); DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
+  setToy(); H = toyOn() ? 770 : 900; CW = stageW(); CH = stageH() - toyBase(); DPR = Math.min(2, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
   cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); layout(oldW); populateHomes(); renderTickets(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 }
 let startCity = 0; try { startCity = clamp(parseInt(localStorage.getItem('ww.city') || '0', 10) || 0, 0, CITIES.length - 1); } catch(e) {}
 cityIdx = startCity; city = CITIES[startCity]; dayNo = computeDay();
-setToy(); H = toyOn() ? 770 : 900; CW = stageW(); CH = stageH() - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
+setToy(); H = toyOn() ? 770 : 900; CW = stageW(); CH = stageH() - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(2, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
 layout(0); buildPegs(); initCreatures(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0;
 renderTickets(); updateUI(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 window.addEventListener('resize', resize);
