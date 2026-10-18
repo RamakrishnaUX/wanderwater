@@ -3016,7 +3016,7 @@ async function ppEdgeTurn(kind){
     book.classList.add('ended'); await turn3d(F, 0, -180, 'left center', 1100); if (gen !== PP.gen) return; PP.ended = true;
   } else {
     F.style.left = '0px'; F.style.transformOrigin = 'right center'; fr.innerHTML = BCOV + '<div class="shade"></div>'; bk.innerHTML = ppPageHTML(PP.idx + 1) + '<div class="shade"></div>';
-    PP.ended = false; $('lfL').innerHTML = PP.idx === 0 ? '' : ppPageHTML(PP.idx); $('lfR').innerHTML = ENDP; book.classList.remove('ended');
+    PP.ended = false; $('lfL').innerHTML = PP.idx === 0 ? '' : ppPageHTML(PP.idx); $('lfR').innerHTML = PP.idx + 1 < PP_N ? ppPageHTML(PP.idx + 1) : ''; book.classList.remove('ended');
     await turn3d(F, 0, 180, 'right center', 1100); if (gen !== PP.gen) return;
   }
   ppPaint(); ppCleanup();
