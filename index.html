@@ -277,13 +277,14 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 .sig{margin-top:4cqw; font-family:"Segoe Script","Snell Roundhand","Brush Script MT",cursive; font-size:6cqw; color:#2b3f7a; border-bottom:1px solid rgba(109,95,74,.3); min-height:9cqw; white-space:nowrap; overflow:hidden}
 .mrz{margin-top:auto; margin-bottom:5cqw; font-family:var(--mono); font-size:3cqw; letter-spacing:.04em; line-height:1.5; color:#2a2a33; white-space:pre; overflow:hidden; padding-top:2cqw; border-top:1px solid rgba(109,95,74,.25)}
 .slots{flex:1; min-height:0; display:grid; grid-template-rows:1fr 1fr; gap:2cqw; margin-top:2cqw; margin-bottom:6cqw}
-.slot{position:relative; display:grid; place-items:center; min-height:0}
+.slot{position:relative; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-height:0; padding:0 4cqw; overflow:visible}
+.slot.st-r{align-items:flex-end}
 .slot svg.st{height:auto; max-width:100%; mix-blend-mode:multiply; overflow:visible}
-.slot.st-r .note{right:auto; left:3cqw}
+.slot .note{align-self:inherit}
 .slot svg.st text{fill:currentColor}
 .slot.slam svg.st{animation:slam .55s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes slam{0%{transform:scale(1.9) rotate(var(--r)); opacity:0}55%{opacity:1}100%{transform:scale(1) rotate(var(--r)); opacity:1}}
-.slot .note{position:absolute; right:3cqw; bottom:0; font-family:"Segoe Script","Snell Roundhand",cursive; font-size:3.4cqw; color:#2b3f7a; transform:rotate(-4deg)}
+.slot .note{position:static; margin-top:3cqw; white-space:nowrap; font-family:"Segoe Script","Snell Roundhand",cursive; font-size:3.4cqw; color:#2b3f7a; transform:rotate(-4deg)}
 .slot.empty{border:1.5px dashed rgba(109,95,74,.35); border-radius:3cqw; margin:2cqw 4cqw; text-align:center; font-family:var(--mono); color:#9d8e74; font-size:3cqw; letter-spacing:.12em; text-transform:uppercase; align-content:center; gap:1.4cqw}
 .slot.empty b{font-family:var(--display); font-weight:400; font-size:5cqw; letter-spacing:.06em; color:#b3a58a}
 .log{margin-top:4cqw; display:flex; flex-direction:column}
@@ -298,7 +299,7 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 .ppnav{display:flex; align-items:center; gap:10px; transition:opacity .4s}
 .book.closed ~ .ppnav .pgbtn{opacity:.3}
 .ppnav .ctl{background:rgba(255,255,255,.9); color:#12303a; border-color:transparent; min-width:44px; min-height:40px; font-size:18px}
-#passClose{font-size:14px}
+#passClose{width:44px; height:44px; min-width:44px; padding:0; border-radius:50%; display:grid; place-items:center; margin-left:6px}
 .ppnav .ctl:disabled{opacity:.35; cursor:default}
 .ppdots{display:flex; gap:6px}
 .ppdots i{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.4)}
@@ -595,7 +596,7 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
       <button class="ctl pgbtn" id="ppPrev" aria-label="Previous page">‹</button>
       <div class="ppdots" id="ppDots"></div>
       <button class="ctl pgbtn" id="ppNext" aria-label="Next page">›</button>
-      <button class="ctl" id="passClose">Close</button>
+      <button class="ctl" id="passClose" aria-label="Close passport" title="Close"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
   </div>
 </div>
@@ -673,6 +674,7 @@ function unlockAudio(){
   audio(); if (!AC) return;
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e) {}
   try { if (!unlockEl) { unlockEl = new Audio(silentWav()); unlockEl.loop = true; unlockEl.setAttribute('playsinline', ''); unlockEl.volume = .01; } if (unlockEl.paused) { const pr = unlockEl.play(); if (pr && pr.catch) pr.catch(() => {}); } } catch(e) {}
+  try { if (trackEl && M.track && trackEl.paused && musicOn) { const pr = trackEl.play(); if (pr && pr.catch) pr.catch(() => {}); } } catch(e) {}
   try { const b = AC.createBuffer(1, 1, 22050), src = AC.createBufferSource(); src.buffer = b; src.connect(AC.destination); src.start(0); } catch(e) {}
 }
 ['touchend', 'pointerup', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio, { capture:true, passive:true }));
@@ -726,7 +728,32 @@ const SFX = {
 
 /* ---------- music: an original, generated soundtrack for each city ---------- */
 let musicOn = true; try { musicOn = localStorage.getItem('ww.music') !== '0'; } catch(e) {}
-const M = { out:null, bus:null, style:null, step:0, next:0, st:null, rng:Math.random, timer:0, id:null };
+const M = { out:null, bus:null, style:null, step:0, next:0, st:null, rng:Math.random, timer:0, id:null, track:null, tok:0 };
+/* real recordings for each city, streamed from Wikimedia Commons (public domain or CC BY-SA). The generated music stays as a fallback. */
+const TRACKS = {
+  paris:{ url:'https://upload.wikimedia.org/wikipedia/commons/a/a6/Satie_Gymnopedie_No_1_performed_by_Michael_Laucke.flac', name:'Gymnopedie No. 1, Erik Satie', vol:0.9 },
+  dubai:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/0f/Oud_music_by_Andy_R._Jordan_2v2.mp3', name:'Oud improvisation', vol:0.8 },
+  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/85/Sitar_and_tabla_rendition_-_Freedom_Jam%2C_2015.oga', name:'Sitar and tabla', vol:0.75 },
+  nyc:{ url:'https://upload.wikimedia.org/wikipedia/commons/c/cb/Paul_Whiteman_Concert_Orchestra_-_Rhapsody_in_Blue_Part_01.mp3', name:'Rhapsody in Blue, George Gershwin', vol:0.8 },
+  tokyo:{ url:'https://upload.wikimedia.org/wikipedia/commons/3/3e/Shikanotoone.ogg', name:'Shika no Tone, shakuhachi', vol:0.9 },
+  london:{ url:'https://upload.wikimedia.org/wikipedia/commons/e/e7/Elgar%3B_Enigma_variations%2C_Theme_IX._Nimrod.ogg', name:'Nimrod, Edward Elgar', vol:0.95 },
+  florence:{ url:'https://upload.wikimedia.org/wikipedia/commons/6/60/Antonio_Vivaldi%2C_Mandolin_Concerto_in_C_major%2C_RV_425.ogg', name:'Mandolin Concerto in C, Vivaldi', vol:0.8 },
+  amsterdam:{ url:'https://upload.wikimedia.org/wikipedia/commons/a/a6/Street_organ_playing_a_waltz.ogg', name:'Dutch street organ waltz', vol:0.7 },
+  oslo:{ url:'https://upload.wikimedia.org/wikipedia/commons/7/7b/Henrik_Ibsen%2C_Edvard_Grieg_-_Morgenstemning_%28Morning_Mood%29.ogg', name:'Morning Mood, Edvard Grieg', vol:0.9 },
+  hague:{ url:'https://upload.wikimedia.org/wikipedia/commons/9/97/Sweelinck_Mein_junges_Leben.ogg', name:'Mein junges Leben, Sweelinck', vol:0.85 },
+};
+let trackEl = null, trackGain = null; const trackFails = {};
+function trackType(u){ return u.endsWith('.mp3') ? 'audio/mpeg' : u.endsWith('.flac') ? 'audio/flac' : 'audio/ogg'; }
+function trackOK(id){ const t = TRACKS[id]; if (!t || trackFails[id]) return false; try { return !!new Audio().canPlayType(trackType(t.url)); } catch(e) { return false; } }
+function ensureTrack(){
+  if (trackEl || !AC) return !!trackEl;
+  try { trackEl = new Audio(); trackEl.crossOrigin = 'anonymous'; trackEl.loop = true; trackEl.preload = 'auto'; trackEl.setAttribute('playsinline', '');
+    const src = AC.createMediaElementSource(trackEl); trackGain = AC.createGain(); trackGain.gain.value = 0; src.connect(trackGain); trackGain.connect(M.out);
+    trackEl.addEventListener('error', () => { if (M.track) { trackFails[M.track] = 1; const id = M.track; M.track = null; musicSwitch(id, true); } });
+  } catch(e) { trackEl = null; }
+  return !!trackEl;
+}
+function nowPlaying(){ return M.track ? TRACKS[M.track].name : (STYLES[city.id] ? STYLES[city.id].name : 'music'); }
 const mf = m => 440 * Math.pow(2, (m - 69) / 12);
 function musicInit(){
   M.out = AC.createGain(); M.out.gain.value = (musicOn && !muted) ? 1 : 0;
@@ -739,9 +766,19 @@ function musicInit(){
   M.timer = setInterval(musicTick, 30);
 }
 function musicGain(){ if (!AC) return; if (M.out) M.out.gain.setTargetAtTime((musicOn && !muted) ? 1 : 0, AC.currentTime, .25); if (hum) hum.gain.setTargetAtTime(muted ? 0 : (musicOn ? .1 : .22), AC.currentTime, .3); }
-function musicSwitch(id){
-  if (!AC) return; if (!M.out) musicInit(); if (M.id === id && M.bus) return;
-  const t = AC.currentTime;
+function musicSwitch(id, force){
+  if (!AC) return; if (!M.out) musicInit(); if (M.id === id && (M.bus || M.track) && !force) return;
+  const t = AC.currentTime, tok = ++M.tok;
+  if (trackGain) { trackGain.gain.cancelScheduledValues(t); trackGain.gain.setValueAtTime(trackGain.gain.value, t); trackGain.gain.linearRampToValueAtTime(0, t + .9); }
+  if (trackOK(id) && ensureTrack()) {
+    if (M.bus) { const old = M.bus; old.gain.cancelScheduledValues(t); old.gain.setValueAtTime(old.gain.value, t); old.gain.linearRampToValueAtTime(0, t + 1.2); setTimeout(() => { try { old.disconnect(); } catch(e) {} }, 2600); }
+    M.bus = null; M.style = null; M.id = id; M.track = id; musicGain();
+    const start = () => { if (tok !== M.tok) return; const tr = TRACKS[id]; if (trackEl.src !== tr.url) { trackEl.src = tr.url; }
+      const pr = trackEl.play(); if (pr && pr.catch) pr.catch(() => {}); const n = AC.currentTime; trackGain.gain.cancelScheduledValues(n); trackGain.gain.setValueAtTime(0, n); trackGain.gain.linearRampToValueAtTime(tr.vol, n + 2.5); };
+    if (trackEl.src) setTimeout(start, 950); else start();
+    return;
+  }
+  if (M.track) { M.track = null; setTimeout(() => { if (tok === M.tok && trackEl) trackEl.pause(); }, 1000); }
   if (M.bus) { const old = M.bus; old.gain.cancelScheduledValues(t); old.gain.setValueAtTime(old.gain.value, t); old.gain.linearRampToValueAtTime(0, t + 1.4); setTimeout(() => { try { old.disconnect(); } catch(e) {} }, 2800); }
   const bus = AC.createGain(); bus.gain.setValueAtTime(0, t); bus.gain.linearRampToValueAtTime(1, t + 2.4); bus.connect(M.out);
   M.bus = bus; M.id = id; M.style = STYLES[id]; M.step = 0; M.next = t + .5; M.st = {}; M.rng = seeded(id.length * 977 + ((Date.now() / 864e5) | 0)); musicGain();
@@ -2726,7 +2763,7 @@ const soundBtn = $('soundBtn');
 const IC = { sound:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.3 6.3a8 8 0 0 1 0 11.4"/></svg>', mute:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>', music:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5.5l10.5-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17" cy="15.5" r="2.5"/></svg>', musicOff:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5.5l10.5-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17" cy="15.5" r="2.5"/><path d="M3 3l18 18"/></svg>' };
 function updateSoundBtn(){ soundBtn.innerHTML = (muted ? IC.mute : IC.sound) + '<span class="ibl">' + (muted ? 'Sound is off' : 'Sound is on') + '</span>'; soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.title = soundBtn.ariaLabel = muted ? 'Sound off' : 'Sound on'; }
 soundBtn.addEventListener('click', () => { muted = !muted; updateSoundBtn(); audio(); musicGain(); toast(muted ? 'Sound off.' : 'Sound on.'); }); updateSoundBtn();
-$('musicBtn').addEventListener('click', () => { audio(); musicOn = !musicOn; try { localStorage.setItem('ww.music', musicOn ? '1' : '0'); } catch(e) {} updateMusicBtn(); musicGain(); toast(musicOn ? 'Now playing: ' + STYLES[city.id].name + '.' : 'Music off.'); });
+$('musicBtn').addEventListener('click', () => { audio(); musicOn = !musicOn; try { localStorage.setItem('ww.music', musicOn ? '1' : '0'); } catch(e) {} updateMusicBtn(); musicGain(); toast(musicOn ? 'Now playing: ' + nowPlaying() + '.' : 'Music off.'); });
 function updateMusicBtn(){ const b = $('musicBtn'); b.innerHTML = (musicOn ? IC.music : IC.musicOff) + '<span class="ibl">' + (musicOn ? 'Music is on' : 'Music is off') + '</span>'; b.setAttribute('aria-pressed', String(musicOn)); b.title = musicOn ? 'Music on' : 'Music off'; b.setAttribute('aria-label', b.title); }
 updateMusicBtn();
 
@@ -2870,7 +2907,7 @@ function stampSVG(c, i){
     b = `<path d="M60 6H160L214 100L160 194H60L6 100Z" stroke-width="4" stroke-linejoin="round"/><path d="M65 15H155L203 100L155 185H65L17 100Z" stroke-width="1.3"/>
     <path d="M110 24V62M98 64h24M82 32h56M88 32l-8 16M88 32l8 16M132 32l-8 16M132 32l8 16" stroke-width="1.6" stroke-linecap="round"/>${F('M78 48h20a10 6 0 0 1-20 0zM122 48h20a10 6 0 0 1-20 0z')}
     ${T2(110, 88, 'AANKOMST · ARRIVAL', 10, { ls:2 })}${B2(110, 118, 'THE HAGUE', 20)}${T2(110, 140, date, 10.5)}${T2(110, 160, 'VREDE EN RECHT', 8.5, { ls:1.4 })}`; }
-  const vbp = vb.split(' ').map(Number), arv = vbp[2] / vbp[3], sw = Math.min(58, 46 * arv).toFixed(1);
+  const vbp = vb.split(' ').map(Number), arv = vbp[2] / vbp[3], sw = Math.min(46, 38 * arv).toFixed(1);
   return `<svg class="st" viewBox="${vb}" style="width:${sw}cqw; --r:${ROT[i]}deg; transform:rotate(${ROT[i]}deg); color:${ink}" fill="none" stroke="${ink}" aria-label="${c.name} stamp, ${date}"><g filter="url(#inkF)" fill="none" opacity=".88">${b}</g></svg>`;
 }
 const WM = '<svg class="wm" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="50" cy="50" r="34"/><ellipse cx="50" cy="50" rx="15" ry="34"/><path d="M16 50h68M20 33h60M20 67h60"/><path d="M22 76c6-4 10-4 14 0s8 4 14 0 8-4 14 0 8 4 14 0" stroke-width="2.2"/></svg>';
@@ -2882,7 +2919,7 @@ function ppPageHTML(n){
   const nm = (store.name || '').trim(), got = CITIES.filter(c => store.stamps[c.id]).length, iss = ppDate(new Date(store.issued)), no = `<div class="no">${String(n + 1).padStart(2, '0')}</div>`;
   if (n === 0) return `<div class="pg">${WM}<div class="hd"><span>Wanderwater</span><span>Underwater Museum</span></div><h3>To whom it may concern</h3>
     <p class="req">The Wanderwater Underwater Museum requests all fish, rays, turtles and divers to let the bearer swim freely, and to give the bearer such current and bubbles as may be needed.</p>
-    <svg class="seal" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-width="2.5"/><circle cx="50" cy="50" r="40" stroke-width="1"/><path d="M28 56c5-4 9-4 13 0s9 4 14 0 9-4 14 0" stroke-width="2"/><circle cx="50" cy="38" r="9" stroke-width="2"/><text x="50" y="79" text-anchor="middle" font-size="5.6" letter-spacing="1" fill="currentColor" stroke="none" font-family="IBM Plex Mono, monospace">VALID · 10 GALLERIES</text></svg>${no}</div>`;
+    <svg class="seal" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-width="2.5"/><circle cx="50" cy="50" r="40" stroke-width="1"/><path d="M28 56c5-4 9-4 13 0s9 4 14 0 9-4 14 0" stroke-width="2"/><circle cx="50" cy="38" r="9" stroke-width="2"/><path id="sealArc" d="M15 50A35 35 0 0 0 85 50" stroke="none"/><text font-size="5.2" letter-spacing="1.2" fill="currentColor" stroke="none" font-family="IBM Plex Mono, monospace"><textPath href="#sealArc" startOffset="50%" text-anchor="middle">VALID · 10 GALLERIES</textPath></text></svg>${no}</div>`;
   if (n === 1) { const parts = nm ? nm.toUpperCase().replace(/[^A-Z ]/g, '').trim().split(/\s+/) : ['TRAVELLER'], sur = parts.length > 1 ? parts[parts.length - 1] : parts[0], giv = parts.length > 1 ? parts.slice(0, -1).join('<') : '';
     return `<div class="pg">${WM}<div class="hd"><span>Passport · Type P</span><span>WWR</span></div>
     <div class="idg"><div class="photo"><svg viewBox="0 0 60 80"><circle cx="30" cy="31" r="13" fill="#2f4f5c"/><path d="M6 80c2-20 12-28 24-28s22 8 24 28z" fill="#2f4f5c"/><rect x="18" y="24" width="24" height="10" rx="5" fill="#9fdcf0" stroke="#1d2b33" stroke-width="2"/><path d="M42 30c5 0 6-6 6-14" stroke="#ffd23f" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
@@ -2892,7 +2929,7 @@ function ppPageHTML(n){
     <div class="mrz">${mrzLine('P<WWR' + sur + '<<' + giv)}\n${mrzLine(store.pno + '<' + got + 'WWR' + iss.replace(/\s/g, '') + '<<<OCEAN')}</div>${no}</div>`; }
   if (n >= 2 && n <= 6) { const pg = n - 2; let slots = '';
     for (let k = 0; k < 2; k++) { const i = pg * 2 + k, c = CITIES[i];
-      slots += store.stamps[c.id] ? `<div class="slot${PP.slam === i ? ' slam' : ''}${k ? ' st-r' : ''}" style="justify-items:${k ? 'end' : 'start'}; transform:translate(${[3, -4, 5, -2, 4, -5, 2, -3, 5, -4][i]}cqw, ${[2, -1, -2, 3, 1, -3, 2, 0, -2, 1][i]}cqw)">${stampSVG(c, i)}${store.best[c.id] ? `<span class="note">best ${store.best[c.id]} pumps</span>` : ''}</div>`
+      slots += store.stamps[c.id] ? `<div class="slot${PP.slam === i ? ' slam' : ''}${k ? ' st-r' : ''}" style="transform:translate(${[1.5, -1.5, 2, -1, 1.5, -2, 1, -1.5, 2, -1.5][i]}cqw, ${[1, -.5, -1, 1.5, .5, -1.5, 1, 0, -1, .5][i]}cqw)">${stampSVG(c, i)}${store.best[c.id] ? `<span class="note">best ${store.best[c.id]} pumps</span>` : ''}</div>`
         : `<div class="slot empty"><div><b>${c.code}</b></div><div>${c.name}</div><div>not visited yet</div></div>`; }
     return `<div class="pg">${WM}<div class="hd"><span>Visas · ${CITIES[pg * 2].code} · ${CITIES[pg * 2 + 1].code}</span><span>${store.pno}</span></div><div class="slots">${slots}</div>${no}</div>`; }
   const rows = CITIES.map(c => `<div><b>${c.code}</b><span>${c.name}</span><span class="${store.stamps[c.id] ? 'yes' : ''}">${store.stamps[c.id] ? stampDate(c.id) + (store.best[c.id] ? ' · ' + store.best[c.id] + ' pumps' : '') : 'not yet'}</span></div>`).join('');
@@ -3080,7 +3117,7 @@ window.addEventListener('resize', resize);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); });
 let seen = false; try { seen = localStorage.getItem('ww.how') === '1'; } catch(e) {}
 if (!seen) openModal('how'); else introToast();
-window.__ww = { items:() => items, pegs:() => pegs, pump, setCity, get T(){ return T; }, diver:() => diver, openLandmark, boat:() => boat, openPassport, openPainting, easel:() => [EX(), floorY(EX())], shells:() => shells, jellies:() => jellies, mantas:() => mantas, turtle:() => turtle, speech:() => speech, shooters:() => shooters };
+window.__ww = { items:() => items, pegs:() => pegs, pump, setCity, get T(){ return T; }, diver:() => diver, openLandmark, boat:() => boat, openPassport, openPainting, easel:() => [EX(), floorY(EX())], shells:() => shells, jellies:() => jellies, mantas:() => mantas, turtle:() => turtle, speech:() => speech, shooters:() => shooters, music:() => ({ id:M.id, track:M.track, gen:!!M.style, paused:trackEl ? trackEl.paused : null, time:trackEl ? Math.round(trackEl.currentTime) : null, fails:Object.keys(trackFails).join(",") }) };
 requestAnimationFrame(t => { last = t; requestAnimationFrame(frame); });
 })();
 </script>
