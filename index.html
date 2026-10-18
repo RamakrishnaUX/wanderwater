@@ -362,6 +362,13 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 .idg{display:grid; grid-template-columns:31cqw minmax(0,1fr); gap:4cqw; margin-top:4cqw}
 .photo{aspect-ratio:3 / 4; border-radius:2px; background:linear-gradient(160deg, #cfe6ec, #9fc7d2); position:relative; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
 .photo svg{position:absolute; inset:0; width:100%; height:100%}
+.photo{pointer-events:auto; cursor:pointer}
+.photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1}
+.photo.has svg{display:none}
+.photo .addp{position:absolute; left:50%; bottom:5%; transform:translateX(-50%); z-index:2; white-space:nowrap; font-family:var(--mono); font-size:2.2cqw; letter-spacing:.06em; text-transform:uppercase; color:#fff; background:rgba(20,40,50,.72); padding:.6cqw 1.6cqw; border-radius:99px; transition:opacity .2s}
+.photo.has .addp{opacity:0}
+.photo.has:hover .addp, .photo.has:focus-visible .addp{opacity:1}
+.ppNote{margin:1.2cqw 0 0; font-family:var(--mono); font-size:1.9cqw; line-height:1.35; letter-spacing:.02em; color:#8a7c64}
 .photo::after{content:""; position:absolute; inset:0; background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.55) 45%, rgba(190,255,240,.25) 52%, transparent 65%); background-size:250% 100%; animation:holo 4s linear infinite}
 @keyframes holo{from{background-position:120% 0}to{background-position:-120% 0}}
 .fld{display:flex; flex-direction:column; gap:2.4cqw; min-width:0}
@@ -3246,10 +3253,10 @@ function ppPageHTML(n){
     <svg class="seal" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-width="2.5"/><circle cx="50" cy="50" r="40" stroke-width="1"/><path d="M28 56c5-4 9-4 13 0s9 4 14 0 9-4 14 0" stroke-width="2"/><circle cx="50" cy="38" r="9" stroke-width="2"/><path id="sealArc" d="M15 50A35 35 0 0 0 85 50" stroke="none"/><text font-size="5.2" letter-spacing="1.2" fill="currentColor" stroke="none" font-family="IBM Plex Mono, monospace"><textPath href="#sealArc" startOffset="50%" text-anchor="middle">VALID · 10 GALLERIES</textPath></text></svg>${no}</div>`;
   if (n === 1) { const parts = nm ? nm.toUpperCase().replace(/[^A-Z ]/g, '').trim().split(/\s+/) : ['TRAVELLER'], sur = parts.length > 1 ? parts[parts.length - 1] : parts[0], giv = parts.length > 1 ? parts.slice(0, -1).join('<') : '';
     return `<div class="pg">${WM}<div class="hd"><span>Passport · Type P</span><span>WWR</span></div>
-    <div class="idg"><div class="photo"><svg viewBox="0 0 60 80"><circle cx="30" cy="31" r="13" fill="#2f4f5c"/><path d="M6 80c2-20 12-28 24-28s22 8 24 28z" fill="#2f4f5c"/><rect x="18" y="24" width="24" height="10" rx="5" fill="#9fdcf0" stroke="#1d2b33" stroke-width="2"/><path d="M42 30c5 0 6-6 6-14" stroke="#ffd23f" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
+    <div class="idg"><div class="photo${store.photo ? ' has' : ''}" role="button" tabindex="0" aria-label="${store.photo ? 'Change your passport photo' : 'Add your passport photo'}">${store.photo ? `<img src="${store.photo}" alt="">` : ''}<span class="addp">${store.photo ? 'Change' : '+ Add photo'}</span><svg viewBox="0 0 60 80"><circle cx="30" cy="31" r="13" fill="#2f4f5c"/><path d="M6 80c2-20 12-28 24-28s22 8 24 28z" fill="#2f4f5c"/><rect x="18" y="24" width="24" height="10" rx="5" fill="#9fdcf0" stroke="#1d2b33" stroke-width="2"/><path d="M42 30c5 0 6-6 6-14" stroke="#ffd23f" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
       <div class="fld"><div><small>Passport no.</small><b>${store.pno}</b></div><div><small>Holder</small><input id="ppName" maxlength="26" placeholder="Write your name" value="${nm.replace(/[<>"]/g, '')}" aria-label="Your name"></div>
       <div><small>Issued by</small><b>Wanderwater Museum</b></div><div><small>Date of issue</small><b>${iss}</b></div><div><small>Galleries visited</small><b>${got} of ${CITIES.length}</b></div></div></div>
-    <div class="sig">${nm.replace(/[<>]/g, '')}</div>
+    <div class="sig">${nm.replace(/[<>]/g, '')}</div><p class="ppNote">Your name and photo are saved online so the museum can see who visited.</p>
     <div class="mrz">${mrzLine('P<WWR' + sur + '<<' + giv)}\n${mrzLine(store.pno + '<' + got + 'WWR' + iss.replace(/\s/g, '') + '<<<OCEAN')}</div>${no}</div>`; }
   if (n >= 2 && n <= 6) { const pg = n - 2; let slots = '';
     for (let k = 0; k < 2; k++) { const i = pg * 2 + k, c = CITIES[i];
@@ -3267,7 +3274,26 @@ function ppSize(){
 }
 function ppView(){ return PP.single ? [null, PP.idx] : [PP.idx, PP.idx + 1]; }
 function pageOn(el, n, side){ el.innerHTML = n == null || n < 0 || n >= PP_N ? `<div class="pg blank"></div>` : ppPageHTML(n); if (side) el.innerHTML += '<div class="shade"></div>'; }
-function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return; inp.dataset.b = 1; inp.addEventListener('input', () => { store.name = inp.value; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = inp.value); }); inp.addEventListener('change', () => { const v = inp.value.trim(); if (v && v !== store.nameSent) { track('passport_name_entered', { first_time: store.nameSent ? 'no' : 'yes', name_length: v.length }); store.nameSent = v; save(); } if (!PP.busy) ppPaint(); }); }
+function ppId(){ if (!store.pid) { store.pid = Array.from(crypto.getRandomValues(new Uint8Array(9)), x => x.toString(16).padStart(2, '0')).join(''); save(); } return store.pid; }
+function ppSync(withPhoto){
+  const body = { id:ppId(), name:(store.name || '').trim(), city:city.name, stamps:CITIES.filter(c => store.stamps[c.id]).length };
+  if (withPhoto && store.photo) body.photo = store.photo;
+  if (!body.name && !body.photo) return;
+  try { fetch('/api/passport', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body), keepalive:!body.photo }).catch(() => {}); } catch(e) {}
+}
+let ppFile = null;
+function ppPickPhoto(){
+  if (!ppFile) { ppFile = document.createElement('input'); ppFile.type = 'file'; ppFile.accept = 'image/*'; ppFile.hidden = true; document.body.appendChild(ppFile);
+    ppFile.addEventListener('change', () => { const f = ppFile.files && ppFile.files[0]; ppFile.value = ''; if (!f) return; const url = URL.createObjectURL(f), im = new Image();
+      im.onload = () => { const W2 = 300, H2 = 400, cv2 = document.createElement('canvas'); cv2.width = W2; cv2.height = H2; const c2 = cv2.getContext('2d'), sc = Math.max(W2 / im.width, H2 / im.height), w = im.width * sc, h = im.height * sc;
+        c2.drawImage(im, (W2 - w) / 2, (H2 - h) / 2, w, h); URL.revokeObjectURL(url); const first = !store.photo; store.photo = cv2.toDataURL('image/jpeg', .82); save();
+        track('passport_photo_added', { first_time: first ? 'yes' : 'no' }); ppSync(true); if (!PP.busy) ppPaint(); toast('Looking sharp. Photo added.'); };
+      im.onerror = () => { URL.revokeObjectURL(url); toast('That photo would not open. Try another.'); }; im.src = url; }); }
+  ppFile.click();
+}
+document.addEventListener('click', e => { const ph = e.target.closest && e.target.closest('#book .photo'); if (ph) { e.stopPropagation(); audio(); ppPickPhoto(); } }, true);
+document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('#book .photo')) { e.preventDefault(); ppPickPhoto(); } });
+function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return; inp.dataset.b = 1; inp.addEventListener('input', () => { store.name = inp.value; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = inp.value); }); inp.addEventListener('change', () => { const v = inp.value.trim(); if (v && v !== store.nameSent) { track('passport_name_entered', { first_time: store.nameSent ? 'no' : 'yes', name_length: v.length }); store.nameSent = v; save(); ppSync(false); } if (!PP.busy) ppPaint(); }); }
 function ppPaint(){
   const [l, r] = ppView();
   // in a spread, page 1 of the book is the inside of the cover itself
@@ -3336,7 +3362,7 @@ async function ppTurn(dir){
   const book = $('book'); let g = null;
   const pw = () => $('lfR').offsetWidth || 300;
   book.addEventListener('pointerdown', e => {
-    if (!PP.open || PP.busy || e.target.closest('input')) return; const r = book.getBoundingClientRect(), dir = e.clientX > r.left + r.width / 2 ? 1 : -1;
+    if (!PP.open || PP.busy || e.target.closest('input, .photo')) return; const r = book.getBoundingClientRect(), dir = e.clientX > r.left + r.width / 2 ? 1 : -1;
     g = { x0:e.clientX, t0:performance.now(), dir, on:false, ang:0, id:e.pointerId };
   });
   book.addEventListener('pointermove', e => {
