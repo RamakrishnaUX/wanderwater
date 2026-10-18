@@ -653,7 +653,10 @@ body.quiet #hints{opacity:0; pointer-events:none}
 :root[data-theme="dark"] .galgrid button{background:rgba(255,255,255,.06)!important}
 .galgrid button:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(6,32,48,.14)!important}
 .galgrid button[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--accent)!important}
-.galgrid .band{display:block; align-self:stretch; height:58px; margin:0 -12px 9px; background:linear-gradient(180deg, var(--w1), var(--w2) 60%, var(--w3))}
+.galgrid .band{display:block; position:relative; overflow:hidden; align-self:stretch; height:84px; margin:0 -12px 10px; background:linear-gradient(180deg, var(--w1), var(--w2) 60%, var(--w3))}
+.galgrid .band img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s var(--spring)}
+.galgrid button:hover .band img{transform:scale(1.05)}
+@media (min-width: 720px){ .galgrid .band{height:auto; aspect-ratio:4/3} }
 .galgrid .c{font-size:11px; font-weight:600; letter-spacing:.06em}
 .galgrid .n{font-size:17px; font-weight:700; letter-spacing:-.015em}
 .galgrid .st{font-size:12.5px; color:var(--ink-soft)}
@@ -838,7 +841,7 @@ body.coach #hints{opacity:0}
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Poke around</b>Tap a landmark to hear its story. Wave at the diver. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
-    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive.</p>
+    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0).</p>
     <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
   </div>
 </div>
@@ -3134,18 +3137,20 @@ function renderTickets(){
   tix.innerHTML = '';
   if (true) {
     const c = city, b = document.createElement('button'); b.className = 'tk pick'; b.setAttribute('aria-label', 'Change gallery. Now showing ' + c.name);
-    b.innerHTML = `<span class="c">${pad2(cityIdx + 1)} ${c.code}</span><span class="n">${c.name}</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 12 8" width="11" height="8"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+    b.innerHTML = `<span class="n">${c.name}</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 12 8" width="11" height="8"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
     b.addEventListener('click', () => { audio(); openGallery(); }); tix.appendChild(b); measure(); return; }
   CITIES.forEach((c, i) => { const b = document.createElement('button'); b.className = 'tk'; b.setAttribute('aria-pressed', String(i === cityIdx)); b.setAttribute('aria-label', 'Gallery ' + (i + 1) + ', ' + c.name);
-    b.innerHTML = `<span class="c">${pad2(i + 1)} ${c.code}</span><span class="n">${c.name}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
+    b.innerHTML = `<span class="n">${c.name}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
     b.addEventListener('click', () => { audio(); daily = false; setCity(i); }); tix.appendChild(b); });
   measure();
 }
+const PHOTOS = {"paris": "Pont des Invalides et Tour Eiffel - 01.jpg", "dubai": "Dubai Skyline mit Burj Khalifa (cropped).jpg", "delhi": "India Gate, New Delhi from West.jpg", "nyc": "Brooklyn Bridge and the Lower Manhattan skyline from Pebble Beach, New York.jpg", "tokyo": "Tokyo Tower at night 7.JPG", "london": "Palace of Westminster, London - Feb 2007.jpg", "florence": "Panorama di Firenze centro visto dal Piazzale Michelangelo.jpg", "amsterdam": "Colorful windows and canal houses at blue hour with water reflection in Damrak Amsterdam Netherlands.jpg", "oslo": "Oslo Opera House - 2025.jpg", "hague": "Den Haag, het Binnenhof diverse RM met de Hofvijver op de voorgrond foto8 2015-08-05 18.56.jpg"};
+const photoURL = id => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(PHOTOS[id]) + '?width=640';
 function openGallery(){
   const g = $('galGrid'); g.innerHTML = '';
   CITIES.forEach((c, i) => { const b = document.createElement('button'); b.setAttribute('aria-pressed', String(i === cityIdx));
     b.style.setProperty('--w1', c.water[0]); b.style.setProperty('--w2', c.water[1]); b.style.setProperty('--w3', c.water[2]);
-    b.innerHTML = `<span class="band" aria-hidden="true"></span><span class="c">${pad2(i + 1)} · ${c.code}</span><span class="n">${c.name}</span><span class="st">${store.stamps[c.id] ? 'Stamped' : i === cityIdx ? 'You are here' : 'Waiting for you'}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
+    b.innerHTML = `<span class="band" aria-hidden="true">${PHOTOS[c.id] ? `<img src="${photoURL(c.id)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}</span><span class="n">${c.name}</span><span class="st">${store.stamps[c.id] ? 'Stamped' : i === cityIdx ? 'You are here' : 'Waiting for you'}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
     b.addEventListener('click', () => { closeModal('gal'); daily = false; setCity(i); }); g.appendChild(b); });
   openModal('gal');
 }
