@@ -688,17 +688,22 @@ body.coach .pump{animation:coachPulse 1.6s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){ #cityCard, .pill, .ldots i, .icons.open, body.coach .pump{transition:none!important; animation:none!important} }
 
 /* ================= desktop: the whole game sits inside the ring toss toy ================= */
+#stage{position:fixed; inset:0; transform:translateZ(0)}
 #toyLid, #toyBase{display:none}
-body.toy #scene{height:calc(100% - 118px)}
-body.toy #toyLid{display:block; position:fixed; left:0; right:0; top:0; height:16px; z-index:6; pointer-events:none;
-  background:linear-gradient(180deg, #4a8ff0, #2563c4 70%, #1c4f9f); box-shadow:0 4px 10px rgba(10,40,90,.35), inset 0 -2px 0 rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.35)}
-body.toy #toyBase{display:block; position:fixed; left:0; right:0; bottom:0; height:118px; z-index:6; pointer-events:none;
-  background:linear-gradient(180deg, #3f86e6 0%, #2563c4 45%, #1c4f9f 100%); box-shadow:0 -6px 16px rgba(10,40,90,.35), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -10px 24px rgba(0,0,0,.18)}
-body.toy #toyBase::before{content:""; position:absolute; left:0; right:0; top:-10px; height:10px; background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.18)); }
-body.toy::after{content:""; position:fixed; left:0; right:0; top:16px; bottom:118px; z-index:5; pointer-events:none;
-  box-shadow:inset 14px 0 18px -10px rgba(255,255,255,.55), inset -14px 0 18px -10px rgba(255,255,255,.45), inset 0 0 0 1px rgba(255,255,255,.25)}
-body.toy #top{top:28px}
-body.toy #dock{padding-bottom:19px}
+body.toy{background:radial-gradient(110% 80% at 50% 0%, #f6fbfd 0%, #e2eef3 55%, #cfe1e9 100%)}
+:root[data-theme="dark"] body.toy{background:radial-gradient(110% 80% at 50% 0%, #15222c 0%, #0b141b 60%, #060b10 100%)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body.toy{background:radial-gradient(110% 80% at 50% 0%, #15222c 0%, #0b141b 60%, #060b10 100%)} }
+body.toy #stage{inset:auto}
+body.toy #scene{height:calc(100% - 118px); border-radius:6px 6px 0 0}
+body.toy #stage::before{content:""; position:absolute; left:3%; right:3%; bottom:-46px; height:46px; background:radial-gradient(50% 50% at 50% 30%, rgba(10,40,60,.32), rgba(10,40,60,0)); pointer-events:none; z-index:-1}
+body.toy #stage::after{content:""; position:absolute; left:0; right:0; top:0; bottom:118px; z-index:5; pointer-events:none; border-radius:6px 6px 0 0;
+  box-shadow:inset 16px 0 22px -12px rgba(255,255,255,.6), inset -16px 0 22px -12px rgba(255,255,255,.5), inset 0 0 0 1.5px rgba(255,255,255,.35)}
+body.toy #toyLid{display:block; position:absolute; left:-16px; right:-16px; top:-14px; height:34px; z-index:6; pointer-events:none; border-radius:12px;
+  background:linear-gradient(180deg, #5296f2, #2563c4 65%, #1c4f9f); box-shadow:0 8px 16px rgba(10,40,90,.3), inset 0 -3px 0 rgba(0,0,0,.14), inset 0 2px 0 rgba(255,255,255,.4)}
+body.toy #toyBase{display:block; position:absolute; left:-20px; right:-20px; bottom:-10px; height:128px; z-index:6; pointer-events:none; border-radius:10px 10px 24px 24px;
+  background:linear-gradient(180deg, #4389e8 0%, #2563c4 42%, #1c4f9f 100%); box-shadow:0 18px 40px rgba(10,40,90,.35), inset 0 3px 0 rgba(255,255,255,.4), inset 0 -12px 26px rgba(0,0,0,.2)}
+body.toy #top{top:32px}
+body.toy #dock{padding-bottom:16px}
 body.toy #pad{background:none; box-shadow:none; padding:0; gap:26px}
 body.toy #pad::before{display:none}
 body.toy #pad .well{width:92px; height:80px; border-radius:50%; background:radial-gradient(ellipse at 50% 60%, rgba(0,0,0,.28), rgba(0,0,0,0) 70%); box-shadow:none}
@@ -711,8 +716,7 @@ body.toy #coachTip{bottom:162px}
 </style>
 </head>
 <body>
-
-
+<div id="stage">
 <canvas id="scene" aria-label="An underwater museum. Pump water to loop rings onto landmarks. Tap anything in the sea." role="img"></canvas>
 <button id="ttl" aria-label="Wanderwater"><span class="lt">W</span><span class="lt">a</span><span class="lt">n</span><span class="lt">d</span><span class="lt">e</span><span class="lt">r</span><span class="lt acc">w</span><span class="lt acc">a</span><span class="lt acc">t</span><span class="lt acc">e</span><span class="lt acc">r</span></button>
 <div id="tix" role="group" aria-label="Galleries"></div>
@@ -726,7 +730,7 @@ body.toy #coachTip{bottom:162px}
   <div class="menuWrap">
   <button class="ib glass" id="gearBtn" aria-label="Settings" aria-expanded="false" aria-controls="icons" title="Settings"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></button>
   <div class="icons glass" id="icons">
-    <button class="ib" id="fishBtn" aria-label="Release a school of fish" title="Release fish"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12c3.2-5 9.5-6 13.5-1.6L21 7v10l-5-3.4C12 18 5.7 17 2.5 12z"/><circle cx="8" cy="11.3" r=".9" fill="currentColor"/></svg><span class="ibl">Release fish</span></button>
+    <button class="ib" id="fishBtn" aria-label="Release a school of fish" title="Release fish"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12c3.2-5 9.5-6 13.5-1.6L21 7v10l-5-3.4C12 18 5.7 17 2.5 12z"/><circle cx="8" cy="11.3" r=".9" fill="currentColor"/></svg><span class="ibl">Release the fish</span></button>
     <button class="ib" id="musicBtn" aria-label="Music" aria-pressed="true" title="Music"><span class="ibl">Music</span></button>
     <button class="ib" id="soundBtn" aria-label="Sound" aria-pressed="true" title="Sound"><span class="ibl">Sound</span></button>
     <button class="ib" id="themeBtn" aria-pressed="false" title="Dark mode"><span class="ibl">Dark mode</span></button>
@@ -757,32 +761,33 @@ body.toy #coachTip{bottom:162px}
     <div class="facts" id="shF"></div>
     <p id="shP"></p>
     <ul id="shMore"></ul>
-    <a id="shLink" target="_blank" rel="noopener noreferrer">Read more on Wikipedia ↗</a>
+    <a id="shLink" target="_blank" rel="noopener noreferrer">Read the full story ↗</a>
     </div>
   </div>
 </div>
 <div id="toast" class="glass" style="opacity:0"></div>
-<div id="cityCard" aria-live="polite"><div id="ccN"></div><div id="ccT"></div><div id="ccS">Loop all three landmarks for a stamp. Tap any one to learn its story.</div></div>
+<div id="cityCard" aria-live="polite"><div id="ccN"></div><div id="ccT"></div><div id="ccS">Ring all three landmarks to win the stamp.</div></div>
 <div id="toyLid" aria-hidden="true"></div><div id="toyBase" aria-hidden="true"></div>
-<div id="coachTip" aria-hidden="true">Press and hold to pump</div>
+<div id="coachTip" aria-hidden="true">Psst. Hold a pump and watch the water go.</div>
+</div>
 
 <div id="splash" role="dialog" aria-modal="true" aria-labelledby="spT">
   <div class="sky">
     <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
     <h1 id="spT">Wander<span>water</span></h1>
-    <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>An underwater museum of ten cities.</p>
+    <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>Ten cities. One very soggy museum.</p>
   </div>
   <div class="sea">
     <div class="surf" aria-hidden="true"><i></i><i></i></div>
     <div class="fx rays"></div><div class="fx" id="spBubs"></div>
     <div class="seac">
       <ul>
-        <li><i class="pmp">PUMP</i>Pump to float the rings</li>
-        <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ff8a8a" stroke-width="3"><ellipse cx="12" cy="13" rx="8" ry="4.5"/></svg></i>Loop all three landmarks</li>
-        <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c8ecff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></i>Tap anything to learn its story</li>
+        <li><i class="pmp">PUMP</i>Pump the water, float the rings</li>
+        <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ff8a8a" stroke-width="3"><ellipse cx="12" cy="13" rx="8" ry="4.5"/></svg></i>Ring all three landmarks</li>
+        <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c8ecff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></i>Tap anything. Everything has a story.</li>
       </ul>
       <div class="foot">
-        <button id="spWhy" aria-haspopup="dialog" aria-controls="spSheet"><span>?</span>Where is this from?</button>
+        <button id="spWhy" aria-haspopup="dialog" aria-controls="spSheet"><span>?</span>Wait, I know this toy</button>
         <button id="spGo">Dive in <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
       </div>
     </div>
@@ -813,33 +818,33 @@ body.toy #coachTip{bottom:162px}
           <circle cx="80" cy="228" r="11.5" fill="#cf5f00"/><circle cx="80" cy="225" r="11.5" fill="#ff8a1f"/><circle cx="76" cy="221" r="3.5" fill="#fff" opacity=".35"/>
           <circle cx="160" cy="228" r="11.5" fill="#cf5f00"/><circle cx="160" cy="225" r="11.5" fill="#ff8a1f"/><circle cx="156" cy="221" r="3.5" fill="#fff" opacity=".35"/>
         </svg>
-      <h3 id="spShT">The water ring toss toy</h3>
-      <p>A small plastic box full of water, with pegs inside and colourful rings floating around. Press the two buttons at the bottom, the water whooshes up, and you try to land the rings on the pegs.</p>
-      <p>Wanderwater is that same toy, with an underwater museum of ten cities inside.</p>
+      <h3 id="spShT">Yes, that toy.</h3>
+      <p>A little box of water, a few pegs, a flurry of rings. You mash the two buttons, the water whooshes up, and you hope a ring lands. Usually it doesn't. When it does, it's glorious.</p>
+      <p>Wanderwater is that same toy, now with an underwater museum of ten cities inside.</p>
       <small>Illustration of the classic toy.</small>
-      <button id="spShX">Got it</button>
+      <button id="spShX">Take me back</button>
     </div>
   </div>
 </div>
 <div id="how" class="modal" hidden>
   <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="howTitle">
     <h2 id="howTitle">How to play</h2>
-    <p class="sub">A water ring toy, turned into an underwater museum of ten cities.</p>
+    <p class="sub">The water toy you loved, with ten cities hiding inside.</p>
     <ol class="steps">
-      <li><div><b>Pump the water</b>Press A and L, or the yellow buttons. Water shoots straight up from the two vents on the seabed and fans out as it rises, carrying everything with it. Hold Current ◀ or ▶ (arrow keys) to push things sideways.</div></li>
-      <li><div><b>Loop the landmarks</b>Let a ring drop onto the tip of a landmark. It slides down and stays. Loop all three landmarks to earn the city's passport stamp, in as few pumps as you can.</div></li>
+      <li><div><b>Pump</b>Press the two pump buttons, or A and L. Water rockets up from the seabed and takes the rings with it. Hold a current, or the arrow keys, to nudge things sideways.</div></li>
+      <li><div><b>Ring the landmarks</b>Drop a ring onto the tip of a landmark and it slides down and stays. Ring all three to win the city's stamp. Fewer pumps, more bragging rights.</div></li>
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
-      <li><div><b>Explore</b>Tap a landmark to light it up, hear its sound and read its story. Tap the diver to say hi. Tap anything else in the sea too, and drag to stir the water.</div></li>
+      <li><div><b>Poke around</b>Tap a landmark to hear its story. Wave at the diver. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
     <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Pranatarthi Haram on veena by Veena Raja Rao and Veena Gopala Rao (CC0). Via Wikimedia Commons and the Internet Archive.</p>
-    <div class="btns"><button class="ctl pri" id="howGo">Start</button></div>
+    <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
   </div>
 </div>
 
 <div id="gal" class="modal" hidden>
   <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="galT">
     <div class="shHead"><h2 id="galT">Atlas</h2><button class="x sx" id="galX" aria-label="Close">×</button></div>
-    <p class="sub">Ten cities, three landmarks each. Loop all three to stamp your passport.</p>
+    <p class="sub">Ten cities, thirty landmarks, one tiny passport. Where to next?</p>
     <div class="galgrid" id="galGrid"></div>
     <div class="btns"><button class="ctl" id="galClose">Close</button></div>
   </div>
@@ -883,11 +888,11 @@ body.toy #coachTip{bottom:162px}
     </div>
     <textarea id="copyBox" rows="4" readonly hidden></textarea>
     <div class="btns">
-      <button class="ctl" id="copyBtn">Copy result</button>
+      <button class="ctl" id="copyBtn">Copy my score</button>
       <button class="ctl" id="saveBtn">Share postcard</button>
-      <button class="ctl" id="seeStamp">See your stamp</button>
-      <button class="ctl" id="keepBtn">Keep playing</button>
-      <button class="ctl pri" id="nextBtn">Next gallery</button>
+      <button class="ctl" id="seeStamp">Admire the stamp</button>
+      <button class="ctl" id="keepBtn">Stay a while</button>
+      <button class="ctl pri" id="nextBtn">Next city</button>
     </div>
   </div>
 </div>
@@ -2924,7 +2929,7 @@ function tap(x, y){
   for (const p of pegs) if (x > p.minX - 6 && x < p.maxX + 6 && y > p.tip - 10 && y < p.bot + 4) { openLandmark(p); return; }
   for (const s of stars) if (Math.hypot(s.x - x, s.y - y) < s.r * 1.3 + 8) { s.flex = 1; s.crawl = 3; s.tx = clamp(s.x + (Math.random() < .5 ? -1 : 1) * frand(18, 34), 14, W - 14); SFX.note(s.note); openStar(s); return; }
   for (const s of shells) if (Math.hypot(s.x - x, s.y - 6 - y) < 20 * s.s) {
-    if (s.kind === 'scallop') { if (s.open > .6) { s.glintP = 1; SFX.note(1760); openPearl(); } else { s.target = 1; SFX.note(1318.5); for (let i = 0; i < 6; i++) bubble(s.x + frand(-4, 4), s.y - 8); toast('A pearl! Tap it to learn more.'); } }
+    if (s.kind === 'scallop') { if (s.open > .6) { s.glintP = 1; SFX.note(1760); openPearl(); } else { s.target = 1; SFX.note(1318.5); for (let i = 0; i < 6; i++) bubble(s.x + frand(-4, 4), s.y - 8); toast('Ooh, a pearl! Tap it.'); } }
     if (s.kind === 'conch') { if (s.crab <= 0) { s.crab = 5.2; s.dir = Math.random() < .5 ? -1 : 1; SFX.squish(); } }
     if (s.kind === 'cowrie') { s.glint = 1; SFX.note(1760); }
     return; }
@@ -3049,12 +3054,12 @@ $('fishBtn').addEventListener('click', () => { audio(); spawnRandomSchool(); });
 function holdBtn(id, v){ const b = $(id); const on = e => { e.preventDefault(); audio(); curHold = v; b.classList.add('on'); }; const off = () => { curHold = 0; b.classList.remove('on'); };
   b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off); }
 holdBtn('curL', -1); holdBtn('curR', 1);
-$('resetBtn').addEventListener('click', () => { resetItems(); toast('Tank reset. The rings are back by the pumps.'); });
+$('resetBtn').addEventListener('click', () => { resetItems(); toast('Fresh water. The rings are back by the pumps.'); });
 const soundBtn = $('soundBtn');
 const IC = { sound:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.3 6.3a8 8 0 0 1 0 11.4"/></svg>', mute:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>', music:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5.5l10.5-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17" cy="15.5" r="2.5"/></svg>', musicOff:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5.5l10.5-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17" cy="15.5" r="2.5"/><path d="M3 3l18 18"/></svg>' };
 function updateSoundBtn(){ soundBtn.innerHTML = (muted ? IC.mute : IC.sound) + '<span class="ibl">' + 'Sound' + '</span>'; soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.title = soundBtn.ariaLabel = muted ? 'Sound off' : 'Sound on'; }
-soundBtn.addEventListener('click', () => { muted = !muted; updateSoundBtn(); audio(); musicGain(); toast(muted ? 'Sound off.' : 'Sound on.'); }); updateSoundBtn();
-$('musicBtn').addEventListener('click', () => { audio(); musicOn = !musicOn; try { localStorage.setItem('ww.music', musicOn ? '1' : '0'); } catch(e) {} updateMusicBtn(); musicGain(); toast(musicOn ? 'Now playing: ' + nowPlaying() + '.' : 'Music off.'); });
+soundBtn.addEventListener('click', () => { muted = !muted; updateSoundBtn(); audio(); musicGain(); toast(muted ? 'Shh. Sound off.' : 'Sound back on.'); }); updateSoundBtn();
+$('musicBtn').addEventListener('click', () => { audio(); musicOn = !musicOn; try { localStorage.setItem('ww.music', musicOn ? '1' : '0'); } catch(e) {} updateMusicBtn(); musicGain(); toast(musicOn ? 'Now playing: ' + nowPlaying() : 'Music off. Just the bubbles now.'); });
 function updateMusicBtn(){ const b = $('musicBtn'); b.innerHTML = (musicOn ? IC.music : IC.musicOff) + '<span class="ibl">' + 'Music' + '</span>'; b.setAttribute('aria-pressed', String(musicOn)); b.title = musicOn ? 'Music on' : 'Music off'; b.setAttribute('aria-label', b.title); }
 updateMusicBtn();
 
@@ -3063,7 +3068,7 @@ const IC2 = { moon:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path 
   tilt:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.2" transform="rotate(-14 12 12)"/><path d="M3 9a9 9 0 0 0 0 6M21 9a9 9 0 0 1 0 6"/></svg>' };
 try { const th = localStorage.getItem('ww.theme'); if (th) document.documentElement.setAttribute('data-theme', th); readTheme(); } catch(e) {}
 function updateThemeBtn(){ const b = $('themeBtn'); b.innerHTML = (night ? IC2.sun : IC2.moon) + '<span class="ibl">' + 'Dark mode' + '</span>'; b.setAttribute('aria-pressed', String(night)); b.title = night ? 'Dark mode on' : 'Dark mode off'; b.setAttribute('aria-label', 'Dark mode'); }
-$('themeBtn').addEventListener('click', () => { audio(); const t = night ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); readTheme(); try { localStorage.setItem('ww.theme', t); } catch(e) {} updateThemeBtn(); toast(night ? 'Night falls over the museum.' : 'Morning light returns.'); });
+$('themeBtn').addEventListener('click', () => { audio(); const t = night ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); readTheme(); try { localStorage.setItem('ww.theme', t); } catch(e) {} updateThemeBtn(); toast(night ? 'Night falls. The jellies light up.' : 'Good morning, sunshine.'); });
 updateThemeBtn();
 
 /* ---------- tilt the phone to move the rings ---------- */
@@ -3076,7 +3081,7 @@ function tiltListen(){ window.removeEventListener('deviceorientation', onOrient)
 function tiltAsk(){ if (!tiltOn || !tiltNeedsAsk || tiltAsked) return; tiltAsked = true; DeviceOrientationEvent.requestPermission().then(r => { if (r !== 'granted') { tiltOn = false; updateTiltBtn(); } tiltListen(); }).catch(() => {}); }
 window.addEventListener('pointerdown', tiltAsk, { capture:true });
 function updateTiltBtn(){ const b = $('tiltBtn'); b.innerHTML = IC2.tilt + '<span class="ibl">' + 'Tilt to move' + '</span>'; b.setAttribute('aria-pressed', String(tiltOn)); b.title = tiltOn ? 'Tilt to move on' : 'Tilt to move off'; b.setAttribute('aria-label', 'Tilt to move'); }
-$('tiltBtn').addEventListener('click', () => { audio(); tiltOn = !tiltOn; try { localStorage.setItem('ww.tilt', tiltOn ? '1' : '0'); } catch(e) {} if (tiltOn) { tiltAsked = false; tiltAsk(); } tiltListen(); updateTiltBtn(); toast(tiltOn ? 'Tilt your phone to slide the rings.' : 'Tilt to move is off.'); });
+$('tiltBtn').addEventListener('click', () => { audio(); tiltOn = !tiltOn; try { localStorage.setItem('ww.tilt', tiltOn ? '1' : '0'); } catch(e) {} if (tiltOn) { tiltAsked = false; tiltAsk(); } tiltListen(); updateTiltBtn(); toast(tiltOn ? 'Tilt your phone to slosh the rings.' : 'Tilt off. Back to buttons.'); });
 updateTiltBtn(); tiltListen();
 $('howBtn').addEventListener('click', () => openModal('how'));
 $('howGo').addEventListener('click', () => { closeModal('how'); introToast(); try { localStorage.setItem('ww.how', '1'); } catch(e) {} audio(); });
@@ -3106,7 +3111,7 @@ window.addEventListener('keydown', e => {
   else if (k === 'm') { if (!e.repeat && mantas.length < 3) { const d = Math.random() < .5 ? 1 : -1; mantas.push({ x:d > 0 ? -170 : W + 170, y:frand(SURF + 150, FB - 300), dir:d, ft:d, t:frand(0, 5), roll:0, spd:frand(28, 40), depth:frand(.45, .85), wait:0 }); SFX.glide(); } }
   else if (k === 'b') { const x = T - ptr.t < 3 ? ptr.x : frand(80, W - 80); for (let i = 0; i < 40; i++) bubble(x + frand(-18, 18), floorY(x) - frand(0, 30), frand(1.5, 6)); SFX.pop(); }
   else if (k === 'c') { if (!e.repeat) { daily = false; setCity((cityIdx + 1) % CITIES.length); } }
-  else if (k === 'r') { if (!e.repeat) { resetItems(); toast('Tank reset.'); } }
+  else if (k === 'r') { if (!e.repeat) { resetItems(); toast('Fresh water, fresh start.'); } }
   else if (k === 'p') openPassport();
   else if (k === 'd') { if (!e.repeat) swimDiver(); }
   else if (e.key === 'Escape') closeSheet();
@@ -3137,7 +3142,7 @@ function openGallery(){
   const g = $('galGrid'); g.innerHTML = '';
   CITIES.forEach((c, i) => { const b = document.createElement('button'); b.setAttribute('aria-pressed', String(i === cityIdx));
     b.style.setProperty('--w1', c.water[0]); b.style.setProperty('--w2', c.water[1]); b.style.setProperty('--w3', c.water[2]);
-    b.innerHTML = `<span class="band" aria-hidden="true"></span><span class="c">${pad2(i + 1)} · ${c.code}</span><span class="n">${c.name}</span><span class="st">${store.stamps[c.id] ? 'Stamped' : i === cityIdx ? 'You are here' : 'Not yet'}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
+    b.innerHTML = `<span class="band" aria-hidden="true"></span><span class="c">${pad2(i + 1)} · ${c.code}</span><span class="n">${c.name}</span><span class="st">${store.stamps[c.id] ? 'Stamped' : i === cityIdx ? 'You are here' : 'Waiting for you'}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
     b.addEventListener('click', () => { closeModal('gal'); daily = false; setCity(i); }); g.appendChild(b); });
   openModal('gal');
 }
@@ -3382,7 +3387,7 @@ function celebrate(){
 function showDone(){
   const r = lastResult; if (!r) return;
   $('doneEb').textContent = r.daily ? 'Daily #' + r.day + ' · ' + r.city : 'Gallery ' + pad2(r.gi + 1) + ' · ' + r.city;
-  $('doneTitle').textContent = r.first ? r.city + ' is in your passport' : r.newBest ? 'New best for ' + r.city : 'Loop complete';
+  $('doneTitle').textContent = r.first ? r.city + ', stamped!' : r.newBest ? 'New record in ' + r.city + '!' : 'Ringed it again';
   $('doneBig').textContent = r.pumps + (r.pumps === 1 ? ' pump' : ' pumps');
   $('doneBest').textContent = r.best; $('donePass').textContent = Object.keys(store.stamps).length + '/' + CITIES.length;
   $('copyBox').hidden = true; openModal('done');
@@ -3403,13 +3408,13 @@ function savePostcard(){
   c.toBlob(blob => { if (!blob) return; const fname = 'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png';
     if (!downloads) { const file = new File([blob], fname, { type:'image/png' });
       if (navigator.canShare && navigator.canShare({ files:[file] })) { navigator.share({ files:[file], title:'Wanderwater', text:resultText() }).catch(() => {}); return; }
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('Postcard saved.'); return; }
-    downloads.save({ filename:'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png', data:blob }).then(() => toast('Postcard saved.'), err => { if (err && (err.code === 'unavailable' || err.code === 'not_granted')) $('saveBtn').hidden = true; }); }, 'image/png');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('Postcard saved. Send it to someone.'); return; }
+    downloads.save({ filename:'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png', data:blob }).then(() => toast('Postcard saved. Send it to someone.'), err => { if (err && (err.code === 'unavailable' || err.code === 'not_granted')) $('saveBtn').hidden = true; }); }, 'image/png');
 }
 function introToast(){ showCityCard(); }
 function showCityCard(){
-  const el = $('cityCard'); if (!el) return; $('ccN').textContent = 'Gallery ' + pad2(cityIdx + 1) + ' · ' + city.code; $('ccT').textContent = city.name;
-  const pk = document.querySelector('.tk.pick'); el.style.top = (pk ? pk.getBoundingClientRect().bottom + 26 : Math.max(90, SURF * S + 22)) + 'px'; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  const el = $('cityCard'); if (!el) return; $('ccN').textContent = 'Now arriving · ' + pad2(cityIdx + 1) + ' of 10'; $('ccT').textContent = city.name;
+  const pk = document.querySelector('.tk.pick'), so = $('stage').getBoundingClientRect().top; el.style.top = (pk ? pk.getBoundingClientRect().bottom - so + 26 : Math.max(90, SURF * S + 22)) + 'px'; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 3600);
 }
 function setCity(i){
@@ -3423,18 +3428,22 @@ function populateHomes(){ fish = fish.filter(f => !f.home); anemones.forEach(a =
 /* ---------- boot ---------- */
 function toyOn(){ return window.innerWidth >= 1100 && window.innerHeight >= 700; }
 function toyBase(){ return toyOn() ? 118 : 0; }
-function setToy(){ document.body.classList.toggle('toy', toyOn()); }
+function setToy(){ const on = toyOn(), st = $('stage'); document.body.classList.toggle('toy', on);
+  if (on) { const sh = window.innerHeight - 96, sw = Math.min(window.innerWidth - 200, Math.round(sh * 1.45), 1440); st.style.cssText = `left:${Math.round((window.innerWidth - sw) / 2)}px; top:44px; width:${sw}px; height:${sh}px`; }
+  else st.style.cssText = ''; }
+function stageW(){ return $('stage').clientWidth || window.innerWidth; }
+function stageH(){ return $('stage').clientHeight || window.innerHeight; }
 function track(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch(e) {} }
 function buzz(pattern){ try { if (navigator.vibrate && !muted) navigator.vibrate(pattern); } catch(e) {} }
 function resize(){
-  setToy(); CW = window.innerWidth; CH = window.innerHeight - toyBase(); DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
+  setToy(); CW = stageW(); CH = stageH() - toyBase(); DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
   cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); layout(oldW); populateHomes(); renderTickets(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 }
 let startCity = 0; try { startCity = clamp(parseInt(localStorage.getItem('ww.city') || '0', 10) || 0, 0, CITIES.length - 1); } catch(e) {}
 cityIdx = startCity; city = CITIES[startCity]; dayNo = computeDay();
-setToy(); CW = window.innerWidth; CH = window.innerHeight - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
+setToy(); CW = stageW(); CH = stageH() - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
 layout(0); buildPegs(); initCreatures(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0;
-renderTickets(); updateUI(); $('hints').style.bottom = ($('dock').offsetHeight + 10) + 'px';
+renderTickets(); updateUI(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 window.addEventListener('resize', resize);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); });
 let seen = false; try { seen = localStorage.getItem('ww.how') === '1'; } catch(e) {}
