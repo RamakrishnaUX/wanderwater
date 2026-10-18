@@ -3267,7 +3267,7 @@ function ppSize(){
 }
 function ppView(){ return PP.single ? [null, PP.idx] : [PP.idx, PP.idx + 1]; }
 function pageOn(el, n, side){ el.innerHTML = n == null || n < 0 || n >= PP_N ? `<div class="pg blank"></div>` : ppPageHTML(n); if (side) el.innerHTML += '<div class="shade"></div>'; }
-function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return; inp.dataset.b = 1; inp.addEventListener('input', () => { store.name = inp.value; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = inp.value); }); inp.addEventListener('change', () => { if (!PP.busy) ppPaint(); }); }
+function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return; inp.dataset.b = 1; inp.addEventListener('input', () => { store.name = inp.value; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = inp.value); }); inp.addEventListener('change', () => { const v = inp.value.trim(); if (v && v !== store.nameSent) { track('passport_name_entered', { first_time: store.nameSent ? 'no' : 'yes', name_length: v.length }); store.nameSent = v; save(); } if (!PP.busy) ppPaint(); }); }
 function ppPaint(){
   const [l, r] = ppView();
   // in a spread, page 1 of the book is the inside of the cover itself
