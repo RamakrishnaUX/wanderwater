@@ -482,6 +482,7 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 /* passport: closed book sits centred, then glides as it opens so the open spread is centred too */
 .book{transition:transform 1.15s cubic-bezier(.45,.05,.25,1)}
 .book.closed{transform:translateX(calc(var(--pw) * -.5))}
+.book.single.closed{transform:none}
 .book{touch-action:none}
 .book.open .leaf{cursor:pointer}
 .book.drag .leaf, .book.drag .card3d{cursor:grabbing}
@@ -501,6 +502,8 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
 .book.ended{transform:translateX(calc(var(--pw) * .5))}
 .book.closing{transform:translateX(calc(var(--pw) * -.5))}
 .book.ended .leaf.R{visibility:hidden}
+.book.single.ended, .book.single.closing{transform:none}
+.book.single.ended .leaf.R{visibility:visible}
 .pp, .book{-webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
 .book input{-webkit-user-select:text; user-select:text}
 </style>
@@ -2945,8 +2948,8 @@ function ppPageHTML(n){
 }
 const PP_N = 8;
 function ppSize(){
-  const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = false;
-  let pw = Math.min(380, (vh - 210) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
+  const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = vw < 700 && vh > vw;
+  let pw = single ? Math.min(460, (vh - 210) / 1.42, vw - 32) : Math.min(380, (vh - 210) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
   PP.single = single; bk.classList.toggle('single', single); bk.style.setProperty('--pw', pw + 'px'); bk.style.setProperty('--ph', Math.round(pw * 1.42) + 'px'); bk.style.setProperty('--n', single ? 1 : 2);
 }
 function ppView(){ return PP.single ? [null, PP.idx] : [PP.idx, PP.idx + 1]; }
@@ -2955,7 +2958,7 @@ function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return;
 function ppPaint(){
   const [l, r] = ppView();
   // in a spread, page 1 of the book is the inside of the cover itself
-  if (PP.ended) { $('lfL').innerHTML = BCOV; $('lfR').innerHTML = ''; }
+  if (PP.ended) { if (PP.single) { $('lfL').innerHTML = ''; $('lfR').innerHTML = BCOV; } else { $('lfL').innerHTML = BCOV; $('lfR').innerHTML = ''; } }
   else { $('lfL').innerHTML = l == null || l === 0 ? '' : ppPageHTML(l); $('lfR').innerHTML = r != null && r < PP_N ? ppPageHTML(r) : ''; }
   $('coverIn').innerHTML = ppPageHTML(0).replace('class="pg"', 'class="pg endpaper"');
   bindName();
@@ -2972,6 +2975,11 @@ function pageSound(dir){ if (!AC || muted) return; swoosh(.5, dir > 0 ? 700 : 15
 function ppPrep(dir){
   const step = PP.single ? 1 : 2, ni = PP.idx + dir * step; if (ni < 0 || ni >= PP_N) return null;
   const F = $('lfF'), fr = F.querySelector('.front'), bk = F.querySelector('.back'); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = false;
+  if (PP.single) {
+    F.style.left = '0px'; F.style.transformOrigin = 'left center'; bk.innerHTML = '<div class="pg blank"></div><div class="shade"></div>';
+    if (dir > 0) { pageOn(fr, PP.idx, 1); $('lfR').innerHTML = ppPageHTML(ni); return { F, ni, from:0, to:-180 }; }
+    pageOn(fr, ni, 1); F.style.transform = 'rotateY(-180deg)'; return { F, ni, from:-180, to:0 };
+  }
   if (dir > 0) { F.style.left = 'var(--pw)'; pageOn(fr, PP.idx + 1, 1); pageOn(bk, ni, 1); $('lfR').innerHTML = ppPageHTML(ni + 1); F.style.transformOrigin = 'left center'; return { F, ni, to:-180 }; }
   F.style.left = '0px'; pageOn(fr, PP.idx, 1); pageOn(bk, ni + 1, 1); $('lfL').innerHTML = ni === 0 ? '' : ppPageHTML(ni); F.style.transformOrigin = 'right center'; return { F, ni, to:180 };
 }
@@ -2981,6 +2989,12 @@ async function ppEdgeTurn(kind){
   if (PP.busy) return; const F = $('lfF'), fr = F.querySelector('.front'), bk = F.querySelector('.back'), book = $('book');
   if (kind === 'close') return ppCloseBook();
   PP.busy = true; pageSound(kind === 'end' ? 1 : -1); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = false;
+  if (PP.single) {
+    F.style.left = '0px'; F.style.transformOrigin = 'left center'; bk.innerHTML = '<div class="pg blank"></div><div class="shade"></div>'; fr.innerHTML = ppPageHTML(PP.idx) + '<div class="shade"></div>';
+    if (kind === 'end') { $('lfR').innerHTML = BCOV; book.classList.add('ended'); await turn3d(F, 0, -180, 'left center', 1000); PP.ended = true; }
+    else { PP.ended = false; book.classList.remove('ended'); F.style.transform = 'rotateY(-180deg)'; await turn3d(F, -180, 0, 'left center', 1000); }
+    ppPaint(); ppCleanup(); return;
+  }
   if (kind === 'end') {
     F.style.left = 'var(--pw)'; F.style.transformOrigin = 'left center'; fr.innerHTML = ppPageHTML(PP.idx + 1) + '<div class="shade"></div>'; bk.innerHTML = BCOV + '<div class="shade"></div>'; $('lfR').innerHTML = ENDP;
     book.classList.add('ended'); await turn3d(F, 0, -180, 'left center', 1100); PP.ended = true;
@@ -3002,7 +3016,7 @@ function ppCloseBook(){
 }
 async function ppTurn(dir){
   if (PP.busy || !PP.open) return; const edge = ppEdge(dir); if (edge) return ppEdgeTurn(edge); const t = ppPrep(dir); if (!t) return;
-  PP.busy = true; pageSound(dir); await turn3d(t.F, 0, t.to, t.F.style.transformOrigin, 950); PP.idx = t.ni; ppPaint(); ppCleanup();
+  PP.busy = true; pageSound(dir); await turn3d(t.F, t.from || 0, t.to, t.F.style.transformOrigin, 950); PP.idx = t.ni; ppPaint(); ppCleanup();
 }
 /* grab a page and flip it by hand, or tap a page to turn it */
 (() => {
@@ -3014,8 +3028,8 @@ async function ppTurn(dir){
   });
   book.addEventListener('pointermove', e => {
     if (!g) return; const dx = e.clientX - g.x0;
-    if (!g.on) { if (Math.abs(dx) < 8) return; if ((g.dir > 0 && dx > 0) || (g.dir < 0 && dx < 0)) { g = null; return; } const edge = ppEdge(g.dir); if (edge) { g = null; ppEdgeTurn(edge); return; } const t = ppPrep(g.dir); if (!t) { g = null; return; } g.t = t; g.on = true; PP.busy = true; book.classList.add('drag'); try { book.setPointerCapture(g.id); } catch(_) {} }
-    const p = clamp(Math.abs(dx) / (pw() * 1.6), 0, 1); g.ang = g.t.to * p; g.p = p; g.t.F.style.transform = `rotateY(${g.ang}deg)`;
+    if (!g.on) { if (Math.abs(dx) < 8) return; if (PP.single) g.dir = dx < 0 ? 1 : -1; if ((g.dir > 0 && dx > 0) || (g.dir < 0 && dx < 0)) { g = null; return; } const edge = ppEdge(g.dir); if (edge) { g = null; ppEdgeTurn(edge); return; } const t = ppPrep(g.dir); if (!t) { g = null; return; } g.t = t; g.on = true; PP.busy = true; book.classList.add('drag'); try { book.setPointerCapture(g.id); } catch(_) {} }
+    const p = clamp(Math.abs(dx) / (pw() * 1.6), 0, 1); const f0 = g.t.from || 0; g.ang = f0 + (g.t.to - f0) * p; g.p = p; g.t.F.style.transform = `rotateY(${g.ang}deg)`;
     g.t.F.querySelectorAll('.shade').forEach(sh => sh.style.opacity = String(Math.sin(p * Math.PI)));
   });
   const end = async e => {
@@ -3023,7 +3037,7 @@ async function ppTurn(dir){
     if (!d.on) { if (e.type === 'pointerup' && Math.abs(e.clientX - d.x0) < 8 && !e.target.closest('input, .cover3d')) ppTurn(d.dir); return; }
     const F = d.t.F, fast = (performance.now() - d.t0) < 260 && d.p > .08, commit = d.p > .35 || fast;
     F.querySelectorAll('.shade').forEach(sh => sh.style.opacity = '');
-    const target = commit ? d.t.to : 0, dur = Math.max(220, 700 * Math.abs(target - d.ang) / 180);
+    const target = commit ? d.t.to : (d.t.from || 0), dur = Math.max(220, 700 * Math.abs(target - d.ang) / 180);
     if (commit) pageSound(d.dir);
     await F.animate([{ transform:`rotateY(${d.ang}deg)` }, { transform:`rotateY(${target}deg)` }], { duration:dur, easing:'cubic-bezier(.3,.6,.3,1)', fill:'forwards' }).finished.catch(() => {});
     if (commit) PP.idx = d.t.ni; ppPaint(); ppCleanup();
