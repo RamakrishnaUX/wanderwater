@@ -214,6 +214,11 @@ button.chip{cursor:pointer; border-color:var(--glass-line)}
 .steps li::before{content:counter(s); width:30px; height:30px; border-radius:50%; background:var(--ink); color:var(--sky); display:grid; place-items:center; font-family:var(--display); font-size:14px}
 .steps b{display:block}
 .credits{margin:0; font-size:12px; line-height:1.45; color:var(--ink-soft)}
+.credits summary{cursor:pointer; font-weight:600; list-style:none; display:inline-flex; align-items:center; gap:7px; padding:4px 0}
+.credits summary::-webkit-details-marker{display:none}
+.credits summary::after{content:''; width:6px; height:6px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:translateY(-2px) rotate(45deg); transition:transform .25s var(--spring)}
+.credits[open] summary::after{transform:translateY(1px) rotate(225deg)}
+.credits p{margin:6px 0 0}
 .btns{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
 .stamps{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px}
 .stamp{aspect-ratio:1.2; border:2px dashed var(--tk-line); border-radius:10px; display:grid; place-items:center; text-align:center; font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); padding:4px; min-width:0}
@@ -611,6 +616,13 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 .pill{font-size:13px; font-weight:600; letter-spacing:-.005em; transition:max-width .5s var(--spring), opacity .4s, padding .5s var(--spring)}
 .pill b{font-size:15px}
 #chipPump{max-width:140px; overflow:hidden}
+.pills{flex-wrap:nowrap; white-space:nowrap}
+.pill.cityp{gap:6px; padding:4px 10px 4px 12px; color:var(--ink); font-size:15px; font-weight:700; letter-spacing:-.01em}
+.pill.cityp svg{width:11px; height:8px; color:var(--ink-soft); transition:transform .3s var(--spring)}
+.pill.cityp:hover svg{transform:translateY(1px)}
+.psep{flex:none; width:1px; height:18px; margin:0 4px; background:var(--ink-soft); opacity:.3}
+@media (max-width: 430px){ #top .pill{padding:3px 6px} #top .pill.cityp{font-size:14px; padding:3px 6px 3px 10px; gap:5px} .psep{margin:0 2px} .ldots{gap:4px} .ldots i{width:8px; height:8px} #top .pill .lbl{display:none} #top{gap:6px} }
+@media (max-width: 374px){ #top{left:max(12px, env(safe-area-inset-left, 0px)); right:max(12px, env(safe-area-inset-right, 0px))} #top .pill{padding:3px 5px} #top .pill.cityp{padding-left:9px; gap:4px} .ldots{gap:3px} .ldots i{width:7px; height:7px} .psep{margin:0 1px} }
 #chipPump.zero{max-width:0; padding-left:0; padding-right:0; opacity:0}
 .pill.bump b{animation:bump .45s var(--spring)}
 @keyframes bump{0%{transform:scale(1)} 35%{transform:scale(1.28)} 100%{transform:scale(1)}}
@@ -728,9 +740,10 @@ body.coach #hints{opacity:0}
 <div id="hints" class="glass"><kbd>A</kbd> <kbd>L</kbd> pumps · <kbd>← →</kbd> current · <kbd>Space</kbd> fish · <kbd>M</kbd> manta · <kbd>B</kbd> bubbles · <kbd>D</kbd> say hi to the diver · <kbd>C</kbd> next city · drag to stir the water</div>
 <div id="top">
   <div class="pills glass">
+    <button class="pill cityp" id="cityPill" aria-label="Change city"><span class="n" id="cityN">Paris</span><svg viewBox="0 0 12 8" width="11" height="8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="psep" aria-hidden="true"></span>
     <span class="pill" id="chipLoop" title="Landmarks looped"><span class="ldots" aria-hidden="true"><i></i><i></i><i></i></span><span class="vh"><span id="loopN">0</span> of 3 landmarks looped</span></span>
-    <span class="pill zero" id="chipPump" title="Pump presses this round"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 5 6.5 8 6.5 11.2a6.5 6.5 0 0 1-13 0C5.5 11 8 8 12 3z"/></svg><b id="pumpN">0</b> <span class="lbl">pumps</span></span>
     <button class="pill" id="passBtn" aria-label="Open your passport" title="Passport"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M9 17h6"/></svg><b><span id="passN">0</span>/10</b></button>
+    <span class="pill zero" id="chipPump" title="Pump presses this round"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 5 6.5 8 6.5 11.2a6.5 6.5 0 0 1-13 0C5.5 11 8 8 12 3z"/></svg><b id="pumpN">0</b> <span class="lbl">pumps</span></span>
   </div>
   <div class="menuWrap">
   <button class="ib glass" id="gearBtn" aria-label="Settings" aria-expanded="false" aria-controls="icons" title="Settings"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></button>
@@ -841,7 +854,7 @@ body.coach #hints{opacity:0}
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Poke around</b>Tap a landmark to hear its story. Wave at the diver. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
-    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0).</p>
+    <details class="credits"><summary>Credits and licences</summary><p>Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0).</p></details>
     <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
   </div>
 </div>
@@ -2871,6 +2884,7 @@ function draw(){
 
 /* ---------- floating DOM ---------- */
 const ttl = $('ttl'), tix = $('tix');
+$('cityPill').addEventListener('click', () => { audio(); openGallery(); });
 let ttlW = 300, ttlH = 50, tkW = 100, tkH = 46, tixMode = 'inline', ttlX = 32, LT = [];
 function measure(){
   ttlX = CW < 760 ? 16 : 32; ttl.style.left = ttlX + 'px'; ttlW = ttl.offsetWidth; ttlH = ttl.offsetHeight;
@@ -3136,9 +3150,7 @@ function pad2(n){ return String(n).padStart(2, '0'); }
 function renderTickets(){
   tix.innerHTML = '';
   if (true) {
-    const c = city, b = document.createElement('button'); b.className = 'tk pick'; b.setAttribute('aria-label', 'Change gallery. Now showing ' + c.name);
-    b.innerHTML = `<span class="n">${c.name}</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 12 8" width="11" height="8"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
-    b.addEventListener('click', () => { audio(); openGallery(); }); tix.appendChild(b); measure(); return; }
+    $('cityN').textContent = city.name; $('cityPill').setAttribute('aria-label', 'Change city. Now in ' + city.name); measure(); return; }
   CITIES.forEach((c, i) => { const b = document.createElement('button'); b.className = 'tk'; b.setAttribute('aria-pressed', String(i === cityIdx)); b.setAttribute('aria-label', 'Gallery ' + (i + 1) + ', ' + c.name);
     b.innerHTML = `<span class="n">${c.name}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
     b.addEventListener('click', () => { audio(); daily = false; setCity(i); }); tix.appendChild(b); });
@@ -3422,7 +3434,7 @@ function savePostcard(){
 function introToast(){ showCityCard(); }
 function showCityCard(){
   const el = $('cityCard'); if (!el) return; $('ccN').textContent = 'Now arriving · ' + pad2(cityIdx + 1) + ' of 10'; $('ccT').textContent = city.name;
-  const pk = document.querySelector('.tk.pick'), so = $('stage').getBoundingClientRect().top; el.style.top = (pk ? pk.getBoundingClientRect().bottom - so + 26 : Math.max(90, SURF * S + 22)) + 'px'; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  const so = $('stage').getBoundingClientRect().top; el.style.top = Math.max(ttl.getBoundingClientRect().bottom - so + 18, SURF * S + 22) + 'px'; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 3600);
 }
 function setCity(i){
