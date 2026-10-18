@@ -126,6 +126,7 @@ button.chip{cursor:pointer; border-color:var(--glass-line)}
 .steps li{display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:start; counter-increment:s}
 .steps li::before{content:counter(s); width:30px; height:30px; border-radius:50%; background:var(--ink); color:var(--sky); display:grid; place-items:center; font-family:var(--display); font-size:14px}
 .steps b{display:block}
+.credits{margin:0; font-size:12px; line-height:1.45; color:var(--ink-soft)}
 .btns{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
 .stamps{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px}
 .stamp{aspect-ratio:1.2; border:2px dashed var(--tk-line); border-radius:10px; display:grid; place-items:center; text-align:center; font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); padding:4px; min-width:0}
@@ -561,6 +562,7 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Explore</b>Tap a landmark to light it up, hear its sound and read its story. Tap the diver to say hi. Tap anything else in the sea too, and drag to stir the water.</div></li>
     </ol>
+    <p class="credits">Music: recordings from Wikimedia Commons. Oud by Andy R. Jordan (CC BY-SA 3.0), sitar by Ashok Ayengar (CC BY-SA 4.0), Sweelinck played by Metzner (CC BY-SA 3.0). Satie (Michael Laucke), Gershwin (Paul Whiteman Orchestra), Araki Kodō III, Elgar (Barbirolli, Hallé), Vivaldi (Milan Baroque Soloists), the street organ and Grieg recordings are public domain.</p>
     <div class="btns"><button class="ctl pri" id="howGo">Start</button></div>
   </div>
 </div>
