@@ -36,7 +36,7 @@
   --glass:rgba(248,253,253,.76); --glass-line:rgba(255,255,255,.85);
   --accent:#123f73; --stamp:#c8372a; --sky:#cfeaf2;
   --tk-top:#fffdf4; --tk-bot:rgba(214,242,248,.78); --tk-line:#9fc3c9;
-  --pump:#ffd23f; --pump-d:#c08a04;
+  --pump:#8fd8ff; --pump-d:#3b86b3; --spSky1:#a9dcee; --spSky2:#eef9fa;
   --display:"Bungee","Arial Black",system-ui,sans-serif;
   --body:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -44,13 +44,13 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ink:#e4f2f4; --ink-soft:#a4c3c9; --glass:rgba(8,26,38,.7); --glass-line:rgba(150,215,235,.22);
-    --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563;
+    --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563; --spSky1:#060e22; --spSky2:#1b2c4c;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --ink:#e4f2f4; --ink-soft:#a4c3c9; --glass:rgba(8,26,38,.7); --glass-line:rgba(150,215,235,.22);
-  --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563;
+  --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563; --spSky1:#060e22; --spSky2:#1b2c4c;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -66,44 +66,36 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
   user-select:none; -webkit-user-select:none; background:none; border:0; padding:0}
 #ttl .lt{display:inline-block; will-change:transform; transform-origin:50% 100%}
 #ttl .acc{color:var(--accent)}
-/* splash: a quick hello before the first dive */
-#splash{position:fixed; inset:0; z-index:40; overflow:hidden; color:#eaf8fb; text-align:center; transition:opacity .6s ease, visibility .6s, transform .6s ease;
-  background:linear-gradient(180deg, #7fd3e6 0%, #2ea3c4 14%, #137aa0 34%, #0b4f78 62%, #062a47 86%, #041d33 100%)}
+/* splash: a quick hello before the first dive. Sky on top with the same title as the game, then the sea */
+#splash{position:fixed; inset:0; z-index:40; overflow:hidden; display:flex; flex-direction:column; text-align:center; color:#eaf8fb; transition:opacity .6s ease, visibility .6s, transform .6s ease;
+  background:linear-gradient(180deg, #2ea3c4, #062a47)}
 #splash.out{opacity:0; visibility:hidden; pointer-events:none; transform:scale(1.04)}
-#splash .fx{position:absolute; inset:0; pointer-events:none}
-#splash .rays{background:repeating-linear-gradient(100deg, transparent 0 7%, rgba(255,255,255,.07) 9%, transparent 12%, transparent 19%, rgba(255,255,255,.05) 21%, transparent 25%);
-  -webkit-mask:linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 40%, transparent 75%); mask:linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 40%, transparent 75%);
-  transform-origin:50% -20%; animation:spRays 9s ease-in-out infinite alternate}
-@keyframes spRays{from{transform:skewX(-4deg) translateX(-3%)} to{transform:skewX(5deg) translateX(3%)}}
-#splash .caus{opacity:.12; mix-blend-mode:screen; background:
-  radial-gradient(40px 18px at 20% 30%, rgba(255,255,255,.7), transparent 70%), radial-gradient(60px 22px at 70% 22%, rgba(255,255,255,.6), transparent 70%),
-  radial-gradient(50px 16px at 45% 48%, rgba(255,255,255,.5), transparent 70%), radial-gradient(70px 20px at 85% 60%, rgba(255,255,255,.4), transparent 70%),
-  radial-gradient(44px 14px at 12% 66%, rgba(255,255,255,.4), transparent 70%);
-  background-size:560px 470px; animation:spCaus 18s linear infinite}
-@keyframes spCaus{from{background-position:0 0, 0 0, 0 0, 0 0, 0 0} to{background-position:560px 80px, -560px 40px, 280px -80px, -280px 120px, 560px -40px}}
-#splash .waves{top:0; height:70px; bottom:auto}
-#splash .waves i{position:absolute; left:0; top:0; width:200%; height:100%; background-repeat:repeat-x; background-size:50% 100%}
-#splash .waves i:nth-child(1){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 70' preserveAspectRatio='none'><path d='M0 0h800v30c-50 0-50 14-100 14S650 30 600 30s-50 14-100 14S450 30 400 30s-50 14-100 14S250 30 200 30s-50 14-100 14S50 30 0 30z' fill='%23d8f4fa' fill-opacity='.55'/></svg>"); animation:spWave 7s linear infinite}
-#splash .waves i:nth-child(2){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 70' preserveAspectRatio='none'><path d='M0 0h800v20c-66 0-66 18-133 18S600 20 533 20s-66 18-133 18S333 20 267 20s-67 18-133 18S67 20 0 20z' fill='%23ffffff' fill-opacity='.35'/></svg>"); animation:spWave 11s linear infinite reverse}
-@keyframes spWave{from{transform:translateX(0)} to{transform:translateX(-50%)}}
-#splash .bub{position:absolute; bottom:-30px; border-radius:50%; border:1.5px solid rgba(255,255,255,.55); background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.7) 0 12%, rgba(255,255,255,.08) 28%, transparent 60%); animation:spBub linear infinite}
-@keyframes spBub{0%{transform:translate(0,0); opacity:0} 10%{opacity:.9} 50%{transform:translate(14px,-55vh)} 100%{transform:translate(-8px,-110vh); opacity:0}}
-#splash .floor{position:absolute; left:-5%; right:-5%; bottom:0; height:120px; background:radial-gradient(60% 100% at 50% 100%, rgba(120,200,190,.18), transparent 70%)}
-#splash .sp{position:relative; z-index:1; height:100%; width:min(480px, 100%); margin:0 auto; display:flex; flex-direction:column; padding:calc(64px + env(safe-area-inset-top)) 20px calc(18px + env(safe-area-inset-bottom))}
-#splash .hero{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:0}
-#splash .rings{position:relative; width:150px; height:56px; margin-bottom:4px}
-#splash .rings i{position:absolute; width:46px; height:46px; border-radius:50%; border:7px solid; box-shadow:inset 0 3px 0 rgba(255,255,255,.35), 0 6px 14px rgba(0,0,0,.2); animation:spBob 3.4s ease-in-out infinite}
+#splash .sky{flex:none; position:relative; background:linear-gradient(180deg, var(--spSky1), var(--spSky2)); padding:calc(44px + env(safe-area-inset-top)) 20px 40px; display:flex; flex-direction:column; align-items:center; gap:12px}
+#splash .rings{position:relative; width:150px; height:56px}
+#splash .rings i{position:absolute; width:46px; height:46px; border-radius:50%; border:7px solid; box-shadow:inset 0 3px 0 rgba(255,255,255,.4), 0 6px 12px rgba(0,40,70,.18); animation:spBob 3.4s ease-in-out infinite}
 #splash .rings i:nth-child(1){left:6px; top:8px; border-color:#ff5a5a; animation-delay:-.4s}
-#splash .rings i:nth-child(2){left:52px; top:0; border-color:#ffd23f; animation-delay:-1.6s}
+#splash .rings i:nth-child(2){left:52px; top:0; border-color:#8fd8ff; animation-delay:-1.6s}
 #splash .rings i:nth-child(3){left:98px; top:10px; border-color:#35d896; animation-delay:-2.5s}
-@keyframes spBob{0%,100%{transform:translateY(0) rotate(-8deg)} 50%{transform:translateY(-9px) rotate(8deg)}}
-#splash h1{margin:0; font-family:var(--display); font-weight:400; font-size:clamp(42px, 12.5vw, 70px); line-height:1; letter-spacing:.5px; color:#fff;
-  text-shadow:0 3px 0 rgba(4,40,70,.35), 0 0 28px rgba(160,235,255,.45); animation:spFloat 5s ease-in-out infinite}
-#splash h1 span{color:#ffd23f}
-@keyframes spFloat{0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}}
-#splash .mean{margin:0; font-size:16px; line-height:1.5; color:rgba(234,248,251,.85)}
-#splash .mean b{color:#fff; font-weight:700}
-#splash ul{list-style:none; margin:22px 0 0; padding:0; display:grid; gap:10px; width:100%}
+@keyframes spBob{0%,100%{transform:translateY(0) rotate(-8deg)} 50%{transform:translateY(-8px) rotate(8deg)}}
+#splash h1{margin:0; font-family:var(--display); font-weight:400; font-size:clamp(42px, 12.5vw, 70px); line-height:1; letter-spacing:.01em; color:var(--ink); text-shadow:0 2px 0 rgba(255,255,255,.35)}
+#splash h1 span{color:var(--accent)}
+#splash .mean{margin:0; font-size:16px; line-height:1.5; color:var(--ink-soft)}
+#splash .mean b{color:var(--ink); font-weight:700}
+#splash .sea{flex:1; position:relative; min-height:0; background:linear-gradient(180deg, #2ea3c4 0%, #137aa0 22%, #0b4f78 55%, #062a47 85%, #041d33 100%)}
+#splash .surf{position:absolute; left:0; right:0; top:-22px; height:24px; pointer-events:none; z-index:2}
+#splash .surf i{position:absolute; inset:0; background-repeat:repeat-x; background-size:480px 24px}
+#splash .surf i:nth-child(1){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='480' height='24' viewBox='0 0 480 24'><path d='M0 12 C60 2 60 2 120 12 S180 22 240 12 S300 2 360 12 S420 22 480 12 V24 H0z' fill='%237fd3e6'/></svg>"); top:-4px; opacity:.75; animation:spSurf 9s linear infinite reverse}
+#splash .surf i:nth-child(2){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='480' height='24' viewBox='0 0 480 24'><path d='M0 14 C80 6 80 6 160 14 S240 22 320 14 S400 6 480 14 V24 H0z' fill='%232ea3c4'/></svg>"); animation:spSurf 6s linear infinite}
+@keyframes spSurf{from{background-position-x:0} to{background-position-x:480px}}
+#splash .fx{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+#splash .rays{background:repeating-linear-gradient(100deg, transparent 0 7%, rgba(255,255,255,.08) 9%, transparent 12%, transparent 19%, rgba(255,255,255,.05) 21%, transparent 25%);
+  -webkit-mask:linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 45%, transparent 80%); mask:linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 45%, transparent 80%);
+  animation:spRays 9s ease-in-out infinite alternate}
+@keyframes spRays{from{transform:skewX(-4deg) translateX(-3%)} to{transform:skewX(5deg) translateX(3%)}}
+#splash .bub{position:absolute; bottom:-30px; border-radius:50%; border:1.5px solid rgba(255,255,255,.55); background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.7) 0 12%, rgba(255,255,255,.08) 28%, transparent 60%); animation:spBub linear infinite}
+@keyframes spBub{0%{transform:translate(0,0); opacity:0} 10%{opacity:.9} 50%{transform:translate(14px,-40vh)} 90%{opacity:.6} 100%{transform:translate(-8px,-80vh); opacity:0}}
+#splash .seac{position:relative; z-index:1; height:100%; width:min(480px, 100%); margin:0 auto; display:flex; flex-direction:column; padding:30px 20px calc(18px + env(safe-area-inset-bottom))}
+#splash ul{list-style:none; margin:0; padding:0; display:grid; gap:10px; width:100%}
 #splash li{display:flex; align-items:center; gap:14px; padding:13px 16px; border-radius:18px; text-align:left; font-size:16px; font-weight:600; color:#fff;
   background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.22);
   -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 8px 20px rgba(0,20,40,.18);
@@ -111,11 +103,11 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 #splash li:nth-child(1){animation-delay:.15s} #splash li:nth-child(2){animation-delay:.28s} #splash li:nth-child(3){animation-delay:.41s}
 @keyframes spIn{from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none}}
 #splash li i{flex:none; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-style:normal; background:rgba(255,255,255,.14)}
-#splash li i.pmp{background:radial-gradient(circle at 35% 30%, #fff1a8, #ffd23f 45%, #e0a90c); color:#5a3d00; font-size:9.5px; font-weight:800; letter-spacing:.3px; box-shadow:0 2px 0 #b07c00}
-#splash .foot{display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:16px}
-#spGo{width:100%; height:58px; border:0; border-radius:18px; background:linear-gradient(180deg, #ffe066, #ffd23f 55%, #f5c21f); color:#3d2a00; font:800 19px/1 system-ui, sans-serif; letter-spacing:.3px; cursor:pointer;
-  box-shadow:0 5px 0 #c08a04, 0 14px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.6); transition:transform .12s, box-shadow .12s; display:flex; align-items:center; justify-content:center; gap:10px}
-#spGo:active{transform:translateY(4px); box-shadow:0 1px 0 #c08a04, 0 6px 16px rgba(0,0,0,.3)}
+#splash li i.pmp{background:radial-gradient(circle at 35% 30%, #effaff, #8fd8ff 45%, #49ade3); color:#0d4a73; font-size:9.5px; font-weight:800; letter-spacing:.3px; box-shadow:0 2px 0 #3b86b3}
+#splash .foot{margin-top:auto; padding-top:16px; display:flex; flex-direction:column; align-items:center; gap:10px}
+#spGo{width:100%; height:58px; border:0; border-radius:18px; background:linear-gradient(180deg, #c4ecff, #8fd8ff 55%, #74cbf7); color:#0b3a5c; font:800 19px/1 system-ui, sans-serif; letter-spacing:.3px; cursor:pointer;
+  box-shadow:0 5px 0 #3b86b3, 0 14px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.7); transition:transform .12s, box-shadow .12s; display:flex; align-items:center; justify-content:center; gap:10px}
+#spGo:active{transform:translateY(4px); box-shadow:0 1px 0 #3b86b3, 0 6px 16px rgba(0,0,0,.3)}
 #spWhy{background:none; border:0; color:rgba(234,248,251,.8); font:600 14px system-ui, sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:4px 10px}
 #spWhy span{width:22px; height:22px; border-radius:50%; border:1.5px solid currentColor; display:grid; place-items:center; font-size:13px}
 #spWhyT{margin:0; font-size:14px; line-height:1.5; color:rgba(234,248,251,.9); background:rgba(0,30,55,.45); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 14px}
@@ -138,9 +130,9 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
   padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-bottom:max(16px, env(safe-area-inset-bottom, 0px))}
 #dock > *{pointer-events:auto}
 .pump{width:78px; height:78px; border-radius:50%; border:0; cursor:pointer; touch-action:manipulation;
-  background:radial-gradient(circle at 35% 30%, #fff4b8, var(--pump) 40%, #e8a90a 82%);
+  background:radial-gradient(circle at 35% 30%, #effaff, var(--pump) 40%, #49ade3 82%);
   box-shadow:0 7px 0 var(--pump-d), 0 12px 20px rgba(0,0,0,.25), inset 0 -3px 6px rgba(0,0,0,.12);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; color:#7a5200; font-family:var(--display); font-size:22px; line-height:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; color:#0d4a73; font-family:var(--display); font-size:22px; line-height:1;
   transition:transform .06s, box-shadow .06s; user-select:none; -webkit-user-select:none}
 .pump small{font-family:var(--mono); font-size:9px; letter-spacing:.14em; margin-top:3px}
 .pump.down{transform:translateY(6px); box-shadow:0 1px 0 var(--pump-d), 0 3px 6px rgba(0,0,0,.25), inset 0 -2px 4px rgba(0,0,0,.12)}
@@ -618,22 +610,25 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
 <div id="toast" class="glass" style="opacity:0"></div>
 
 <div id="splash" role="dialog" aria-modal="true" aria-labelledby="spT">
-  <div class="fx rays"></div><div class="fx caus"></div><div class="fx waves"><i></i><i></i></div><div class="floor"></div><div class="fx" id="spBubs"></div>
-  <div class="sp">
-    <div class="hero">
-      <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
-      <h1 id="spT">Wander<span>water</span></h1>
-      <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>An underwater museum of ten cities.</p>
+  <div class="sky">
+    <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
+    <h1 id="spT">Wander<span>water</span></h1>
+    <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>An underwater museum of ten cities.</p>
+  </div>
+  <div class="sea">
+    <div class="surf" aria-hidden="true"><i></i><i></i></div>
+    <div class="fx rays"></div><div class="fx" id="spBubs"></div>
+    <div class="seac">
       <ul>
         <li><i class="pmp">PUMP</i>Pump to float the rings</li>
         <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ff8a8a" stroke-width="3"><ellipse cx="12" cy="13" rx="8" ry="4.5"/></svg></i>Loop all three landmarks</li>
         <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c8ecff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></i>Tap anything to learn its story</li>
       </ul>
-    </div>
-    <div class="foot">
-      <button id="spWhy" aria-expanded="false" aria-controls="spWhyT"><span>?</span>Where is this from?</button>
-      <p id="spWhyT" hidden>Remember the old water ring toss toy? Press the buttons on both sides, the water pumps, and you try to land rings on the pegs. This is that, with a museum in it.</p>
-      <button id="spGo">Dive in <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+      <div class="foot">
+        <button id="spWhy" aria-expanded="false" aria-controls="spWhyT"><span>?</span>Where is this from?</button>
+        <p id="spWhyT" hidden>Remember the old water ring toss toy? Press the buttons on both sides, the water pumps, and you try to land rings on the pegs. This is that, with a museum in it.</p>
+        <button id="spGo">Dive in <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+      </div>
     </div>
   </div>
 </div>
