@@ -838,7 +838,7 @@ body.coach #hints{opacity:0}
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Poke around</b>Tap a landmark to hear its story. Wave at the diver. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
-    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Pranatarthi Haram on veena by Veena Raja Rao and Veena Gopala Rao (CC0). Via Wikimedia Commons and the Internet Archive.</p>
+    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive.</p>
     <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
   </div>
 </div>
@@ -1012,7 +1012,7 @@ const M = { out:null, bus:null, style:null, step:0, next:0, st:null, rng:Math.ra
 const TRACKS = {
   paris:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/02/Parisian_%28ISRC_USUAN1100120%29.mp3', name:'Parisian, Kevin MacLeod', vol:0.8 },
   dubai:{ url:'https://archive.org/download/wh062/wh062_04_Kaazim_Tareeq_Sahraawee.mp3', name:'Tareeq Sahraawee, Kaazim Zareb', vol:0.85 },
-  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/a/a0/Pranatarthi_Haram_by_Veena_Raja_Rao_and_Veena_Gopala_Rao.ogg/Pranatarthi_Haram_by_Veena_Raja_Rao_and_Veena_Gopala_Rao.ogg.mp3', name:'Pranatarthi Haram, Veena Raja Rao and Veena Gopala Rao', vol:0.95 },
+  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/2/2d/Kishori_Amonkar_performing_Raag-Bhopali.ogg/Kishori_Amonkar_performing_Raag-Bhopali.ogg.mp3', name:'Raag Bhopali, Kishori Amonkar', vol:1, start:240 },
   nyc:{ url:'https://upload.wikimedia.org/wikipedia/commons/f/f6/Hot_Swing_%28ISRC_USUAN1100202%29.mp3', name:'Hot Swing, Kevin MacLeod', vol:0.75 },
   tokyo:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/02/Off_to_Osaka_%28ISRC_USUAN1100128%29.mp3', name:'Off to Osaka, Kevin MacLeod', vol:0.8 },
   london:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/89/Rock_Over_London_%28ISRC_USUAN1100092%29.mp3', name:'Rock Over London, Kevin MacLeod', vol:0.65 },
@@ -1052,7 +1052,7 @@ function musicSwitch(id, force){
   if (trackOK(id) && ensureTrack()) {
     if (M.bus) { const old = M.bus; old.gain.cancelScheduledValues(t); old.gain.setValueAtTime(old.gain.value, t); old.gain.linearRampToValueAtTime(0, t + 1.2); setTimeout(() => { try { old.disconnect(); } catch(e) {} }, 2600); }
     M.bus = null; M.style = null; M.id = id; M.track = id; musicGain();
-    const start = () => { if (tok !== M.tok) return; const tr = TRACKS[id]; if (trackEl.src !== tr.url) { trackEl.src = tr.url; }
+    const start = () => { if (tok !== M.tok) return; const tr = TRACKS[id]; if (trackEl.src !== tr.url) { trackEl.src = tr.url; if (tr.start) trackEl.addEventListener('loadedmetadata', () => { try { if (trackEl.src === tr.url && trackEl.currentTime < tr.start) trackEl.currentTime = tr.start; } catch(e) {} }, { once:true }); }
       const pr = trackEl.play(); if (pr && pr.catch) pr.catch(() => {}); const n = AC.currentTime; trackGain.gain.cancelScheduledValues(n); trackGain.gain.setValueAtTime(0, n); trackGain.gain.linearRampToValueAtTime(tr.vol, n + 2.5); };
     if (trackEl.src) setTimeout(start, 950); else start();
     return;
