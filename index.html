@@ -740,7 +740,7 @@ body.coach #hints{opacity:0}
 <canvas id="scene" aria-label="An underwater museum. Pump water to loop rings onto landmarks. Tap anything in the sea." role="img"></canvas>
 <button id="ttl" aria-label="Wanderwater"><span class="lt">W</span><span class="lt">a</span><span class="lt">n</span><span class="lt">d</span><span class="lt">e</span><span class="lt">r</span><span class="lt acc">w</span><span class="lt acc">a</span><span class="lt acc">t</span><span class="lt acc">e</span><span class="lt acc">r</span></button>
 <div id="tix" role="group" aria-label="Galleries"></div>
-<div id="hints" class="glass"><kbd>A</kbd> <kbd>L</kbd> pumps · <kbd>← →</kbd> current · <kbd>Space</kbd> fish · <kbd>M</kbd> manta · <kbd>B</kbd> bubbles · <kbd>D</kbd> say hi to the diver · <kbd>C</kbd> next city · drag to stir the water</div>
+<div id="hints" class="glass"><kbd>A</kbd> <kbd>L</kbd> pumps · <kbd>← →</kbd> current · <kbd>Space</kbd> fish · <kbd>M</kbd> manta · <kbd>B</kbd> bubbles · <kbd>C</kbd> next city · drag to stir the water</div>
 <div id="top">
   <div class="pills glass">
     <button class="pill cityp" id="cityPill" aria-label="Change city"><span class="n" id="cityN">Paris</span><svg viewBox="0 0 12 8" width="11" height="8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="psep" aria-hidden="true"></span>
@@ -854,8 +854,8 @@ body.coach #hints{opacity:0}
     <ol class="steps">
       <li><div><b>Pump</b>Press the two pump buttons, or A and L. Water rockets up from the seabed and takes the rings with it. Hold a current, or the arrow keys, to nudge things sideways.</div></li>
       <li><div><b>Ring the landmarks</b>Drop a ring onto the tip of a landmark and it slides down and stays. Ring all three to win the city's stamp. Fewer pumps, more bragging rights.</div></li>
-      <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
-      <li><div><b>Poke around</b>Tap a landmark to hear its story. Wave at the diver. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
+      <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
+      <li><div><b>Poke around</b>Tap a landmark to hear its story. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
     <details class="credits"><summary>Credits and licences</summary><p>Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0).</p></details>
     <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
@@ -2048,7 +2048,7 @@ function stepFish(dt){
     if (f.y < top + 26) ay += (top + 26 - f.y) * 5; if (f.y > bot - 8) ay -= (f.y - bot + 8) * 6;
     if (f.leaving) ax += f.ldir * base * 2.2; else { if (f.x < 34) ax += (34 - f.x) * 4; if (f.x > W - 34) ax -= (f.x - W + 34) * 4; }
     if (ptrLive) { const dx = f.x - ptr.x, dy = f.y - ptr.y, d2 = dx * dx + dy * dy, RR2 = 95; if (d2 < RR2 * RR2) { const d = Math.sqrt(d2) || 1; ax += dx / d * (RR2 - d) * 13; ay += dy / d * (RR2 - d) * 9; if (d < 45) f.dart = Math.max(f.dart, .25); } }
-    if (diver) { const dx = f.x - diver.x, dy = f.y - diver.y, d2 = dx * dx + dy * dy; if (d2 < 4900) { const d = Math.sqrt(d2) || 1; ax += dx / d * (70 - d) * 6; ay += dy / d * (70 - d) * 4; } }
+    if (false) { const dx = f.x - diver.x, dy = f.y - diver.y, d2 = dx * dx + dy * dy; if (d2 < 4900) { const d = Math.sqrt(d2) || 1; ax += dx / d * (70 - d) * 6; ay += dy / d * (70 - d) * 4; } }
     if (pl) { field(f.x, f.y); ax += FX * 1.5; ay += FY * 1.5; } else ax += cur * 55 * 1.5;
     const maxA = f.dart > 0 ? 1500 : (sp.kind === 'school' ? 340 : 230), am = Math.hypot(ax, ay); if (am > maxA) { ax *= maxA / am; ay *= maxA / am; }
     f.vx += ax * dt; f.vy += ay * dt; f.vy *= Math.exp(-1.3 * dt);
@@ -2114,7 +2114,7 @@ function stepWorld(dt){
     if (turtleTalks % 2 === 0) { say('turtle', pick(['Did you know? ', 'Here is one for free. ', 'Something I remember: ']) + city.facts[factIdx % city.facts.length]); factIdx++; }
     else say('turtle', pick(['I have more stories about ' + city.name + '. Tap me.', 'Tap me, young diver. I remember things the guidebooks forget.', 'Ask an old turtle. Tap me for a story about ' + city.name + '.', 'A hundred years of swimming teaches you a thing or two. Tap me.'])); }
   if (speech) { speech.t -= dt; if (speech.t <= 0) speech = null; }
-  stepDiver(dt);
+
   for (const s of stars) { s.flex = Math.max(0, s.flex - dt * .5); s.crawl = Math.max(0, s.crawl - dt); if (s.crawl > 0) { s.x += (s.tx - s.x) * dt * .5; s.y = floorY(s.x) - 3; } }
   for (const s of shells) {
     if (s.kind === 'scallop') s.open += (s.target - s.open) * Math.min(1, dt * 5);
@@ -2880,7 +2880,7 @@ function draw(){
   drawPegs();
   for (const it of items) if (it.hooked < 0) { if (it.type === 'ring') drawRing(it, 'all'); else drawOrb(it); }
   for (const f of fish) if (f.depth >= .8) drawFish(f);
-  drawTurtle(); drawDiver(); drawBubbles(); drawSnow(true);
+  drawTurtle(); drawBubbles(); drawSnow(true);
   drawSky(); drawSpeech(); drawStamp();
   if (wipe > 0) { ctx.fillStyle = rgba(pal()[0], Math.min(1, wipe)); ctx.fillRect(0, 0, W, H); }
 }
@@ -2942,7 +2942,6 @@ function tap(x, y){
     return;
   }
   if (y < surfY(x) + 18) { splash(x, -28); SFX.splash(); for (let i = 0; i < 6; i++) bubble(x + frand(-10, 10), y + 10, frand(1.5, 3.5)); return; }
-  const d = diver; if (Math.abs(d.x - x) < 52 && Math.abs(d.y - y) < 26) { swimDiver(); return; }
   let best = null, bd = 22; for (const f of fish) { const sc = f.size * (.46 + .54 * f.depth), dd = Math.hypot(f.x - x, f.y - y) - SP[f.sp].L * sc * .6; if (dd < bd) { bd = dd; best = f; } }
   if (best) { const a = Math.atan2(best.y - y, best.x - x) || frand(0, TAU); best.vx = Math.cos(a) * 260; best.vy = Math.sin(a) * 200; best.dart = .8;
     for (const f of fish) { if (f === best || (f.g !== best.g && Math.hypot(f.x - x, f.y - y) > 60)) continue; const dx = f.x - x, dy = f.y - y, dd = Math.hypot(dx, dy) || 1; if (dd < 130) { f.vx += dx / dd * 140; f.vy += dy / dd * 100; f.dart = .5; } }
@@ -3140,7 +3139,6 @@ window.addEventListener('keydown', e => {
   else if (k === 'c') { if (!e.repeat) { daily = false; setCity((cityIdx + 1) % CITIES.length); } }
   else if (k === 'r') { if (!e.repeat) { resetItems(); toast('Fresh water, fresh start.'); } }
   else if (k === 'p') openPassport();
-  else if (k === 'd') { if (!e.repeat) swimDiver(); }
   else if (e.key === 'Escape') closeSheet();
   else used = false;
   if (used) { e.preventDefault(); hintsSeen(); }
