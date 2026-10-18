@@ -304,7 +304,9 @@ svg.i{fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stro
 .ppnav{display:flex; align-items:center; gap:10px; transition:opacity .4s}
 .book.closed ~ .ppnav .pgbtn{opacity:.3}
 .ppnav .ctl{background:rgba(255,255,255,.9); color:#12303a; border-color:transparent; min-width:44px; min-height:40px; font-size:18px}
-#passClose{width:44px; height:44px; min-width:44px; padding:0; border-radius:50%; display:grid; place-items:center; margin-left:6px}
+#passClose{position:absolute; left:50%; bottom:max(22px, calc(env(safe-area-inset-bottom) + 14px)); transform:translateX(-50%); width:54px; height:54px; padding:0; border-radius:50%; display:grid; place-items:center; color:#fff; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.75); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:0 6px 20px rgba(0,0,0,.25); cursor:pointer; transition:background .2s, transform .2s; z-index:3}
+#passClose:hover{background:rgba(255,255,255,.24)}
+#passClose:active{transform:translateX(-50%) scale(.92)}
 .ppnav .ctl:disabled{opacity:.35; cursor:default}
 .ppdots{display:flex; gap:6px}
 .ppdots i{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.4)}
@@ -602,9 +604,9 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
       <button class="ctl pgbtn" id="ppPrev" aria-label="Previous page">‹</button>
       <div class="ppdots" id="ppDots"></div>
       <button class="ctl pgbtn" id="ppNext" aria-label="Next page">›</button>
-      <button class="ctl" id="passClose" aria-label="Close passport" title="Close"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
   </div>
+  <button id="passClose" aria-label="Close passport" title="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
 </div>
 
 <div id="done" class="modal" hidden>
@@ -2944,7 +2946,7 @@ function ppPageHTML(n){
 const PP_N = 8;
 function ppSize(){
   const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = false;
-  let pw = Math.min(380, (vh - 130) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
+  let pw = Math.min(380, (vh - 210) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
   PP.single = single; bk.classList.toggle('single', single); bk.style.setProperty('--pw', pw + 'px'); bk.style.setProperty('--ph', Math.round(pw * 1.42) + 'px'); bk.style.setProperty('--n', single ? 1 : 2);
 }
 function ppView(){ return PP.single ? [null, PP.idx] : [PP.idx, PP.idx + 1]; }
