@@ -566,7 +566,7 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Explore</b>Tap a landmark to light it up, hear its sound and read its story. Tap the diver to say hi. Tap anything else in the sea too, and drag to stir the water.</div></li>
     </ol>
-    <p class="credits">Music: recordings from Wikimedia Commons. Oud by Andy R. Jordan (CC BY-SA 3.0), sitar by Ashok Ayengar (CC BY-SA 4.0), Sweelinck played by Metzner (CC BY-SA 3.0). Satie (Michael Laucke), Gershwin (Paul Whiteman Orchestra), Araki Kodō III, Elgar (Barbirolli, Hallé), Vivaldi (Milan Baroque Soloists), the street organ and Grieg recordings are public domain.</p>
+    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0. Tracks: Parisian, Desert City, Dub Eastern, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday, via Wikimedia Commons.</p>
     <div class="btns"><button class="ctl pri" id="howGo">Start</button></div>
   </div>
 </div>
@@ -737,16 +737,16 @@ let musicOn = true; try { musicOn = localStorage.getItem('ww.music') !== '0'; } 
 const M = { out:null, bus:null, style:null, step:0, next:0, st:null, rng:Math.random, timer:0, id:null, track:null, tok:0 };
 /* real recordings for each city, streamed from Wikimedia Commons (public domain or CC BY-SA). The generated music stays as a fallback. */
 const TRACKS = {
-  paris:{ url:'https://upload.wikimedia.org/wikipedia/commons/a/a6/Satie_Gymnopedie_No_1_performed_by_Michael_Laucke.flac', name:'Gymnopedie No. 1, Erik Satie', vol:0.9 },
-  dubai:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/0f/Oud_music_by_Andy_R._Jordan_2v2.mp3', name:'Oud improvisation', vol:0.8 },
-  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/85/Sitar_and_tabla_rendition_-_Freedom_Jam%2C_2015.oga', name:'Sitar and tabla', vol:0.75 },
-  nyc:{ url:'https://upload.wikimedia.org/wikipedia/commons/c/cb/Paul_Whiteman_Concert_Orchestra_-_Rhapsody_in_Blue_Part_01.mp3', name:'Rhapsody in Blue, George Gershwin', vol:0.8 },
-  tokyo:{ url:'https://upload.wikimedia.org/wikipedia/commons/3/3e/Shikanotoone.ogg', name:'Shika no Tone, shakuhachi', vol:0.9 },
-  london:{ url:'https://upload.wikimedia.org/wikipedia/commons/e/e7/Elgar%3B_Enigma_variations%2C_Theme_IX._Nimrod.ogg', name:'Nimrod, Edward Elgar', vol:0.95 },
-  florence:{ url:'https://upload.wikimedia.org/wikipedia/commons/6/60/Antonio_Vivaldi%2C_Mandolin_Concerto_in_C_major%2C_RV_425.ogg', name:'Mandolin Concerto in C, Vivaldi', vol:0.8 },
-  amsterdam:{ url:'https://upload.wikimedia.org/wikipedia/commons/a/a6/Street_organ_playing_a_waltz.ogg', name:'Dutch street organ waltz', vol:0.7 },
-  oslo:{ url:'https://upload.wikimedia.org/wikipedia/commons/7/7b/Henrik_Ibsen%2C_Edvard_Grieg_-_Morgenstemning_%28Morning_Mood%29.ogg', name:'Morning Mood, Edvard Grieg', vol:0.9 },
-  hague:{ url:'https://upload.wikimedia.org/wikipedia/commons/9/97/Sweelinck_Mein_junges_Leben.ogg', name:'Mein junges Leben, Sweelinck', vol:0.85 },
+  paris:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/02/Parisian_%28ISRC_USUAN1100120%29.mp3', name:'Parisian, Kevin MacLeod', vol:0.8 },
+  dubai:{ url:'https://upload.wikimedia.org/wikipedia/commons/3/30/Desert_City_%28ISRC_USUAN1100564%29.mp3', name:'Desert City, Kevin MacLeod', vol:0.75 },
+  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/3/3e/Dub_Eastern_%28ISRC_USUAN1200046%29.mp3', name:'Dub Eastern, Kevin MacLeod', vol:0.75 },
+  nyc:{ url:'https://upload.wikimedia.org/wikipedia/commons/f/f6/Hot_Swing_%28ISRC_USUAN1100202%29.mp3', name:'Hot Swing, Kevin MacLeod', vol:0.75 },
+  tokyo:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/02/Off_to_Osaka_%28ISRC_USUAN1100128%29.mp3', name:'Off to Osaka, Kevin MacLeod', vol:0.8 },
+  london:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/89/Rock_Over_London_%28ISRC_USUAN1100092%29.mp3', name:'Rock Over London, Kevin MacLeod', vol:0.65 },
+  florence:{ url:'https://upload.wikimedia.org/wikipedia/commons/5/51/Bushwick_Tarantella_%28ISRC_USUAN1300002%29.mp3', name:'Bushwick Tarantella, Kevin MacLeod', vol:0.75 },
+  amsterdam:{ url:'https://upload.wikimedia.org/wikipedia/commons/2/29/Bicycle_%28ISRC_USUAN1100870%29.mp3', name:'Bicycle, Kevin MacLeod', vol:0.75 },
+  oslo:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/83/Celtic_Impulse_%28ISRC_USUAN1100297%29.mp3', name:'Celtic Impulse, Kevin MacLeod', vol:0.7 },
+  hague:{ url:'https://upload.wikimedia.org/wikipedia/commons/2/28/Cheery_Monday_%28ISRC_USUAN1700065%29.mp3', name:'Cheery Monday, Kevin MacLeod', vol:0.75 },
 };
 let trackEl = null, trackGain = null; const trackFails = {};
 function trackType(u){ return u.endsWith('.mp3') ? 'audio/mpeg' : u.endsWith('.flac') ? 'audio/flac' : 'audio/ogg'; }
