@@ -77,7 +77,7 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 #splash .rings i:nth-child(2){left:52px; top:0; border-color:#8fd8ff; animation-delay:-1.6s}
 #splash .rings i:nth-child(3){left:98px; top:10px; border-color:#35d896; animation-delay:-2.5s}
 @keyframes spBob{0%,100%{transform:translateY(0) rotate(-8deg)} 50%{transform:translateY(-8px) rotate(8deg)}}
-#splash h1{margin:0; font-family:var(--display); font-weight:400; font-size:clamp(42px, 12.5vw, 70px); line-height:1; letter-spacing:.01em; color:var(--ink); text-shadow:0 2px 0 rgba(255,255,255,.35)}
+#splash h1{margin:0; max-width:100%; white-space:nowrap; font-family:var(--display); font-weight:400; font-size:clamp(30px, 9.4vw, 70px); line-height:1; letter-spacing:.01em; color:var(--ink); text-shadow:0 2px 0 rgba(255,255,255,.35)}
 #splash h1 span{color:var(--accent)}
 #splash .mean{margin:0; font-size:16px; line-height:1.5; color:var(--ink-soft)}
 #splash .mean b{color:var(--ink); font-weight:700}
@@ -3230,6 +3230,8 @@ let seen = false; try { seen = localStorage.getItem('ww.how') === '1'; } catch(e
 $('spWhy').addEventListener('click', () => { const t = $('spWhyT'), open = t.hidden; t.hidden = !open; $('spWhy').setAttribute('aria-expanded', String(open)); });
 $('spGo').addEventListener('click', () => { audio(); $('splash').classList.add('out'); splashOn = false; cityAt = T; turtleHintT = T; try { localStorage.setItem('ww.how', '1'); } catch(e) {} setTimeout(() => { $('splash').hidden = true; introToast(); }, 500); });
 $('spGo').focus({ preventScroll:true });
+(() => { const h = $('spT'), fit = () => { if ($('splash').hidden) return; h.style.fontSize = ''; const max = h.parentElement.clientWidth - 40; let fs = parseFloat(getComputedStyle(h).fontSize); while (h.scrollWidth > max && fs > 20) { fs -= 1; h.style.fontSize = fs + 'px'; } };
+  fit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); window.addEventListener('resize', fit); })();
 (() => { const box = $('spBubs'); for (let i = 0; i < 18; i++) { const b = document.createElement('span'), r = 4 + Math.random() * 14; b.className = 'bub'; b.style.cssText = `left:${Math.random() * 100}%; width:${r}px; height:${r}px; animation-duration:${7 + Math.random() * 9}s; animation-delay:${-Math.random() * 14}s`; box.appendChild(b); } })();
 window.__ww = { items:() => items, pegs:() => pegs, pump, setCity, get T(){ return T; }, diver:() => diver, openLandmark, boat:() => boat, openPassport, openPainting, easel:() => [EX(), floorY(EX())], shells:() => shells, jellies:() => jellies, mantas:() => mantas, turtle:() => turtle, speech:() => speech, shooters:() => shooters, music:() => ({ id:M.id, track:M.track, gen:!!M.style, paused:trackEl ? trackEl.paused : null, time:trackEl ? Math.round(trackEl.currentTime) : null, fails:Object.keys(trackFails).join(",") }) };
 requestAnimationFrame(t => { last = t; requestAnimationFrame(frame); });
