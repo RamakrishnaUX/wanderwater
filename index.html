@@ -1914,7 +1914,7 @@ let slowT = 0, firstPumpSent = false;
 function onLanded(p){
   const firstOnPeg = p.stack.filter(r => r.landed).length <= 1;
   p.glow = 1; p.fxT = 5; sparkle(p.x, p.rest - 6, '#fff6c2', 10); landmarkSound(p);
-  if (firstOnPeg) { slowT = .55; for (let k = 0; k < 3; k++) setTimeout(() => ripples.push({ x:p.x, y:p.rest - 4, t:0 }), k * 140); SFX.chime(); buzz([14, 50, 22]); track('ring_landed', { city:city.id, landmark:p.id || '' }); }
+  if (firstOnPeg) { slowT = .55; const lr = p.stack.filter(r => r.landed).pop(), rx0 = lr ? lr.x : p.x, ry0 = lr ? lr.y : p.rest - 3; for (let k = 0; k < 3; k++) setTimeout(() => ripples.push({ x:rx0, y:ry0, t:0, e:1 }), k * 160); SFX.chime(); buzz([14, 50, 22]); track('ring_landed', { city:city.id, landmark:p.id || '' }); }
   if (!route.includes(p)) route.push(p);
   if (!loopDone && pegs.every(q => q.stack.some(r => r.landed))) { loopDone = true; celebrate(); }
   updateUI();
@@ -2122,7 +2122,7 @@ function stepWorld(dt){
   sparks = sparks.filter(s => s.life > 0);
   for (const s of sand) { s.vx *= Math.exp(-2.5 * dt); s.vy += (40 - s.vy) * 1.5 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt * .6; if (s.y > floorY(s.x)) s.life = 0; }
   sand = sand.filter(s => s.life > 0);
-  for (const r of ripples) r.t += dt; ripples = ripples.filter(r => r.t < .7);
+  for (const r of ripples) r.t += dt; ripples = ripples.filter(r => r.t < (r.e ? 1 : .7));
   for (const w of waves) w.t += dt; waves = waves.filter(w => w.t < 1.6);
   for (const s of snow) { s.ph += dt * .6; s.x += (cur * 40 * (.5 + s.d) + Math.sin(s.ph) * 4) * dt; s.y += (3 + s.d * 4) * dt; if (s.y > H) s.y = SURF + 10; if (s.x < 0) s.x += W; if (s.x > W) s.x -= W; }
   pegs.forEach(p => { p.glow = Math.max(0, p.glow - dt * 1.2); p.fxT = Math.max(0, p.fxT - dt); });
@@ -2809,7 +2809,8 @@ function drawBubbles(){
   for (const s of sand) { ctx.globalAlpha = s.life * .8; ctx.fillStyle = city.sand; E(s.x, s.y, 1.6, 1.6); }
   for (const s of sparks) { if (s.sky) continue; ctx.globalAlpha = Math.max(0, s.life); ctx.fillStyle = s.col; ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(T * 4); R(-2, -.6, 4, 1.2); R(-.6, -2, 1.2, 4); ctx.restore(); }
   ctx.globalAlpha = 1;
-  for (const r of ripples) { ctx.strokeStyle = `rgba(255,255,255,${.6 * (1 - r.t / .7)})`; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(r.x, r.y, 8 + r.t * 90, 0, TAU); ctx.stroke(); }
+  for (const r of ripples) { if (r.e) { const k = r.t, rx = RX + k * 64, ry = rx * .3; ctx.strokeStyle = `rgba(255,248,214,${.75 * (1 - k)})`; ctx.lineWidth = 2.4 * (1 - k * .6); ctx.beginPath(); ctx.ellipse(r.x, r.y, rx, ry, 0, 0, TAU); ctx.stroke(); continue; }
+    ctx.strokeStyle = `rgba(255,255,255,${.6 * (1 - r.t / .7)})`; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(r.x, r.y, 8 + r.t * 90, 0, TAU); ctx.stroke(); }
   for (const w of waves) { ctx.strokeStyle = `rgba(255,240,200,${.5 * (1 - w.t / 1.6)})`; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(w.x, w.y, 10 + w.t * 70, 0, TAU); ctx.stroke(); }
 }
 function drawSky(){
