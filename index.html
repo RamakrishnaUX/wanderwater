@@ -67,26 +67,60 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 #ttl .lt{display:inline-block; will-change:transform; transform-origin:50% 100%}
 #ttl .acc{color:var(--accent)}
 /* splash: a quick hello before the first dive */
-#splash{position:fixed; inset:0; z-index:40; display:grid; place-items:center; padding:24px 20px calc(24px + env(safe-area-inset-bottom));
-  background:radial-gradient(120% 80% at 50% 0%, rgba(120,210,235,.35), transparent 60%), linear-gradient(180deg, rgba(10,58,92,.86), rgba(4,22,40,.94));
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:#eaf7fa; text-align:center; transition:opacity .5s ease, visibility .5s}
-#splash.out{opacity:0; visibility:hidden; pointer-events:none}
-#splash .sp{width:min(440px, 100%); display:flex; flex-direction:column; align-items:center; gap:18px; animation:spIn .7s cubic-bezier(.2,.85,.25,1.08) both}
-@keyframes spIn{from{opacity:0; transform:translateY(18px) scale(.97)} to{opacity:1; transform:none}}
-#splash h1{margin:0; font-family:var(--display); font-weight:400; font-size:clamp(40px, 11vw, 64px); line-height:1; letter-spacing:.5px; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.18)}
-#splash h1 span{color:#8ec5ff}
-#splash .mean{margin:-6px 0 0; font-size:15px; line-height:1.45; color:rgba(234,247,250,.82)}
+#splash{position:fixed; inset:0; z-index:40; overflow:hidden; color:#eaf8fb; text-align:center; transition:opacity .6s ease, visibility .6s, transform .6s ease;
+  background:linear-gradient(180deg, #7fd3e6 0%, #2ea3c4 14%, #137aa0 34%, #0b4f78 62%, #062a47 86%, #041d33 100%)}
+#splash.out{opacity:0; visibility:hidden; pointer-events:none; transform:scale(1.04)}
+#splash .fx{position:absolute; inset:0; pointer-events:none}
+#splash .rays{background:repeating-linear-gradient(100deg, transparent 0 7%, rgba(255,255,255,.07) 9%, transparent 12%, transparent 19%, rgba(255,255,255,.05) 21%, transparent 25%);
+  -webkit-mask:linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 40%, transparent 75%); mask:linear-gradient(180deg, #000 0%, rgba(0,0,0,.6) 40%, transparent 75%);
+  transform-origin:50% -20%; animation:spRays 9s ease-in-out infinite alternate}
+@keyframes spRays{from{transform:skewX(-4deg) translateX(-3%)} to{transform:skewX(5deg) translateX(3%)}}
+#splash .caus{opacity:.12; mix-blend-mode:screen; background:
+  radial-gradient(40px 18px at 20% 30%, rgba(255,255,255,.7), transparent 70%), radial-gradient(60px 22px at 70% 22%, rgba(255,255,255,.6), transparent 70%),
+  radial-gradient(50px 16px at 45% 48%, rgba(255,255,255,.5), transparent 70%), radial-gradient(70px 20px at 85% 60%, rgba(255,255,255,.4), transparent 70%),
+  radial-gradient(44px 14px at 12% 66%, rgba(255,255,255,.4), transparent 70%);
+  background-size:560px 470px; animation:spCaus 18s linear infinite}
+@keyframes spCaus{from{background-position:0 0, 0 0, 0 0, 0 0, 0 0} to{background-position:560px 80px, -560px 40px, 280px -80px, -280px 120px, 560px -40px}}
+#splash .waves{top:0; height:70px; bottom:auto}
+#splash .waves i{position:absolute; left:0; top:0; width:200%; height:100%; background-repeat:repeat-x; background-size:50% 100%}
+#splash .waves i:nth-child(1){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 70' preserveAspectRatio='none'><path d='M0 0h800v30c-50 0-50 14-100 14S650 30 600 30s-50 14-100 14S450 30 400 30s-50 14-100 14S250 30 200 30s-50 14-100 14S50 30 0 30z' fill='%23d8f4fa' fill-opacity='.55'/></svg>"); animation:spWave 7s linear infinite}
+#splash .waves i:nth-child(2){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 70' preserveAspectRatio='none'><path d='M0 0h800v20c-66 0-66 18-133 18S600 20 533 20s-66 18-133 18S333 20 267 20s-67 18-133 18S67 20 0 20z' fill='%23ffffff' fill-opacity='.35'/></svg>"); animation:spWave 11s linear infinite reverse}
+@keyframes spWave{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+#splash .bub{position:absolute; bottom:-30px; border-radius:50%; border:1.5px solid rgba(255,255,255,.55); background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.7) 0 12%, rgba(255,255,255,.08) 28%, transparent 60%); animation:spBub linear infinite}
+@keyframes spBub{0%{transform:translate(0,0); opacity:0} 10%{opacity:.9} 50%{transform:translate(14px,-55vh)} 100%{transform:translate(-8px,-110vh); opacity:0}}
+#splash .floor{position:absolute; left:-5%; right:-5%; bottom:0; height:120px; background:radial-gradient(60% 100% at 50% 100%, rgba(120,200,190,.18), transparent 70%)}
+#splash .sp{position:relative; z-index:1; height:100%; width:min(480px, 100%); margin:0 auto; display:flex; flex-direction:column; padding:calc(64px + env(safe-area-inset-top)) 20px calc(18px + env(safe-area-inset-bottom))}
+#splash .hero{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:0}
+#splash .rings{position:relative; width:150px; height:56px; margin-bottom:4px}
+#splash .rings i{position:absolute; width:46px; height:46px; border-radius:50%; border:7px solid; box-shadow:inset 0 3px 0 rgba(255,255,255,.35), 0 6px 14px rgba(0,0,0,.2); animation:spBob 3.4s ease-in-out infinite}
+#splash .rings i:nth-child(1){left:6px; top:8px; border-color:#ff5a5a; animation-delay:-.4s}
+#splash .rings i:nth-child(2){left:52px; top:0; border-color:#ffd23f; animation-delay:-1.6s}
+#splash .rings i:nth-child(3){left:98px; top:10px; border-color:#35d896; animation-delay:-2.5s}
+@keyframes spBob{0%,100%{transform:translateY(0) rotate(-8deg)} 50%{transform:translateY(-9px) rotate(8deg)}}
+#splash h1{margin:0; font-family:var(--display); font-weight:400; font-size:clamp(42px, 12.5vw, 70px); line-height:1; letter-spacing:.5px; color:#fff;
+  text-shadow:0 3px 0 rgba(4,40,70,.35), 0 0 28px rgba(160,235,255,.45); animation:spFloat 5s ease-in-out infinite}
+#splash h1 span{color:#ffd23f}
+@keyframes spFloat{0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}}
+#splash .mean{margin:0; font-size:16px; line-height:1.5; color:rgba(234,248,251,.85)}
 #splash .mean b{color:#fff; font-weight:700}
-#splash ul{list-style:none; margin:6px 0 0; padding:0; display:grid; gap:10px; width:100%}
-#splash li{display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:16px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); text-align:left; font-size:16px; font-weight:600}
-#splash li i{flex:none; width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-style:normal; font-size:19px; background:rgba(255,255,255,.12)}
-#splash li i.pmp{background:#ffd23f; color:#5a3d00; font-size:9.5px; font-weight:800; letter-spacing:.3px}
-#spGo{margin-top:6px; min-width:200px; height:54px; border:0; border-radius:999px; background:#ffd23f; color:#3d2a00; font:800 18px/1 system-ui, sans-serif; letter-spacing:.3px; cursor:pointer; box-shadow:0 5px 0 #c08a04, 0 12px 28px rgba(0,0,0,.3); transition:transform .12s, box-shadow .12s}
+#splash ul{list-style:none; margin:22px 0 0; padding:0; display:grid; gap:10px; width:100%}
+#splash li{display:flex; align-items:center; gap:14px; padding:13px 16px; border-radius:18px; text-align:left; font-size:16px; font-weight:600; color:#fff;
+  background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 8px 20px rgba(0,20,40,.18);
+  animation:spIn .7s cubic-bezier(.2,.85,.25,1.08) both}
+#splash li:nth-child(1){animation-delay:.15s} #splash li:nth-child(2){animation-delay:.28s} #splash li:nth-child(3){animation-delay:.41s}
+@keyframes spIn{from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none}}
+#splash li i{flex:none; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-style:normal; background:rgba(255,255,255,.14)}
+#splash li i.pmp{background:radial-gradient(circle at 35% 30%, #fff1a8, #ffd23f 45%, #e0a90c); color:#5a3d00; font-size:9.5px; font-weight:800; letter-spacing:.3px; box-shadow:0 2px 0 #b07c00}
+#splash .foot{display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:16px}
+#spGo{width:100%; height:58px; border:0; border-radius:18px; background:linear-gradient(180deg, #ffe066, #ffd23f 55%, #f5c21f); color:#3d2a00; font:800 19px/1 system-ui, sans-serif; letter-spacing:.3px; cursor:pointer;
+  box-shadow:0 5px 0 #c08a04, 0 14px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.6); transition:transform .12s, box-shadow .12s; display:flex; align-items:center; justify-content:center; gap:10px}
 #spGo:active{transform:translateY(4px); box-shadow:0 1px 0 #c08a04, 0 6px 16px rgba(0,0,0,.3)}
-#spWhy{background:none; border:0; color:rgba(234,247,250,.75); font:600 14px system-ui, sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:6px 10px}
+#spWhy{background:none; border:0; color:rgba(234,248,251,.8); font:600 14px system-ui, sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:4px 10px}
 #spWhy span{width:22px; height:22px; border-radius:50%; border:1.5px solid currentColor; display:grid; place-items:center; font-size:13px}
-#spWhyT{margin:-8px 0 0; max-width:340px; font-size:14px; line-height:1.5; color:rgba(234,247,250,.85); background:rgba(255,255,255,.07); border-radius:12px; padding:10px 14px}
+#spWhyT{margin:0; font-size:14px; line-height:1.5; color:rgba(234,248,251,.9); background:rgba(0,30,55,.45); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 14px}
 #spWhyT[hidden]{display:none}
+@media (prefers-reduced-motion: reduce){ #splash *, #splash{animation:none !important} }
 
 #tix{position:fixed; left:0; top:0; z-index:6}
 .tk{position:absolute; left:0; top:0; width:100px; transform-origin:50% 30%; will-change:transform; display:flex; flex-direction:column; align-items:flex-start; text-align:left;
@@ -584,17 +618,23 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
 <div id="toast" class="glass" style="opacity:0"></div>
 
 <div id="splash" role="dialog" aria-modal="true" aria-labelledby="spT">
+  <div class="fx rays"></div><div class="fx caus"></div><div class="fx waves"><i></i><i></i></div><div class="floor"></div><div class="fx" id="spBubs"></div>
   <div class="sp">
-    <h1 id="spT">Wander<span>water</span></h1>
-    <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>An underwater museum of ten cities.</p>
-    <ul>
-      <li><i class="pmp">PUMP</i>Pump to float the rings</li>
-      <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ff7b7b" stroke-width="3"><ellipse cx="12" cy="13" rx="8" ry="4.5"/></svg></i>Loop all three landmarks</li>
-      <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#bfe6ff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></i>Tap anything to learn its story</li>
-    </ul>
-    <button id="spGo">Dive in</button>
-    <button id="spWhy" aria-expanded="false" aria-controls="spWhyT"><span>?</span>Where is this from?</button>
-    <p id="spWhyT" hidden>Remember the old water ring toss toy? Press the buttons on both sides, the water pumps, and you try to land rings on the pegs. This is that, with a museum in it.</p>
+    <div class="hero">
+      <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h1 id="spT">Wander<span>water</span></h1>
+      <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>An underwater museum of ten cities.</p>
+      <ul>
+        <li><i class="pmp">PUMP</i>Pump to float the rings</li>
+        <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ff8a8a" stroke-width="3"><ellipse cx="12" cy="13" rx="8" ry="4.5"/></svg></i>Loop all three landmarks</li>
+        <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c8ecff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></i>Tap anything to learn its story</li>
+      </ul>
+    </div>
+    <div class="foot">
+      <button id="spWhy" aria-expanded="false" aria-controls="spWhyT"><span>?</span>Where is this from?</button>
+      <p id="spWhyT" hidden>Remember the old water ring toss toy? Press the buttons on both sides, the water pumps, and you try to land rings on the pegs. This is that, with a museum in it.</p>
+      <button id="spGo">Dive in <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+    </div>
   </div>
 </div>
 <div id="how" class="modal" hidden>
@@ -3052,7 +3092,7 @@ async function ppEdgeTurn(kind){
     book.classList.add('ended'); await turn3d(F, 0, -180, 'left center', 1100); if (gen !== PP.gen) return; PP.ended = true;
   } else {
     F.style.left = '0px'; F.style.transformOrigin = 'right center'; fr.innerHTML = BCOV + '<div class="shade"></div>'; bk.innerHTML = ppPageHTML(PP.idx + 1) + '<div class="shade"></div>';
-    PP.ended = false; $('lfL').innerHTML = PP.idx === 0 ? '' : ppPageHTML(PP.idx); $('lfR').innerHTML = PP.idx + 1 < PP_N ? ppPageHTML(PP.idx + 1) : ''; book.classList.remove('ended');
+    PP.ended = false; $('lfL').innerHTML = PP.idx === 0 ? '' : ppPageHTML(PP.idx); $('lfR').innerHTML = ''; book.classList.remove('ended');
     await turn3d(F, 0, 180, 'right center', 1100); if (gen !== PP.gen) return;
   }
   ppPaint(); ppCleanup();
@@ -3195,6 +3235,7 @@ let seen = false; try { seen = localStorage.getItem('ww.how') === '1'; } catch(e
 $('spWhy').addEventListener('click', () => { const t = $('spWhyT'), open = t.hidden; t.hidden = !open; $('spWhy').setAttribute('aria-expanded', String(open)); });
 $('spGo').addEventListener('click', () => { audio(); $('splash').classList.add('out'); splashOn = false; cityAt = T; turtleHintT = T; try { localStorage.setItem('ww.how', '1'); } catch(e) {} setTimeout(() => { $('splash').hidden = true; introToast(); }, 500); });
 $('spGo').focus({ preventScroll:true });
+(() => { const box = $('spBubs'); for (let i = 0; i < 18; i++) { const b = document.createElement('span'), r = 4 + Math.random() * 14; b.className = 'bub'; b.style.cssText = `left:${Math.random() * 100}%; width:${r}px; height:${r}px; animation-duration:${7 + Math.random() * 9}s; animation-delay:${-Math.random() * 14}s`; box.appendChild(b); } })();
 window.__ww = { items:() => items, pegs:() => pegs, pump, setCity, get T(){ return T; }, diver:() => diver, openLandmark, boat:() => boat, openPassport, openPainting, easel:() => [EX(), floorY(EX())], shells:() => shells, jellies:() => jellies, mantas:() => mantas, turtle:() => turtle, speech:() => speech, shooters:() => shooters, music:() => ({ id:M.id, track:M.track, gen:!!M.style, paused:trackEl ? trackEl.paused : null, time:trackEl ? Math.round(trackEl.currentTime) : null, fails:Object.keys(trackFails).join(",") }) };
 requestAnimationFrame(t => { last = t; requestAnimationFrame(frame); });
 })();
