@@ -110,8 +110,20 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 #spGo:active{transform:translateY(4px); box-shadow:0 1px 0 #3b86b3, 0 6px 16px rgba(0,0,0,.3)}
 #spWhy{background:none; border:0; color:rgba(234,248,251,.8); font:600 14px system-ui, sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:4px 10px}
 #spWhy span{width:22px; height:22px; border-radius:50%; border:1.5px solid currentColor; display:grid; place-items:center; font-size:13px}
-#spWhyT{margin:0; font-size:14px; line-height:1.5; color:rgba(234,248,251,.9); background:rgba(0,30,55,.45); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 14px}
-#spWhyT[hidden]{display:none}
+#spSheet{position:absolute; inset:0; z-index:5; display:flex; align-items:flex-end; justify-content:center; background:rgba(2,16,30,.55); opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s}
+#spSheet.on{opacity:1; visibility:visible}
+#spSheet .shx{width:min(520px, 100%); max-height:88%; overflow:auto; background:linear-gradient(180deg, #f4fbfd, #e3f3f8); color:#0f2a33; border-radius:24px 24px 0 0; padding:10px 20px calc(18px + env(safe-area-inset-bottom)); text-align:left;
+  transform:translateY(100%); transition:transform .38s cubic-bezier(.2,.85,.25,1); box-shadow:0 -10px 40px rgba(0,0,0,.3)}
+#spSheet.on .shx{transform:none}
+#spSheet .grab{width:44px; height:5px; border-radius:3px; background:rgba(15,42,51,.2); margin:0 auto 12px}
+#spSheet .toy{display:block; width:min(220px, 62%); margin:4px auto 12px}
+#spSheet .toy .rg{animation:toyBob 3s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
+#spSheet .toy .rg:nth-of-type(2n){animation-delay:-1.2s} #spSheet .toy .rg:nth-of-type(3n){animation-delay:-2.1s}
+@keyframes toyBob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}}
+#spSheet h3{margin:0 0 6px; font:800 20px/1.25 system-ui, sans-serif}
+#spSheet p{margin:0 0 8px; font-size:15px; line-height:1.55; color:#3d5c66}
+#spSheet small{display:block; margin:2px 0 14px; font-size:12px; color:#6b8790}
+#spShX{width:100%; height:52px; border:0; border-radius:16px; background:#0f2a33; color:#fff; font:700 16px system-ui, sans-serif; cursor:pointer}
 @media (prefers-reduced-motion: reduce){ #splash *, #splash{animation:none !important} }
 
 #tix{position:fixed; left:0; top:0; z-index:6}
@@ -625,10 +637,42 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
         <li><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#c8ecff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></i>Tap anything to learn its story</li>
       </ul>
       <div class="foot">
-        <button id="spWhy" aria-expanded="false" aria-controls="spWhyT"><span>?</span>Where is this from?</button>
-        <p id="spWhyT" hidden>Remember the old water ring toss toy? Press the buttons on both sides, the water pumps, and you try to land rings on the pegs. This is that, with a museum in it.</p>
+        <button id="spWhy" aria-haspopup="dialog" aria-controls="spSheet"><span>?</span>Where is this from?</button>
         <button id="spGo">Dive in <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
       </div>
+    </div>
+  </div>
+  <div id="spSheet" role="dialog" aria-modal="true" aria-labelledby="spShT">
+    <div class="shx">
+      <div class="grab"></div>
+      <svg class="toy" viewBox="0 0 240 270" aria-label="Illustration of a handheld water ring toss toy">
+          <defs><linearGradient id="tyB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a7fe0"/><stop offset="1" stop-color="#1f58b8"/></linearGradient>
+          <linearGradient id="tyW" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eaf6fb" stop-opacity=".95"/><stop offset=".5" stop-color="#ffffff" stop-opacity=".7"/><stop offset="1" stop-color="#e3f1f7" stop-opacity=".95"/></linearGradient></defs>
+          <rect x="46" y="34" width="148" height="160" rx="6" fill="url(#tyW)" stroke="#cfe2ea" stroke-width="2"/>
+          <g fill="none" stroke="#b9c9cf" stroke-width="1.4" stroke-linecap="round" opacity=".9">
+            <path d="M150 64 c10-8 24-6 30 4 c-6 10-20 12-30 4 z M180 68 l8-6 v12 z"/><circle cx="170" cy="66" r="1.6"/>
+            <path d="M112 108 c12-9 28-7 35 4 c-7 11-23 13-35 4 z M147 112 l9-7 v14 z"/><circle cx="136" cy="110" r="1.8"/>
+            <path d="M58 92 c8-6 19-5 24 3 c-5 8-16 9-24 3 z M82 95 l7-5 v10 z"/>
+            <circle cx="104" cy="70" r="3"/><circle cx="110" cy="62" r="2"/><circle cx="168" cy="140" r="3"/><circle cx="174" cy="132" r="2"/>
+          </g>
+          <path d="M56 44 V182" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".85"/><path d="M184 48 V110" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+          <path d="M126 50 V82" stroke="#f290c4" stroke-width="3.5" stroke-linecap="round"/><circle cx="126" cy="86" r="6.5" fill="#f2a6cf"/>
+          <ellipse cx="126" cy="78" rx="9" ry="3.6" fill="none" stroke="#f7d21e" stroke-width="3.4"/><ellipse cx="126" cy="72" rx="9" ry="3.6" fill="none" stroke="#3ccf3c" stroke-width="3.4"/><ellipse cx="134" cy="66" rx="9" ry="5" transform="rotate(-25 134 66)" fill="none" stroke="#ff7a1a" stroke-width="3.4"/>
+          <path d="M92 104 V138" stroke="#f290c4" stroke-width="3.5" stroke-linecap="round"/><circle cx="92" cy="142" r="6.5" fill="#f2a6cf"/>
+          <ellipse cx="92" cy="134" rx="9" ry="3.6" fill="none" stroke="#3ccf3c" stroke-width="3.4"/><ellipse cx="92" cy="128" rx="9" ry="3.6" fill="none" stroke="#e8273c" stroke-width="3.4"/>
+          <path d="M150 104 V138" stroke="#f290c4" stroke-width="3.5" stroke-linecap="round"/><circle cx="150" cy="142" r="6.5" fill="#f2a6cf"/>
+          <ellipse class="rg" cx="62" cy="118" rx="9" ry="5.5" transform="rotate(-20 62 118)" fill="none" stroke="#f7d21e" stroke-width="3.6"/><ellipse class="rg" cx="70" cy="148" rx="9" ry="5.5" transform="rotate(15 70 148)" fill="none" stroke="#e8273c" stroke-width="3.6"/><ellipse class="rg" cx="88" cy="160" rx="9" ry="5.5" transform="rotate(0 88 160)" fill="none" stroke="#ff7a1a" stroke-width="3.6"/><ellipse class="rg" cx="170" cy="166" rx="9" ry="5.5" transform="rotate(10 170 166)" fill="none" stroke="#3ccf3c" stroke-width="3.6"/><ellipse class="rg" cx="160" cy="176" rx="9" ry="5.5" transform="rotate(-10 160 176)" fill="none" stroke="#ff7a1a" stroke-width="3.6"/><ellipse class="rg" cx="100" cy="180" rx="9" ry="5.5" transform="rotate(-15 100 180)" fill="none" stroke="#f7d21e" stroke-width="3.6"/><ellipse class="rg" cx="80" cy="182" rx="9" ry="5.5" transform="rotate(5 80 182)" fill="none" stroke="#e8273c" stroke-width="3.6"/>
+          <rect x="36" y="14" width="168" height="26" rx="6" fill="url(#tyB)"/><rect x="36" y="33" width="168" height="7" rx="3" fill="#174a9e"/>
+          <path d="M42 192 H198 L210 252 H30 Z" fill="url(#tyB)"/><path d="M30 252 H210 V258 H30 Z" fill="#174a9e"/>
+          <path d="M66 236 v-14 a14 14 0 0 1 28 0 v14" fill="none" stroke="#174a9e" stroke-width="2.5"/><path d="M146 236 v-14 a14 14 0 0 1 28 0 v14" fill="none" stroke="#174a9e" stroke-width="2.5"/>
+          <circle cx="80" cy="228" r="11.5" fill="#cf5f00"/><circle cx="80" cy="225" r="11.5" fill="#ff8a1f"/><circle cx="76" cy="221" r="3.5" fill="#fff" opacity=".35"/>
+          <circle cx="160" cy="228" r="11.5" fill="#cf5f00"/><circle cx="160" cy="225" r="11.5" fill="#ff8a1f"/><circle cx="156" cy="221" r="3.5" fill="#fff" opacity=".35"/>
+        </svg>
+      <h3 id="spShT">The water ring toss toy</h3>
+      <p>A small plastic box full of water, with pegs inside and colourful rings floating around. Press the two buttons at the bottom, the water whooshes up, and you try to land the rings on the pegs.</p>
+      <p>Wanderwater is that same toy, with an underwater museum of ten cities inside.</p>
+      <small>Illustration of the classic toy.</small>
+      <button id="spShX">Got it</button>
     </div>
   </div>
 </div>
@@ -3227,7 +3271,10 @@ renderTickets(); updateUI(); $('hints').style.bottom = ($('dock').offsetHeight +
 window.addEventListener('resize', resize);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); });
 let seen = false; try { seen = localStorage.getItem('ww.how') === '1'; } catch(e) {}
-$('spWhy').addEventListener('click', () => { const t = $('spWhyT'), open = t.hidden; t.hidden = !open; $('spWhy').setAttribute('aria-expanded', String(open)); });
+const spSh = $('spSheet'), spShow = on => { spSh.classList.toggle('on', on); if (on) $('spShX').focus({ preventScroll:true }); else $('spWhy').focus({ preventScroll:true }); };
+$('spWhy').addEventListener('click', () => spShow(true)); $('spShX').addEventListener('click', () => spShow(false));
+spSh.addEventListener('click', e => { if (e.target === spSh) spShow(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && spSh.classList.contains('on')) spShow(false); });
 $('spGo').addEventListener('click', () => { audio(); $('splash').classList.add('out'); splashOn = false; cityAt = T; turtleHintT = T; try { localStorage.setItem('ww.how', '1'); } catch(e) {} setTimeout(() => { $('splash').hidden = true; introToast(); }, 500); });
 $('spGo').focus({ preventScroll:true });
 (() => { const h = $('spT'), fit = () => { if ($('splash').hidden) return; h.style.fontSize = ''; const max = h.parentElement.clientWidth - 40; let fs = parseFloat(getComputedStyle(h).fontSize); while (h.scrollWidth > max && fs > 20) { fs -= 1; h.style.fontSize = fs + 'px'; } };
