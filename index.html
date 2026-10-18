@@ -124,6 +124,26 @@ button:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 #spSheet p{margin:0 0 8px; font-size:15px; line-height:1.55; color:#3d5c66}
 #spSheet small{display:block; margin:2px 0 14px; font-size:12px; color:#6b8790}
 #spShX{width:100%; height:52px; border:0; border-radius:16px; background:#0f2a33; color:#fff; font:700 16px system-ui, sans-serif; cursor:pointer}
+/* splash on wide screens: a composed, centred layout instead of a stretched phone */
+@media (min-width: 820px){
+  #splash .sky{padding:calc(9vh + env(safe-area-inset-top)) 40px 7vh; gap:16px}
+  #splash .rings{transform:scale(1.25); margin-bottom:10px}
+  #splash h1{font-size:clamp(64px, 6.6vw, 104px)}
+  #splash .mean{font-size:19px}
+  #splash .seac{width:min(1000px, calc(100% - 80px)); padding:6vh 0 5vh; justify-content:center}
+  #splash ul{grid-template-columns:repeat(3, 1fr); gap:18px}
+  #splash li{flex-direction:column; text-align:center; justify-content:center; gap:14px; padding:26px 22px; font-size:18px; border-radius:22px}
+  #splash li i{width:56px; height:56px}
+  #splash li i svg{width:28px; height:28px}
+  #splash li i.pmp{font-size:12px}
+  #splash .foot{margin-top:44px; flex-direction:column-reverse; gap:16px}
+  #spGo{width:340px; height:62px; font-size:20px}
+  #spGo:hover{filter:brightness(1.05)}
+  #spSheet{align-items:center}
+  #spSheet .shx{border-radius:24px; transform:translateY(24px) scale(.97); opacity:0; transition:transform .32s cubic-bezier(.2,.85,.25,1), opacity .25s; padding:20px 28px 24px; max-width:460px}
+  #spSheet.on .shx{opacity:1}
+  #spSheet .grab{display:none}
+}
 @media (prefers-reduced-motion: reduce){ #splash *, #splash{animation:none !important} }
 
 #tix{position:fixed; left:0; top:0; z-index:6}
