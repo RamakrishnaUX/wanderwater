@@ -713,7 +713,8 @@ body.toy #pad .pump{width:70px; height:70px; margin-top:-6px; color:#6b2a00; bac
 body.toy #pad .pump.down, body.toy #pad .pump:active{transform:translateY(6px); box-shadow:0 2px 0 #a94a00, 0 3px 6px rgba(0,0,0,.3), inset 0 -2px 4px rgba(0,0,0,.15)}
 body.toy #pad #hud .ctl.arrow{background:linear-gradient(180deg, #5a9cf5, #2b6bd0); border:0; color:#fff; box-shadow:0 5px 0 #17468f, inset 0 1px 0 rgba(255,255,255,.4)}
 body.toy #pad #hud .ctl.arrow.on, body.toy #pad #hud .ctl.arrow:active{transform:translateY(4px); box-shadow:0 1px 0 #17468f}
-body.toy #coachTip{bottom:162px}
+body.toy #coachTip{bottom:104px}
+body.coach #hints{opacity:0}
 </style>
 </head>
 <body>
@@ -901,7 +902,7 @@ body.toy #coachTip{bottom:162px}
 <script>
 (() => {
 const $ = id => document.getElementById(id);
-const TAU = Math.PI * 2, H = 900, LH = 190, HOLE = 17, RX = 24;
+const TAU = Math.PI * 2, LH = 190, HOLE = 17, RX = 24; let H = 900;
 let RNG = Math.random;
 const rand = (a, b) => a + RNG() * (b - a);
 const frand = (a, b) => a + Math.random() * (b - a);
@@ -1678,8 +1679,8 @@ function buildPegs(){ pegs = [0, 1, 2].map(i => buildPeg(i)); }
 
 function layout(oldW){
   cx = W / 2; Z = Math.min(W / 2 - 24, 430); V = [cx - Z * .8, cx + Z * .8]; SX = cx;
-  const dk = document.getElementById('dock'); FB = H - Math.max(62, (dk ? dk.offsetHeight : 0) / S + 26);
-  ST = FB - 516; SB = ST + 52; SHW = clamp(Z * .55 - 48, 40, 64);
+  const dk = document.getElementById('dock'), toy = document.body.classList.contains('toy'); FB = toy ? H - 58 : H - Math.max(62, (dk ? dk.offsetHeight : 0) / S + 26);
+  ST = FB - (toy ? 470 : 516); SB = ST + 52; SHW = clamp(Z * .55 - 48, 40, 64);
   if (pegs.length) pegs = pegs.map((p, i) => buildPeg(i, p));
   if (oldW && Math.abs(oldW - W) > 1) {
     const f = W / oldW;
@@ -3437,12 +3438,12 @@ function stageH(){ return $('stage').clientHeight || window.innerHeight; }
 function track(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch(e) {} }
 function buzz(pattern){ try { if (navigator.vibrate && !muted) navigator.vibrate(pattern); } catch(e) {} }
 function resize(){
-  setToy(); CW = stageW(); CH = stageH() - toyBase(); DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
+  setToy(); H = toyOn() ? 770 : 900; CW = stageW(); CH = stageH() - toyBase(); DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
   cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); layout(oldW); populateHomes(); renderTickets(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 }
 let startCity = 0; try { startCity = clamp(parseInt(localStorage.getItem('ww.city') || '0', 10) || 0, 0, CITIES.length - 1); } catch(e) {}
 cityIdx = startCity; city = CITIES[startCity]; dayNo = computeDay();
-setToy(); CW = stageW(); CH = stageH() - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
+setToy(); H = toyOn() ? 770 : 900; CW = stageW(); CH = stageH() - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
 layout(0); buildPegs(); initCreatures(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0;
 renderTickets(); updateUI(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 window.addEventListener('resize', resize);
