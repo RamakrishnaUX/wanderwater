@@ -566,7 +566,7 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>D</kbd></dt><dd>say hi to the diver</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Explore</b>Tap a landmark to light it up, hear its sound and read its story. Tap the diver to say hi. Tap anything else in the sea too, and drag to stir the water.</div></li>
     </ol>
-    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0. Tracks: Parisian, Desert City, Dub Eastern, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday, via Wikimedia Commons.</p>
+    <p class="credits">Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Pranatarthi Haram on veena by Veena Raja Rao and Veena Gopala Rao (CC0). Via Wikimedia Commons and the Internet Archive.</p>
     <div class="btns"><button class="ctl pri" id="howGo">Start</button></div>
   </div>
 </div>
@@ -738,8 +738,8 @@ const M = { out:null, bus:null, style:null, step:0, next:0, st:null, rng:Math.ra
 /* real recordings for each city, streamed from Wikimedia Commons (public domain or CC BY-SA). The generated music stays as a fallback. */
 const TRACKS = {
   paris:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/02/Parisian_%28ISRC_USUAN1100120%29.mp3', name:'Parisian, Kevin MacLeod', vol:0.8 },
-  dubai:{ url:'https://upload.wikimedia.org/wikipedia/commons/3/30/Desert_City_%28ISRC_USUAN1100564%29.mp3', name:'Desert City, Kevin MacLeod', vol:0.75 },
-  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/3/3e/Dub_Eastern_%28ISRC_USUAN1200046%29.mp3', name:'Dub Eastern, Kevin MacLeod', vol:0.75 },
+  dubai:{ url:'https://archive.org/download/wh062/wh062_04_Kaazim_Tareeq_Sahraawee.mp3', name:'Tareeq Sahraawee, Kaazim Zareb', vol:0.85 },
+  delhi:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/a/a0/Pranatarthi_Haram_by_Veena_Raja_Rao_and_Veena_Gopala_Rao.ogg/Pranatarthi_Haram_by_Veena_Raja_Rao_and_Veena_Gopala_Rao.ogg.mp3', name:'Pranatarthi Haram, Veena Raja Rao and Veena Gopala Rao', vol:0.95 },
   nyc:{ url:'https://upload.wikimedia.org/wikipedia/commons/f/f6/Hot_Swing_%28ISRC_USUAN1100202%29.mp3', name:'Hot Swing, Kevin MacLeod', vol:0.75 },
   tokyo:{ url:'https://upload.wikimedia.org/wikipedia/commons/0/02/Off_to_Osaka_%28ISRC_USUAN1100128%29.mp3', name:'Off to Osaka, Kevin MacLeod', vol:0.8 },
   london:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/89/Rock_Over_London_%28ISRC_USUAN1100092%29.mp3', name:'Rock Over London, Kevin MacLeod', vol:0.65 },
