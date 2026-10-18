@@ -38,19 +38,22 @@
   --tk-top:#fffdf4; --tk-bot:rgba(214,242,248,.78); --tk-line:#9fc3c9;
   --pump:#8fd8ff; --pump-d:#3b86b3; --spSky1:#a9dcee; --spSky2:#eef9fa;
   --display:"Bungee","Arial Black",system-ui,sans-serif;
-  --body:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:var(--ui);
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif;
+  --r-s:12px; --r-m:18px; --r-l:26px; --spring:cubic-bezier(.32,.72,0,1);
+  --mat:rgba(250,253,255,.72); --mat-line:rgba(255,255,255,.7); --mat-shadow:0 10px 30px rgba(6,32,48,.14), 0 1px 2px rgba(6,32,48,.08); --ok:#34c759;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ink:#e4f2f4; --ink-soft:#a4c3c9; --glass:rgba(8,26,38,.7); --glass-line:rgba(150,215,235,.22);
-    --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563; --spSky1:#060e22; --spSky2:#1b2c4c;
+    --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563; --spSky1:#060e22; --spSky2:#1b2c4c; --mat:rgba(18,30,42,.66); --mat-line:rgba(255,255,255,.12); --mat-shadow:0 10px 30px rgba(0,0,0,.35);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --ink:#e4f2f4; --ink-soft:#a4c3c9; --glass:rgba(8,26,38,.7); --glass-line:rgba(150,215,235,.22);
-  --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563; --spSky1:#060e22; --spSky2:#1b2c4c;
+  --accent:#8ec5ff; --stamp:#ff6b5a; --sky:#0a1830; --tk-top:#17303d; --tk-bot:rgba(16,60,80,.7); --tk-line:#2e5563; --spSky1:#060e22; --spSky2:#1b2c4c; --mat:rgba(18,30,42,.66); --mat-line:rgba(255,255,255,.12); --mat-shadow:0 10px 30px rgba(0,0,0,.35);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -586,6 +589,125 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
 .book.single.ended .leaf.R{visibility:visible}
 .pp, .book{-webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
 .book input{-webkit-user-select:text; user-select:text}
+
+/* ================= Apple layer: one type family, one material, spring motion ================= */
+body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+.vh{position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.glass{background:var(--mat); border:.5px solid var(--mat-line); -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%); box-shadow:var(--mat-shadow)}
+.tk .c, #hints, #hints kbd, #plc .eb, #plc .m, #sheet .eb, #sheet .m, .fact small, .stat small, .ctl.arrow small, .galgrid .c, .keys kbd, .pump small, #doneEb, .stamp, #copyBox{font-family:var(--ui)}
+#sheet .eb, #plc .eb, #doneEb{font-size:12px!important; font-weight:600; letter-spacing:.06em!important; text-transform:uppercase}
+#sheet .m, #plc .m{font-size:13px; letter-spacing:0}
+.fact small, .stat small{font-size:11px; font-weight:600; letter-spacing:.04em}
+.sheet h2, #sheet h2{font-family:var(--ui); font-weight:700; letter-spacing:-.022em; font-size:28px; line-height:1.12}
+.pill b, .chip b, .stat b, .stamp b, #diverBtn b, #tix.compact .c, .steps li::before{font-family:var(--ui); font-weight:700; font-variant-numeric:tabular-nums}
+.big{font-family:var(--ui); font-weight:800; letter-spacing:-.035em}
+.pump{font-family:var(--ui); font-weight:700}
+.pump small{font-weight:700; letter-spacing:.08em}
+#hud{animation:none}
+.ctl{transition:transform .25s var(--spring), background .2s}
+.ctl:active{transform:scale(.96)}
+/* top bar */
+.pills{padding:4px; gap:2px}
+.pill{font-size:13px; font-weight:600; letter-spacing:-.005em; transition:max-width .5s var(--spring), opacity .4s, padding .5s var(--spring)}
+.pill b{font-size:15px}
+#chipPump{max-width:140px; overflow:hidden}
+#chipPump.zero{max-width:0; padding-left:0; padding-right:0; opacity:0}
+.pill.bump b{animation:bump .45s var(--spring)}
+@keyframes bump{0%{transform:scale(1)} 35%{transform:scale(1.28)} 100%{transform:scale(1)}}
+.ldots{display:inline-flex; gap:5px; align-items:center; padding:0 2px}
+.ldots i{width:9px; height:9px; border-radius:50%; border:1.5px solid var(--ink-soft); opacity:.55; transition:transform .5s var(--spring), background .3s, border-color .3s, opacity .3s}
+.ldots i.on{background:var(--accent); border-color:var(--accent); opacity:1; transform:scale(1.2)}
+/* quiet once you are playing */
+#ttl, #hints{transition:opacity 1s ease}
+body.quiet #ttl{opacity:0; pointer-events:none}
+body.quiet #hints{opacity:0; pointer-events:none}
+/* the one city button, everywhere */
+.tk.pick{flex-direction:row; align-items:center; gap:8px; width:auto!important; min-width:0; height:auto; padding:8px 12px 8px 14px; border-radius:999px; border:.5px solid var(--mat-line); background:var(--mat);
+  -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%); box-shadow:var(--mat-shadow)}
+.tk.pick .c{font-size:11px; font-weight:600; letter-spacing:.06em; color:var(--ink-soft)}
+.tk.pick .n{display:block!important; font-size:15px; font-weight:700; letter-spacing:-.01em}
+.tk.pick .chev{display:grid; place-items:center; color:var(--ink-soft)}
+/* toast as a notification capsule */
+#toast{border-radius:999px; padding:9px 18px; font-weight:600; font-size:14.5px; color:var(--ink); letter-spacing:-.005em}
+/* city title card */
+#cityCard{position:fixed; left:50%; z-index:8; transform:translate(-50%, 10px); text-align:center; pointer-events:none; opacity:0; width:min(560px, calc(100vw - 40px)); transition:opacity .6s ease, transform .9s var(--spring)}
+#cityCard.on{opacity:1; transform:translate(-50%, 0)}
+#ccN{font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.85); text-shadow:0 1px 8px rgba(0,30,50,.35)}
+#ccT{font-size:clamp(40px, 9vw, 72px); font-weight:800; letter-spacing:-.04em; line-height:1.02; color:#fff; text-shadow:0 2px 24px rgba(0,30,50,.35); margin:4px 0 8px}
+#ccS{display:inline-block; font-size:14.5px; font-weight:600; color:var(--ink); padding:8px 16px; border-radius:999px; background:var(--mat); border:.5px solid var(--mat-line); -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%); box-shadow:var(--mat-shadow); max-width:100%}
+/* landmark story card */
+#sheet{border-radius:28px 28px 0 0}
+#shArt{border-radius:20px}
+.facts{gap:8px}
+.fact{border:0; background:rgba(120,150,165,.13); border-radius:14px; padding:9px 12px}
+.fact b{font-size:15px; letter-spacing:-.01em}
+#shP{font-size:16px; line-height:1.5; letter-spacing:-.008em}
+#shLink{border:0; background:var(--accent); color:#fff; padding:10px 18px; font-size:15px; font-weight:600}
+:root[data-theme="dark"] #shLink{color:#06233a}
+#shLink:hover{filter:brightness(1.08); background:var(--accent)}
+/* Atlas */
+#gal .sheet{width:min(860px, 100%); gap:16px}
+.galgrid{grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px}
+@media (min-width: 720px){ .galgrid{grid-template-columns:repeat(5, minmax(0,1fr))} }
+.galgrid button{overflow:hidden; border:.5px solid var(--mat-line)!important; border-radius:18px!important; background:rgba(255,255,255,.35)!important; box-shadow:0 1px 2px rgba(6,32,48,.06)!important; padding:0 12px 12px!important; gap:1px!important; min-height:0!important; transition:transform .35s var(--spring), box-shadow .3s}
+:root[data-theme="dark"] .galgrid button{background:rgba(255,255,255,.06)!important}
+.galgrid button:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(6,32,48,.14)!important}
+.galgrid button[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--accent)!important}
+.galgrid .band{display:block; align-self:stretch; height:58px; margin:0 -12px 9px; background:linear-gradient(180deg, var(--w1), var(--w2) 60%, var(--w3))}
+.galgrid .c{font-size:11px; font-weight:600; letter-spacing:.06em}
+.galgrid .n{font-size:17px; font-weight:700; letter-spacing:-.015em}
+.galgrid .st{font-size:12.5px; color:var(--ink-soft)}
+.galgrid .ok{top:8px; right:8px; width:22px; height:22px; border:0; background:#fff; color:var(--stamp); font-weight:800; box-shadow:0 2px 6px rgba(0,0,0,.18)}
+/* settings: one grouped list with switches, on every screen */
+#gearBtn{display:grid!important; width:40px; height:40px; color:var(--ink)}
+#gearBtn[aria-expanded="true"]{background:var(--ink); color:var(--sky)}
+#top{z-index:9}
+.icons{display:none!important; position:absolute; right:0; top:calc(100% + 8px); flex-direction:column; align-items:stretch; gap:0; border-radius:16px; padding:6px; width:244px; background:var(--mat); -webkit-backdrop-filter:blur(30px) saturate(180%); backdrop-filter:blur(30px) saturate(180%)}
+.icons.open{display:flex!important; animation:pop .32s var(--spring)}
+.icons .ib{width:auto; height:44px; border-radius:11px; display:flex; align-items:center; gap:12px; padding:0 10px 0 12px; justify-content:flex-start; font-weight:500; font-size:15px; text-align:left; color:var(--ink)!important; letter-spacing:-.01em}
+.icons .ib .ibl{display:inline}
+.icons .ib svg{opacity:.8}
+.icons .ib.on{background:none; color:var(--ink)}
+.icons .ib:hover{background:rgba(120,150,165,.14)}
+#musicBtn{order:1} #soundBtn{order:2} #themeBtn{order:3} #tiltBtn{order:4} #fishBtn{order:6} #resetBtn{order:7} #howBtn{order:8}
+.icons::after{content:""; order:5; height:.5px; margin:5px 10px; background:var(--glass-line)}
+.icons .ib[aria-pressed]::after{content:""; margin-left:auto; flex:none; width:44px; height:26px; border-radius:13px; background:radial-gradient(circle, #fff 10px, transparent 11px) no-repeat, rgba(120,120,128,.32);
+  background-size:26px 26px, auto; background-position:0 0, 0 0; transition:background-position .35s var(--spring), background-color .25s; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.04)}
+.icons .ib[aria-pressed="true"]::after{background:radial-gradient(circle, #fff 10px, transparent 11px) no-repeat, var(--ok); background-size:26px 26px, auto; background-position:18px 0, 0 0}
+@media (pointer: coarse){ .ib, #gearBtn{min-width:44px; min-height:44px} }
+/* first-time coach mark on the pumps */
+#coachTip{position:fixed; left:50%; z-index:8; transform:translate(-50%, 8px); opacity:0; pointer-events:none; font-size:14.5px; font-weight:600; color:var(--ink); padding:9px 16px; border-radius:999px; background:var(--mat); border:.5px solid var(--mat-line);
+  -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%); box-shadow:var(--mat-shadow); transition:opacity .4s, transform .6s var(--spring); bottom:150px; white-space:nowrap}
+body.coach #coachTip{opacity:1; transform:translate(-50%, 0)}
+body.coach .pump{animation:coachPulse 1.6s ease-in-out infinite}
+@keyframes coachPulse{0%,100%{filter:none} 50%{filter:drop-shadow(0 0 0 rgba(143,216,255,0)) drop-shadow(0 0 14px rgba(143,216,255,.95))}}
+@media (max-width: 640px){ #coachTip{bottom:128px} }
+/* done sheet */
+#done .sheet{border-radius:28px}
+/* motion preference */
+@media (prefers-reduced-motion: reduce){ #cityCard, .pill, .ldots i, .icons.open, body.coach .pump{transition:none!important; animation:none!important} }
+
+/* ================= desktop: the whole game sits inside the ring toss toy ================= */
+#toyLid, #toyBase{display:none}
+body.toy #scene{height:calc(100% - 118px)}
+body.toy #toyLid{display:block; position:fixed; left:0; right:0; top:0; height:16px; z-index:6; pointer-events:none;
+  background:linear-gradient(180deg, #4a8ff0, #2563c4 70%, #1c4f9f); box-shadow:0 4px 10px rgba(10,40,90,.35), inset 0 -2px 0 rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.35)}
+body.toy #toyBase{display:block; position:fixed; left:0; right:0; bottom:0; height:118px; z-index:6; pointer-events:none;
+  background:linear-gradient(180deg, #3f86e6 0%, #2563c4 45%, #1c4f9f 100%); box-shadow:0 -6px 16px rgba(10,40,90,.35), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -10px 24px rgba(0,0,0,.18)}
+body.toy #toyBase::before{content:""; position:absolute; left:0; right:0; top:-10px; height:10px; background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.18)); }
+body.toy::after{content:""; position:fixed; left:0; right:0; top:16px; bottom:118px; z-index:5; pointer-events:none;
+  box-shadow:inset 14px 0 18px -10px rgba(255,255,255,.55), inset -14px 0 18px -10px rgba(255,255,255,.45), inset 0 0 0 1px rgba(255,255,255,.25)}
+body.toy #top{top:28px}
+body.toy #dock{padding-bottom:19px}
+body.toy #pad{background:none; box-shadow:none; padding:0; gap:26px}
+body.toy #pad::before{display:none}
+body.toy #pad .well{width:92px; height:80px; border-radius:50%; background:radial-gradient(ellipse at 50% 60%, rgba(0,0,0,.28), rgba(0,0,0,0) 70%); box-shadow:none}
+body.toy #pad .pump{width:70px; height:70px; margin-top:-6px; color:#6b2a00; background:radial-gradient(circle at 35% 30%, #ffd6a8, #ff8a1f 45%, #e06a00 85%);
+  box-shadow:0 8px 0 #a94a00, 0 12px 18px rgba(0,0,0,.3), inset 0 -3px 6px rgba(0,0,0,.15), inset 0 2px 0 rgba(255,255,255,.55)}
+body.toy #pad .pump.down, body.toy #pad .pump:active{transform:translateY(6px); box-shadow:0 2px 0 #a94a00, 0 3px 6px rgba(0,0,0,.3), inset 0 -2px 4px rgba(0,0,0,.15)}
+body.toy #pad #hud .ctl.arrow{background:linear-gradient(180deg, #5a9cf5, #2b6bd0); border:0; color:#fff; box-shadow:0 5px 0 #17468f, inset 0 1px 0 rgba(255,255,255,.4)}
+body.toy #pad #hud .ctl.arrow.on, body.toy #pad #hud .ctl.arrow:active{transform:translateY(4px); box-shadow:0 1px 0 #17468f}
+body.toy #coachTip{bottom:162px}
 </style>
 </head>
 <body>
@@ -597,8 +719,8 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
 <div id="hints" class="glass"><kbd>A</kbd> <kbd>L</kbd> pumps · <kbd>← →</kbd> current · <kbd>Space</kbd> fish · <kbd>M</kbd> manta · <kbd>B</kbd> bubbles · <kbd>D</kbd> say hi to the diver · <kbd>C</kbd> next city · drag to stir the water</div>
 <div id="top">
   <div class="pills glass">
-    <span class="pill" id="chipLoop" title="Landmarks with a ring on them"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" stroke-width="3"/></svg><b><span id="loopN">0</span>/3</b> <span class="lbl">looped</span></span>
-    <span class="pill" title="Pump presses this round"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 5 6.5 8 6.5 11.2a6.5 6.5 0 0 1-13 0C5.5 11 8 8 12 3z"/></svg><b id="pumpN">0</b> <span class="lbl">pumps</span></span>
+    <span class="pill" id="chipLoop" title="Landmarks looped"><span class="ldots" aria-hidden="true"><i></i><i></i><i></i></span><span class="vh"><span id="loopN">0</span> of 3 landmarks looped</span></span>
+    <span class="pill zero" id="chipPump" title="Pump presses this round"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 5 6.5 8 6.5 11.2a6.5 6.5 0 0 1-13 0C5.5 11 8 8 12 3z"/></svg><b id="pumpN">0</b> <span class="lbl">pumps</span></span>
     <button class="pill" id="passBtn" aria-label="Open your passport" title="Passport"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M9 17h6"/></svg><b><span id="passN">0</span>/10</b></button>
   </div>
   <div class="menuWrap">
@@ -640,6 +762,9 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
   </div>
 </div>
 <div id="toast" class="glass" style="opacity:0"></div>
+<div id="cityCard" aria-live="polite"><div id="ccN"></div><div id="ccT"></div><div id="ccS">Loop all three landmarks for a stamp. Tap any one to learn its story.</div></div>
+<div id="toyLid" aria-hidden="true"></div><div id="toyBase" aria-hidden="true"></div>
+<div id="coachTip" aria-hidden="true">Press and hold to pump</div>
 
 <div id="splash" role="dialog" aria-modal="true" aria-labelledby="spT">
   <div class="sky">
@@ -713,8 +838,8 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
 
 <div id="gal" class="modal" hidden>
   <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="galT">
-    <div class="shHead"><h2 id="galT">Choose a gallery</h2><button class="x sx" id="galX" aria-label="Close">×</button></div>
-    <p class="sub">Ten cities, three landmarks each. A tick means you already have the stamp.</p>
+    <div class="shHead"><h2 id="galT">Atlas</h2><button class="x sx" id="galX" aria-label="Close">×</button></div>
+    <p class="sub">Ten cities, three landmarks each. Loop all three to stamp your passport.</p>
     <div class="galgrid" id="galGrid"></div>
     <div class="btns"><button class="ctl" id="galClose">Close</button></div>
   </div>
@@ -759,7 +884,7 @@ html, body{touch-action:manipulation; -webkit-text-size-adjust:100%; text-size-a
     <textarea id="copyBox" rows="4" readonly hidden></textarea>
     <div class="btns">
       <button class="ctl" id="copyBtn">Copy result</button>
-      <button class="ctl" id="saveBtn" hidden>Save postcard</button>
+      <button class="ctl" id="saveBtn">Share postcard</button>
       <button class="ctl" id="seeStamp">See your stamp</button>
       <button class="ctl" id="keepBtn">Keep playing</button>
       <button class="ctl pri" id="nextBtn">Next gallery</button>
@@ -853,6 +978,7 @@ function swoosh(dur, f1, f2, vol, q = 1){
 const NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.7];
 const SFX = {
   pump(){ swoosh(.55, 240, 1300, .55, .7); tone(92, .3, 'sine', .3, 46); },
+  chime(){ [1318.5, 1760, 2349.3].forEach((f, i) => { tone(f, 1.1, 'sine', .07, null, i * .09); tone(f * 2, .5, 'sine', .015, null, i * .09); }); },
   pop(){ tone(frand(480, 760), .07, 'sine', .14, frand(1100, 1700)); },
   clink(i){ const f = [1046.5, 1174.7, 1318.5, 1568, 1760][i % 5]; tone(f, .9, 'triangle', .12); tone(f * 2.01, .5, 'sine', .04); },
   note(f){ tone(f, 1.3, 'sine', .15); tone(f * 2, .7, 'sine', .03); },
@@ -1737,7 +1863,7 @@ const ptr = { x:-999, y:-999, t:-9, down:false, lx:0, ly:0, lt:0 };
 const ptrFade = () => { const a = T - ptr.t; return a < .25 ? 1 : Math.max(0, 1 - (a - .25) / .55); };
 let grassT = 0;
 function pump(i){
-  audio(); SFX.pump(); pumps++; updateUI();
+  audio(); SFX.pump(); pumps++; updateUI(); if (!firstPumpSent) { firstPumpSent = true; track('first_pump', { city:city.id }); }
   for (let k = 0; k < 14; k++) jetQ.push({ at:T + k * .014, i, k });
   const vx = V[i], vy = floorY(vx); for (let k = 0; k < 8; k++) sand.push({ x:vx + frand(-14, 14), y:vy - 4, vx:frand(-60, 60), vy:frand(-90, -30), life:1 });
   const b = $(i ? 'pumpR' : 'pumpL'); b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 150);
@@ -1777,8 +1903,11 @@ function unhook(it){
   if (!p.stack.some(r => r.landed)) { route = route.filter(r => r !== p); loopDone = false; }
   updateUI();
 }
+let slowT = 0, firstPumpSent = false;
 function onLanded(p){
+  const firstOnPeg = p.stack.filter(r => r.landed).length <= 1;
   p.glow = 1; p.fxT = 5; sparkle(p.x, p.rest - 6, '#fff6c2', 10); landmarkSound(p);
+  if (firstOnPeg) { slowT = .55; for (let k = 0; k < 3; k++) setTimeout(() => ripples.push({ x:p.x, y:p.rest - 4, t:0 }), k * 140); SFX.chime(); buzz([14, 50, 22]); track('ring_landed', { city:city.id, landmark:p.id || '' }); }
   if (!route.includes(p)) route.push(p);
   if (!loopDone && pegs.every(q => q.stack.some(r => r.landed))) { loopDone = true; celebrate(); }
   updateUI();
@@ -2752,7 +2881,7 @@ let last = performance.now(), acc = 0; const STEP = 1 / 120;
 let errN = 0; function frameErr(e){ if (errN++ < 5) console.error('Wanderwater frame error:', e); }
 function healItems(){ for (const it of items) if (it.hooked < 0 && !it.carried) if (!Number.isFinite(it.x) || !Number.isFinite(it.y) || !Number.isFinite(it.vx) || !Number.isFinite(it.vy)) { const v = V[(Math.random() * 2) | 0]; it.x = v; it.y = floorY(v) - 20; it.vx = it.vy = 0; if ('a' in it) { it.a = 0; it.va = 0; } } if (!Number.isFinite(tilt)) tilt = 0; if (!Number.isFinite(cur)) cur = 0; }
 function frame(now){
-  const rawDt = (now - last) / 1000; let dt = Math.min(.05, rawDt); last = now; T += dt;
+  const rawDt = (now - last) / 1000; let dt = Math.min(.05, rawDt); if (slowT > 0) { slowT -= dt; dt *= .35; } last = now; T += dt;
   if (rawDt < .2) { perfEma += (rawDt - perfEma) * .05; perfT += rawDt; if (perfT > 3 && perfEma > 1 / 42 && DPR > 1) { perfT = 0; dprCap = Math.max(1, DPR - .25); DPR = dprCap; cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); } }
   try {
     try { acc += dt; let n = 0; while (acc >= STEP && n < 8) { stepItems(STEP); acc -= STEP; n++; } if (n === 8) acc = 0; healItems(); stepFish(dt); stepWorld(dt); } catch(e) { frameErr(e); }
@@ -2845,7 +2974,7 @@ document.addEventListener('pointerdown', e => { if (icons.classList.contains('op
   const end = () => { if (y0 == null) return; y0 = null; sheet.classList.remove('drag'); if (dy > 70) closeSheet(); else sheet.style.transform = ''; };
   g.addEventListener('pointerup', end); g.addEventListener('pointercancel', end);
 })();
-function openLandmark(p){
+function openLandmark(p){ track('landmark_open', { landmark:p.id || '', city:city.id });
   p.glow = 1; p.fxT = 5; landmarkSound(p);
   const inf = INFO[p.key] || {}, peg = makePeg(p.lm, p.key, 0, 38, p.i); peg.fxT = 5;
   openSheet({ eb:'Exhibit · ' + city.name, title:p.lm.name, meta:p.lm.meta, text:p.lm.text, more:inf.more, wiki:inf.wiki,
@@ -2923,17 +3052,17 @@ holdBtn('curL', -1); holdBtn('curR', 1);
 $('resetBtn').addEventListener('click', () => { resetItems(); toast('Tank reset. The rings are back by the pumps.'); });
 const soundBtn = $('soundBtn');
 const IC = { sound:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.3 6.3a8 8 0 0 1 0 11.4"/></svg>', mute:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>', music:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5.5l10.5-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17" cy="15.5" r="2.5"/></svg>', musicOff:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5V5.5l10.5-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17" cy="15.5" r="2.5"/><path d="M3 3l18 18"/></svg>' };
-function updateSoundBtn(){ soundBtn.innerHTML = (muted ? IC.mute : IC.sound) + '<span class="ibl">' + (muted ? 'Sound is off' : 'Sound is on') + '</span>'; soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.title = soundBtn.ariaLabel = muted ? 'Sound off' : 'Sound on'; }
+function updateSoundBtn(){ soundBtn.innerHTML = (muted ? IC.mute : IC.sound) + '<span class="ibl">' + 'Sound' + '</span>'; soundBtn.setAttribute('aria-pressed', String(!muted)); soundBtn.title = soundBtn.ariaLabel = muted ? 'Sound off' : 'Sound on'; }
 soundBtn.addEventListener('click', () => { muted = !muted; updateSoundBtn(); audio(); musicGain(); toast(muted ? 'Sound off.' : 'Sound on.'); }); updateSoundBtn();
 $('musicBtn').addEventListener('click', () => { audio(); musicOn = !musicOn; try { localStorage.setItem('ww.music', musicOn ? '1' : '0'); } catch(e) {} updateMusicBtn(); musicGain(); toast(musicOn ? 'Now playing: ' + nowPlaying() + '.' : 'Music off.'); });
-function updateMusicBtn(){ const b = $('musicBtn'); b.innerHTML = (musicOn ? IC.music : IC.musicOff) + '<span class="ibl">' + (musicOn ? 'Music is on' : 'Music is off') + '</span>'; b.setAttribute('aria-pressed', String(musicOn)); b.title = musicOn ? 'Music on' : 'Music off'; b.setAttribute('aria-label', b.title); }
+function updateMusicBtn(){ const b = $('musicBtn'); b.innerHTML = (musicOn ? IC.music : IC.musicOff) + '<span class="ibl">' + 'Music' + '</span>'; b.setAttribute('aria-pressed', String(musicOn)); b.title = musicOn ? 'Music on' : 'Music off'; b.setAttribute('aria-label', b.title); }
 updateMusicBtn();
 
 /* ---------- dark mode ---------- */
 const IC2 = { moon:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/></svg>', sun:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>',
   tilt:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.2" transform="rotate(-14 12 12)"/><path d="M3 9a9 9 0 0 0 0 6M21 9a9 9 0 0 1 0 6"/></svg>' };
 try { const th = localStorage.getItem('ww.theme'); if (th) document.documentElement.setAttribute('data-theme', th); readTheme(); } catch(e) {}
-function updateThemeBtn(){ const b = $('themeBtn'); b.innerHTML = (night ? IC2.sun : IC2.moon) + '<span class="ibl">' + (night ? 'Dark mode is on' : 'Dark mode is off') + '</span>'; b.setAttribute('aria-pressed', String(night)); b.title = night ? 'Dark mode on' : 'Dark mode off'; b.setAttribute('aria-label', 'Dark mode'); }
+function updateThemeBtn(){ const b = $('themeBtn'); b.innerHTML = (night ? IC2.sun : IC2.moon) + '<span class="ibl">' + 'Dark mode' + '</span>'; b.setAttribute('aria-pressed', String(night)); b.title = night ? 'Dark mode on' : 'Dark mode off'; b.setAttribute('aria-label', 'Dark mode'); }
 $('themeBtn').addEventListener('click', () => { audio(); const t = night ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); readTheme(); try { localStorage.setItem('ww.theme', t); } catch(e) {} updateThemeBtn(); toast(night ? 'Night falls over the museum.' : 'Morning light returns.'); });
 updateThemeBtn();
 
@@ -2946,7 +3075,7 @@ function onOrient(e){ if (e.gamma == null) return; tiltSeen = true; const ang = 
 function tiltListen(){ window.removeEventListener('deviceorientation', onOrient); if (tiltOn) window.addEventListener('deviceorientation', onOrient); else tiltRaw = 0; }
 function tiltAsk(){ if (!tiltOn || !tiltNeedsAsk || tiltAsked) return; tiltAsked = true; DeviceOrientationEvent.requestPermission().then(r => { if (r !== 'granted') { tiltOn = false; updateTiltBtn(); } tiltListen(); }).catch(() => {}); }
 window.addEventListener('pointerdown', tiltAsk, { capture:true });
-function updateTiltBtn(){ const b = $('tiltBtn'); b.innerHTML = IC2.tilt + '<span class="ibl">' + (tiltOn ? 'Tilt to move is on' : 'Tilt to move is off') + '</span>'; b.setAttribute('aria-pressed', String(tiltOn)); b.title = tiltOn ? 'Tilt to move on' : 'Tilt to move off'; b.setAttribute('aria-label', 'Tilt to move'); }
+function updateTiltBtn(){ const b = $('tiltBtn'); b.innerHTML = IC2.tilt + '<span class="ibl">' + 'Tilt to move' + '</span>'; b.setAttribute('aria-pressed', String(tiltOn)); b.title = tiltOn ? 'Tilt to move on' : 'Tilt to move off'; b.setAttribute('aria-label', 'Tilt to move'); }
 $('tiltBtn').addEventListener('click', () => { audio(); tiltOn = !tiltOn; try { localStorage.setItem('ww.tilt', tiltOn ? '1' : '0'); } catch(e) {} if (tiltOn) { tiltAsked = false; tiltAsk(); } tiltListen(); updateTiltBtn(); toast(tiltOn ? 'Tilt your phone to slide the rings.' : 'Tilt to move is off.'); });
 updateTiltBtn(); tiltListen();
 $('howBtn').addEventListener('click', () => openModal('how'));
@@ -2995,9 +3124,9 @@ function computeDay(){ const now = new Date(), a = Date.UTC(now.getFullYear(), n
 function pad2(n){ return String(n).padStart(2, '0'); }
 function renderTickets(){
   tix.innerHTML = '';
-  if (CW < 700) {
+  if (true) {
     const c = city, b = document.createElement('button'); b.className = 'tk pick'; b.setAttribute('aria-label', 'Change gallery. Now showing ' + c.name);
-    b.innerHTML = `<span class="c">${pad2(cityIdx + 1)} ${c.code}</span><span class="n">${c.name}</span><span class="chev" aria-hidden="true">▾</span>`;
+    b.innerHTML = `<span class="c">${pad2(cityIdx + 1)} ${c.code}</span><span class="n">${c.name}</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 12 8" width="11" height="8"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
     b.addEventListener('click', () => { audio(); openGallery(); }); tix.appendChild(b); measure(); return; }
   CITIES.forEach((c, i) => { const b = document.createElement('button'); b.className = 'tk'; b.setAttribute('aria-pressed', String(i === cityIdx)); b.setAttribute('aria-label', 'Gallery ' + (i + 1) + ', ' + c.name);
     b.innerHTML = `<span class="c">${pad2(i + 1)} ${c.code}</span><span class="n">${c.name}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
@@ -3007,7 +3136,8 @@ function renderTickets(){
 function openGallery(){
   const g = $('galGrid'); g.innerHTML = '';
   CITIES.forEach((c, i) => { const b = document.createElement('button'); b.setAttribute('aria-pressed', String(i === cityIdx));
-    b.innerHTML = `<span class="c">${pad2(i + 1)} ${c.code}</span><span class="n">${c.name}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
+    b.style.setProperty('--w1', c.water[0]); b.style.setProperty('--w2', c.water[1]); b.style.setProperty('--w3', c.water[2]);
+    b.innerHTML = `<span class="band" aria-hidden="true"></span><span class="c">${pad2(i + 1)} · ${c.code}</span><span class="n">${c.name}</span><span class="st">${store.stamps[c.id] ? 'Stamped' : i === cityIdx ? 'You are here' : 'Not yet'}</span>${store.stamps[c.id] ? '<span class="ok" aria-hidden="true">✓</span>' : ''}`;
     b.addEventListener('click', () => { closeModal('gal'); daily = false; setCity(i); }); g.appendChild(b); });
   openModal('gal');
 }
@@ -3205,7 +3335,7 @@ function ppOpenBook(){
   });
 }
 function renderPassport(){ ppPaint(); }
-function openPassport(gi){
+function openPassport(gi){ track('passport_open');
   if (!store.pno) { store.pno = 'WW' + String(Math.floor(1e6 + Math.random() * 9e6)); store.issued = new Date().toISOString(); save(); }
   if (!store.issued) { store.issued = new Date().toISOString(); save(); }
   ppSize(); const step = PP.single ? 1 : 2, target = gi != null ? 2 + (gi >> 1) : (PP.single ? 1 : 0);
@@ -3231,12 +3361,15 @@ function updateUI(){
   const looped = pegs.filter(p => p.stack.some(r => r.landed)).length;
   $('loopN').textContent = looped; $('pumpN').textContent = pumps; $('passN').textContent = Object.keys(store.stamps).length;
   $('chipLoop').classList.toggle('on', looped > 0);
+  document.querySelectorAll('#chipLoop .ldots i').forEach((el, k) => el.classList.toggle('on', k < looped));
+  const cp = $('chipPump'); if (cp) { cp.classList.toggle('zero', pumps === 0); if (pumps && cp._n !== pumps) { cp.classList.remove('bump'); void cp.offsetWidth; cp.classList.add('bump'); } cp._n = pumps; }
+  if (pumps > 0) document.body.classList.remove('coach');
 
 }
 let lastResult = null;
 function celebrate(){
   const d = new Date(), date = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
-  stampFx = { t:0, city:city.name, date, sub:daily ? 'DAILY #' + dayNo : 'WANDERWATER MUSEUM' }; SFX.win();
+  stampFx = { t:0, city:city.name, date, sub:daily ? 'DAILY #' + dayNo : 'WANDERWATER MUSEUM' }; SFX.win(); buzz([30, 60, 30, 60, 80]); track('stamp_earned', { city:city.id, pumps });
   for (let i = 0; i < 70; i++) { const x = frand(20, W - 20); bubble(x, floorY(x) - frand(5, 60), frand(2, 6)); }
   pegs.forEach(p => { sparkle(p.x, p.tip, '#fff6c2', 16); p.fxT = 5; });
   const first = !store.stamps[city.id]; if (first) { store.stamps[city.id] = d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); store.stampAt = store.stampAt || {}; store.stampAt[city.id] = d.toISOString(); }
@@ -3257,21 +3390,30 @@ function showDone(){
 function resultText(){ const r = lastResult || { city:city.name, pumps, daily, day:dayNo };
   return (r.daily ? 'Wanderwater Daily #' + r.day + ' · ' + r.city : 'Wanderwater · ' + r.city) + '\nLooped all 3 landmarks in ' + r.pumps + ' pumps'; }
 let downloads = null;
-(async () => { try { if (window.claude && window.claude.use) { downloads = await window.claude.use('downloads'); if (downloads) $('saveBtn').hidden = false; } } catch(e) { downloads = null; } })();
+(async () => { try { if (window.claude && window.claude.use) { downloads = await window.claude.use('downloads');  } } catch(e) { downloads = null; } })();
 function savePostcard(){
-  if (!downloads) return; const r = lastResult; if (!r) return;
+  const r = lastResult; if (!r) return; track('share_postcard', { city:r.city });
   const c = document.createElement('canvas'); c.width = 1200; c.height = 800; const c2 = c.getContext('2d');
   c2.fillStyle = '#fffaf0'; c2.fillRect(0, 0, 1200, 800);
   const sw = cv.width, sh = cv.height, ar = 1120 / 620; let w = sw, h = sw / ar; if (h > sh) { h = sh; w = sh * ar; }
   c2.drawImage(cv, (sw - w) / 2, (sh - h) / 2, w, h, 40, 40, 1120, 620);
   c2.fillStyle = '#12303a'; c2.font = '400 40px Bungee, "Arial Black", sans-serif'; c2.textAlign = 'left'; c2.fillText('Wanderwater', 48, 724);
-  c2.font = '600 26px "Baloo 2", sans-serif'; c2.fillText((r.daily ? 'Daily #' + r.day + ' · ' : '') + r.city + ' looped in ' + r.pumps + ' pumps', 48, 764);
+  c2.font = '600 26px -apple-system, "SF Pro Text", "Segoe UI", Roboto, sans-serif'; c2.fillText((r.daily ? 'Daily #' + r.day + ' · ' : '') + r.city + ' looped in ' + r.pumps + ' pumps', 48, 764);
   drawStampOn(c2, 1010, 690, 1.25, r.city, r.date, r.daily ? 'DAILY #' + r.day : 'WANDERWATER MUSEUM');
-  c.toBlob(blob => { if (!blob) return; downloads.save({ filename:'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png', data:blob }).then(() => toast('Postcard saved.'), err => { if (err && (err.code === 'unavailable' || err.code === 'not_granted')) $('saveBtn').hidden = true; }); }, 'image/png');
+  c.toBlob(blob => { if (!blob) return; const fname = 'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png';
+    if (!downloads) { const file = new File([blob], fname, { type:'image/png' });
+      if (navigator.canShare && navigator.canShare({ files:[file] })) { navigator.share({ files:[file], title:'Wanderwater', text:resultText() }).catch(() => {}); return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('Postcard saved.'); return; }
+    downloads.save({ filename:'wanderwater-' + r.city.toLowerCase().replace(/[^a-z]+/g, '-') + '.png', data:blob }).then(() => toast('Postcard saved.'), err => { if (err && (err.code === 'unavailable' || err.code === 'not_granted')) $('saveBtn').hidden = true; }); }, 'image/png');
 }
-function introToast(){ toast('Loop all three landmarks for a stamp. Tap any one to learn its story.'); }
+function introToast(){ showCityCard(); }
+function showCityCard(){
+  const el = $('cityCard'); if (!el) return; $('ccN').textContent = 'Gallery ' + pad2(cityIdx + 1) + ' · ' + city.code; $('ccT').textContent = city.name;
+  const pk = document.querySelector('.tk.pick'); el.style.top = (pk ? pk.getBoundingClientRect().bottom + 26 : Math.max(90, SURF * S + 22)) + 'px'; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 3600);
+}
 function setCity(i){
-  cityIdx = i; city = CITIES[i]; buildPegs(); buildDecor(); populateHomes(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0; wipe = 1.1; cityAt = T;
+  if (i !== cityIdx) track('city_change', { city:CITIES[i].id }); cityIdx = i; city = CITIES[i]; buildPegs(); buildDecor(); populateHomes(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0; wipe = 1.1; cityAt = T;
   for (let k = 0; k < 80; k++) { const x = frand(10, W - 10); bubble(x, floorY(x) - frand(0, 40), frand(2, 6)); }
   closeSheet(); renderTickets(); introToast(); updateUI(); SFX.school(); if (AC) musicSwitch(city.id);
   try { localStorage.setItem('ww.city', String(i)); } catch(e) {}
@@ -3279,13 +3421,18 @@ function setCity(i){
 function populateHomes(){ fish = fish.filter(f => !f.home); anemones.forEach(a => spawnGroup('clown', { home:a, depth:.95 })); }
 
 /* ---------- boot ---------- */
+function toyOn(){ return window.innerWidth >= 1100 && window.innerHeight >= 700; }
+function toyBase(){ return toyOn() ? 118 : 0; }
+function setToy(){ document.body.classList.toggle('toy', toyOn()); }
+function track(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch(e) {} }
+function buzz(pattern){ try { if (navigator.vibrate && !muted) navigator.vibrate(pattern); } catch(e) {} }
 function resize(){
-  CW = window.innerWidth; CH = window.innerHeight; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
-  cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); layout(oldW); populateHomes(); renderTickets(); $('hints').style.bottom = ($('dock').offsetHeight + 10) + 'px';
+  setToy(); CW = window.innerWidth; CH = window.innerHeight - toyBase(); DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); S = CH / H; const oldW = W; W = CW / S;
+  cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); layout(oldW); populateHomes(); renderTickets(); $('hints').style.bottom = (toyBase() ? toyBase() + 12 : $('dock').offsetHeight + 10) + 'px';
 }
 let startCity = 0; try { startCity = clamp(parseInt(localStorage.getItem('ww.city') || '0', 10) || 0, 0, CITIES.length - 1); } catch(e) {}
 cityIdx = startCity; city = CITIES[startCity]; dayNo = computeDay();
-CW = window.innerWidth; CH = window.innerHeight; S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
+setToy(); CW = window.innerWidth; CH = window.innerHeight - toyBase(); S = CH / H; W = CW / S; DPR = Math.min(CW < 700 ? 1.5 : 1.75, dprCap, window.devicePixelRatio || 1); cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR);
 layout(0); buildPegs(); initCreatures(); resetItems(); factIdx = (Math.random() * city.facts.length) | 0;
 renderTickets(); updateUI(); $('hints').style.bottom = ($('dock').offsetHeight + 10) + 'px';
 window.addEventListener('resize', resize);
@@ -3295,7 +3442,7 @@ const spSh = $('spSheet'), spShow = on => { spSh.classList.toggle('on', on); if 
 $('spWhy').addEventListener('click', () => spShow(true)); $('spShX').addEventListener('click', () => spShow(false));
 spSh.addEventListener('click', e => { if (e.target === spSh) spShow(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && spSh.classList.contains('on')) spShow(false); });
-$('spGo').addEventListener('click', () => { audio(); $('splash').classList.add('out'); splashOn = false; cityAt = T; turtleHintT = T; try { localStorage.setItem('ww.how', '1'); } catch(e) {} setTimeout(() => { $('splash').hidden = true; introToast(); }, 500); });
+$('spGo').addEventListener('click', () => { audio(); track('dive_in'); setTimeout(() => document.body.classList.add('quiet'), 7000); setTimeout(() => { if (!pumps) document.body.classList.add('coach'); }, 3200); $('splash').classList.add('out'); splashOn = false; cityAt = T; turtleHintT = T; try { localStorage.setItem('ww.how', '1'); } catch(e) {} setTimeout(() => { $('splash').hidden = true; introToast(); }, 500); });
 $('spGo').focus({ preventScroll:true });
 (() => { const h = $('spT'), fit = () => { if ($('splash').hidden) return; h.style.fontSize = ''; const max = h.parentElement.clientWidth - 40; let fs = parseFloat(getComputedStyle(h).fontSize); while (h.scrollWidth > max && fs > 20) { fs -= 1; h.style.fontSize = fs + 'px'; } };
   fit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); window.addEventListener('resize', fit); })();
