@@ -934,6 +934,22 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 /* splash sky is always the light "paper" sky, so its text must never take the dark-mode tokens */
 #splash .sky{color-scheme:light; --ink:#0B1E2A; --ink-soft:#566A72; --ink-faint:rgba(11,30,42,.14); --accent:#0B1E2A; color:#0B1E2A}
 #splash .sky h1, #splash .sky h1 span{color:#0B1E2A!important; -webkit-text-fill-color:#0B1E2A}
+
+.ppnav{transition:opacity .6s var(--e-out, ease) .35s, transform .6s var(--e-out, ease) .35s}
+.pp:not(.opened) .ppnav{opacity:0; transform:translateY(10px); pointer-events:none; transition:none}
+/* passport: flat name editor for phones, real photo input, no 3D cover catching taps */
+.book.open .cover3d{pointer-events:none}
+.photo .ppFile{position:absolute; inset:0; width:100%; height:100%; opacity:0; z-index:3; cursor:pointer; font-size:16px; pointer-events:auto}
+.fld input[readonly]{cursor:text; -webkit-user-select:none; user-select:none}
+#nameSh{position:fixed; inset:0; z-index:60; background:rgba(4,14,20,.5); display:flex; align-items:flex-start; justify-content:center; padding:max(18px, env(safe-area-inset-top)) 16px 16px; animation:ppFade .2s ease both}
+#nameSh[hidden]{display:none!important}
+#nameSh .nsCard{width:100%; max-width:420px; margin-top:8vh; background:#FBFBF8; color:#0B1E2A; border-radius:18px; padding:18px 18px 14px; box-shadow:0 20px 50px rgba(0,0,0,.35); color-scheme:light}
+#nameSh label{display:block; font-family:var(--serif, serif); font-size:22px; margin:0 0 12px}
+#nameSh input{display:block; width:100%; font:500 17px/1.3 var(--ui, system-ui); color:#0B1E2A; background:#fff; border:1.5px solid rgba(11,30,42,.18); border-radius:12px; padding:13px 14px; outline:none; -webkit-appearance:none; appearance:none}
+#nameSh input:focus{border-color:#0B1E2A}
+#nameSh .nsBtns{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
+#nameSh button{font:600 15px/1 var(--ui, system-ui); border:0; border-radius:999px; padding:12px 18px; cursor:pointer; color:#0B1E2A; background:rgba(11,30,42,.07)}
+#nameSh #nameOk{background:#0B1E2A; color:#FBFBF8}
 </style>
 </head>
 <body>
@@ -1076,6 +1092,11 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
   </div>
 </div>
 
+<div id="nameSh" hidden><div class="nsCard" role="dialog" aria-modal="true" aria-labelledby="nameT">
+  <label id="nameT" for="nameIn">Name on your passport</label>
+  <input id="nameIn" type="text" maxlength="26" autocomplete="name" autocapitalize="words" enterkeyhint="done" spellcheck="false" placeholder="Write your name">
+  <div class="nsBtns"><button type="button" id="nameCancel">Cancel</button><button type="button" id="nameOk">Save</button></div>
+</div></div>
 <div id="pass" class="modal" hidden>
   <div class="pp" role="dialog" aria-modal="true" aria-label="Your Wanderwater passport">
 
@@ -2054,19 +2075,25 @@ function jellyC(u){ return u < .28 ? Math.sin(u / .28 * Math.PI / 2) : .5 + .5 *
 function jellyLocal(j, lx, ly){ const c = Math.cos(j.ang), s = Math.sin(j.ang); return [j.x + lx * c - ly * s, j.y + lx * s + ly * c]; }
 function jellyBell(j){ const S = 17 * j.s, c = j.c; return { W:S * (1.3 - .42 * c), H:S * (.68 + .5 * c), S }; }
 function stepJelly(j, dt){
-  j.ph += dt / (j.kick > 0 ? j.per * .55 : j.per); const c = jellyC(j.ph % 1), dc = (c - j.c) / dt; j.c = c; j.kick = Math.max(0, j.kick - dt);
-  const hx = Math.sin(j.ang), hy = -Math.cos(j.ang), thrust = Math.max(0, dc) * 62 * (j.kick > 0 ? 2 : 1);
+  /* A jellyfish only really moves up and down. Each pulse squeezes the bell and rows it straight up,
+     the bell relaxes and refills, and between bursts it is a touch heavier than water so it sinks slowly.
+     It never steers or tips over: the bell stays upright and the tentacles always hang below it. */
+  const top = SURF + 170, bot = Math.max(top + 60, FB - 230);
+  j.tt = (j.tt || 0) - dt; if (j.ty == null || j.tt <= 0) { j.ty = frand(top, bot); j.tt = frand(9, 16); }
+  const want = (j.kick > 0 || j.y > j.ty + 8) && j.y > SURF + 120, u = j.ph % 1;
+  if (want || (u > 0.001 && u < .985)) j.ph += dt / (j.kick > 0 ? j.per * .55 : j.per); else j.ph = Math.ceil(j.ph - .5);
+  const c = jellyC(j.ph % 1), dc = (c - j.c) / dt; j.c = c; j.kick = Math.max(0, j.kick - dt);
+  const thrust = Math.max(0, dc) * 62 * (j.kick > 0 ? 2 : 1);
   let ux = cur * 55, uy = 0; if (parcels.length) { field(j.x, j.y); ux = FX; uy = FY; }
-  const rx = j.vx - ux, ry = j.vy - uy, rel = Math.hypot(rx, ry), drag = 1.3 + .02 * rel;
-  j.vx += (hx * thrust - rx * drag) * dt; j.vy += (hy * thrust - ry * drag + 7) * dt;
-  j.x += j.vx * dt; j.y += j.vy * dt; j.glow = Math.max(0, j.glow - dt * .45);
-  let wantA = Math.sin(T * .17 + j.hue) * .4; if (j.y < SURF + 150) wantA = Math.PI * .8 * (j.x < W / 2 ? 1 : -1); if (j.y > FB - 210) wantA = Math.sin(T * .3) * .2; if (j.x < 70) wantA = .7; if (j.x > W - 70) wantA = -.7;
-  const turn = (wantA - j.ang) * Math.min(1, dt * (.25 + Math.max(0, dc) * .5)); j.ang += turn;
-  if (j.x < 30) j.vx += 30 * dt; if (j.x > W - 30) j.vx -= 30 * dt;
+  const drag = 1.3 + .02 * Math.abs(j.vy);
+  j.vx = 0; j.vy += (-thrust - j.vy * drag + 7) * dt;
+  j.y += j.vy * dt; if (j.y > FB - 150) { j.y = FB - 150; j.vy = Math.min(0, j.vy); }
+  j.x = clamp(j.x, 40, W - 40); j.glow = Math.max(0, j.glow - dt * .45);
+  j.ang = Math.sin(T * .55 + j.hue) * .035;
   const { W:BW, H:BH, S } = jellyBell(j);
   const rope = (nodes, ax, ay, L, damp, sink) => {
     nodes[0].x = ax; nodes[0].y = ay; nodes[0].px = ax; nodes[0].py = ay;
-    for (let i = 1; i < nodes.length; i++) { const q = nodes[i], vx = (q.x - q.px) * damp, vy = (q.y - q.py) * damp; q.px = q.x; q.py = q.y; q.x += vx + ux * dt * .25; q.y += vy + uy * dt * .25 + sink; }
+    for (let i = 1; i < nodes.length; i++) { const q = nodes[i], vx = (q.x - q.px) * damp, vy = (q.y - q.py) * damp; q.px = q.x; q.py = q.y; q.x += vx + ux * dt * .12; q.y += vy + uy * dt * .12 + sink; }
     for (let it = 0; it < 3; it++) for (let i = 1; i < nodes.length; i++) { const p = nodes[i - 1], q = nodes[i], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || 1, df = (d - L) / d; if (i === 1) { q.x -= dx * df; q.y -= dy * df; } else { p.x += dx * df * .5; p.y += dy * df * .5; q.x -= dx * df * .5; q.y -= dy * df * .5; } }
   };
   j.arms.forEach((n, k) => { const [ax, ay] = jellyLocal(j, (k - 1.5) * BW * .16, BH * .05); rope(n, ax, ay, 4.2 * j.s, .9, .06); });
@@ -3471,8 +3498,8 @@ function ppPageHTML(n){
     <svg class="seal" viewBox="0 0 100 100" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-width="2.5"/><circle cx="50" cy="50" r="40" stroke-width="1"/><path d="M28 56c5-4 9-4 13 0s9 4 14 0 9-4 14 0" stroke-width="2"/><circle cx="50" cy="38" r="9" stroke-width="2"/><path id="sealArc" d="M15 50A35 35 0 0 0 85 50" stroke="none"/><text font-size="5.2" letter-spacing="1.2" fill="currentColor" stroke="none" font-family="IBM Plex Mono, monospace"><textPath href="#sealArc" startOffset="50%" text-anchor="middle">VALID · 10 GALLERIES</textPath></text></svg>${no}</div>`;
   if (n === 1) { const parts = nm ? nm.toUpperCase().replace(/[^A-Z ]/g, '').trim().split(/\s+/) : ['TRAVELLER'], sur = parts.length > 1 ? parts[parts.length - 1] : parts[0], giv = parts.length > 1 ? parts.slice(0, -1).join('<') : '';
     return `<div class="pg">${WM}<div class="hd"><span>Passport · Type P</span><span>WWR</span></div>
-    <div class="idg"><div class="photo${store.photo ? ' has' : ''}" role="button" tabindex="0" aria-label="${store.photo ? 'Change your passport photo' : 'Add your passport photo'}">${store.photo ? `<img src="${store.photo}" alt="">` : ''}<span class="addp">${store.photo ? 'Change' : '+ Add photo'}</span><svg viewBox="0 0 60 80"><circle cx="30" cy="31" r="13" fill="#2f4f5c"/><path d="M6 80c2-20 12-28 24-28s22 8 24 28z" fill="#2f4f5c"/><rect x="18" y="24" width="24" height="10" rx="5" fill="#a3cedc" stroke="#1d2b33" stroke-width="2"/><path d="M42 30c5 0 6-6 6-14" stroke="#d9bc5e" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
-      <div class="fld"><div><small>Passport no.</small><b>${store.pno}</b></div><div><small>Holder</small><input id="ppName" maxlength="26" placeholder="Write your name" value="${nm.replace(/[<>"]/g, '')}" aria-label="Your name"></div>
+    <div class="idg"><div class="photo${store.photo ? ' has' : ''}" role="button" tabindex="0" aria-label="${store.photo ? 'Change your passport photo' : 'Add your passport photo'}">${store.photo ? `<img src="${store.photo}" alt="">` : ''}<span class="addp">${store.photo ? 'Change' : '+ Add photo'}</span><input class="ppFile" type="file" accept="image/*" aria-label="${store.photo ? 'Change your passport photo' : 'Add your passport photo'}"><svg viewBox="0 0 60 80"><circle cx="30" cy="31" r="13" fill="#2f4f5c"/><path d="M6 80c2-20 12-28 24-28s22 8 24 28z" fill="#2f4f5c"/><rect x="18" y="24" width="24" height="10" rx="5" fill="#a3cedc" stroke="#1d2b33" stroke-width="2"/><path d="M42 30c5 0 6-6 6-14" stroke="#d9bc5e" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
+      <div class="fld"><div><small>Passport no.</small><b>${store.pno}</b></div><div><small>Holder</small><input id="ppName" maxlength="26" placeholder="Write your name" value="${nm.replace(/[<>"]/g, '')}" aria-label="Your name"${PP_TOUCH ? ' readonly inputmode="none"' : ''}></div>
       <div><small>Issued by</small><b>Wanderwater Museum</b></div><div><small>Date of issue</small><b>${iss}</b></div><div><small>Galleries visited</small><b>${got} of ${CITIES.length}</b></div></div></div>
     <div class="sig">${nm.replace(/[<>]/g, '')}</div><p class="ppNote">Your name and photo are saved online so the museum can see who visited.</p>
     <div class="mrz">${mrzLine('P<WWR' + sur + '<<' + giv)}\n${mrzLine(store.pno + '<' + got + 'WWR' + iss.replace(/\s/g, '') + '<<<OCEAN')}</div>${no}</div>`; }
@@ -3487,7 +3514,7 @@ function ppPageHTML(n){
 const PP_N = 8;
 function ppSize(){
   const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = false;
-  let pw = Math.min(380, (vh - 210) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
+  ppLastW = vw; let pw = Math.min(380, (vh - 210) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
   PP.single = single; bk.classList.toggle('single', single); bk.style.setProperty('--pw', pw + 'px'); bk.style.setProperty('--ph', Math.round(pw * 1.42) + 'px'); bk.style.setProperty('--n', single ? 1 : 2);
 }
 function ppView(){ return PP.single ? [null, PP.idx] : [PP.idx, PP.idx + 1]; }
@@ -3499,6 +3526,14 @@ function ppSync(withPhoto){
   if (!body.name && !body.photo) return;
   try { fetch('/api/passport', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body), keepalive:!body.photo }).catch(() => {}); } catch(e) {}
 }
+var PP_TOUCH = (window.matchMedia && matchMedia('(pointer: coarse)').matches);
+function ppUsePhoto(f){ if (!f) return; const url = URL.createObjectURL(f), im = new Image();
+  im.onload = () => { const W2 = 300, H2 = 400, cv2 = document.createElement('canvas'); cv2.width = W2; cv2.height = H2; const c2 = cv2.getContext('2d'), sc = Math.max(W2 / im.width, H2 / im.height), w = im.width * sc, h = im.height * sc;
+    c2.drawImage(im, (W2 - w) / 2, (H2 - h) / 2, w, h); URL.revokeObjectURL(url); const first = !store.photo; store.photo = cv2.toDataURL('image/jpeg', .82); save();
+    track('passport_photo_added', { first_time: first ? 'yes' : 'no' }); ppSync(true); if (!PP.busy) ppPaint(); toast('Looking sharp. Photo added.'); };
+  im.onerror = () => { URL.revokeObjectURL(url); toast('That photo would not open. Try a JPG or PNG.'); }; im.src = url; }
+document.addEventListener('change', e => { const t = e.target; if (t && t.classList && t.classList.contains('ppFile')) { const f = t.files && t.files[0]; ppUsePhoto(f); try { t.value = ''; } catch(_) {} } });
+document.addEventListener('click', e => { if (e.target.classList && e.target.classList.contains('ppFile')) { e.stopPropagation(); audio(); } }, true);
 let ppFile = null;
 function ppPickPhoto(){
   if (!ppFile) { ppFile = document.createElement('input'); ppFile.type = 'file'; ppFile.accept = 'image/*'; ppFile.hidden = true; document.body.appendChild(ppFile);
@@ -3509,9 +3544,21 @@ function ppPickPhoto(){
       im.onerror = () => { URL.revokeObjectURL(url); toast('That photo would not open. Try another.'); }; im.src = url; }); }
   ppFile.click();
 }
-document.addEventListener('click', e => { const ph = e.target.closest && e.target.closest('#book .photo'); if (ph) { e.stopPropagation(); audio(); ppPickPhoto(); } }, true);
 document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('#book .photo')) { e.preventDefault(); ppPickPhoto(); } });
-function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return; inp.dataset.b = 1; inp.addEventListener('input', () => { store.name = inp.value; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = inp.value); }); inp.addEventListener('change', () => { const v = inp.value.trim(); if (v && v !== store.nameSent) { track('passport_name_entered', { first_time: store.nameSent ? 'no' : 'yes', name_length: v.length }); store.nameSent = v; save(); ppSync(false); } if (!PP.busy) ppPaint(); }); }
+function ppSetName(v, repaint){ store.name = v; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = v); const t = v.trim();
+  if (t && t !== store.nameSent) { track('passport_name_entered', { first_time: store.nameSent ? 'no' : 'yes', name_length: t.length }); store.nameSent = t; save(); ppSync(false); }
+  if (repaint && !PP.busy) ppPaint(); }
+function ppNameSheet(){ const sh = $('nameSh'), inp = $('nameIn'); inp.value = store.name || ''; sh.hidden = false; inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch(_) {} }
+function ppNameDone(saveIt){ const sh = $('nameSh'), inp = $('nameIn'); if (sh.hidden) return; if (saveIt) ppSetName(inp.value.slice(0, 26), true); inp.blur(); sh.hidden = true; }
+function bindName(){ const inp = $('ppName'); if (!inp || inp.dataset.b) return; inp.dataset.b = 1;
+  if (PP_TOUCH) { inp.addEventListener('click', e => { e.preventDefault(); ppNameSheet(); }); inp.addEventListener('focus', () => { inp.blur(); }); return; }
+  inp.addEventListener('input', () => { store.name = inp.value; save(); document.querySelectorAll('.sig').forEach(sg => sg.textContent = inp.value); });
+  inp.addEventListener('change', () => ppSetName(inp.value, true)); }
+(() => { const sh = $('nameSh'), inp = $('nameIn');
+  $('nameOk').addEventListener('click', () => ppNameDone(true)); $('nameCancel').addEventListener('click', () => ppNameDone(false));
+  sh.addEventListener('click', e => { if (e.target === sh) ppNameDone(true); });
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); ppNameDone(true); } if (e.key === 'Escape') { e.preventDefault(); ppNameDone(false); } });
+})();
 function ppPaint(){
   const [l, r] = ppView();
   // in a spread, page 1 of the book is the inside of the cover itself
@@ -3605,7 +3652,7 @@ function ppOpenBook(){
   return new Promise(res => {
     if (PP.open || PP.busy) return res(); PP.busy = true; const bk = $('book'), C = $('ppCover');
     if (AC && !muted) { swoosh(1.1, 300, 1100, .08, 1); noiseHit(AC.currentTime + .05, .08, .04, master, 'lowpass', 900, 1); }
-    PP.open = true; PP.ended = false; ppPaint(); bk.classList.remove('closed', 'closing', 'ended'); bk.classList.add('open');
+    PP.open = true; PP.ended = false; ppPaint(); bk.classList.remove('closed', 'closing', 'ended'); bk.classList.add('open'); const ppw = bk.closest('.pp'); if (ppw) ppw.classList.add('opened');
     const sh = C.querySelector('.shade'); if (sh) sh.animate([{ opacity:0 }, { opacity:1, offset:.5 }, { opacity:0 }], { duration:1200 });
     const gen = PP.gen; setTimeout(() => { if (gen !== PP.gen) return res(); bk.classList.add('settled'); PP.busy = false; ppPaint(); res(); }, 1250);
   });
@@ -3620,11 +3667,19 @@ function openPassport(gi){ track('passport_open');
   PP.gen++; PP.ended = false; const bk = $('book'); bk.classList.add('closed'); bk.classList.remove('open', 'settled', 'ended', 'closing', 'drag');
   const F = $('lfF'); F.getAnimations().forEach(a => a.cancel()); F.style.transform = ''; F.hidden = true; F.querySelector('.front').innerHTML = ''; F.querySelector('.back').innerHTML = '';
   bk.querySelectorAll('.shade').forEach(sh => sh.style.opacity = ''); $('lfL').innerHTML = ''; $('lfR').innerHTML = '';
+  const ppw = bk.closest('.pp'); if (ppw) ppw.classList.remove('opened');
   ppPaint(); $('pass').classList.remove('out'); openModal('pass'); $('ppCover').focus({ preventScroll:true });
   if (gi != null) setTimeout(async () => { await ppOpenBook(); PP.slam = gi; ppPaint(); SFX.thud(); setTimeout(() => { PP.slam = -1; }, 800); }, 750);
 }
-window.addEventListener('resize', () => { if (!$('pass').hidden) { ppSize(); ppPaint(); } });
-$('ppCover').addEventListener('click', () => ppOpenBook()); $('ppCover').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ppOpenBook(); } });
+let ppLastW = window.innerWidth;
+window.addEventListener('resize', () => { if ($('pass').hidden) return; const a = document.activeElement, typing = a && a.tagName === 'INPUT' && a.type !== 'file';
+  if (typing || !$('nameSh').hidden || window.innerWidth === ppLastW && PP_TOUCH) return; ppLastW = window.innerWidth; ppSize(); ppPaint(); });
+$('ppCover').addEventListener('click', () => ppOpenBook());
+(() => { const C = $('ppCover'); let d = null;
+  C.addEventListener('pointerdown', e => { if (PP.open || PP.busy) return; d = { x:e.clientX, y:e.clientY, id:e.pointerId }; });
+  C.addEventListener('pointermove', e => { if (!d || e.pointerId !== d.id) return; if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10) { d = null; audio(); ppOpenBook(); } });
+  const stop = () => { d = null; }; C.addEventListener('pointerup', stop); C.addEventListener('pointercancel', stop); C.addEventListener('pointerleave', stop);
+  C.style.touchAction = 'none'; })(); $('ppCover').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ppOpenBook(); } });
 $('ppPrev').addEventListener('click', () => ppTurn(-1));
 $('ppNext').addEventListener('click', () => ppTurn(1));
 $('seeStamp').addEventListener('click', () => { closeModal('done'); if (lastResult) openPassport(lastResult.gi); });
