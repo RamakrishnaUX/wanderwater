@@ -13,14 +13,14 @@
 <meta property="og:title" content="Wanderwater">
 <meta property="og:description" content="An underwater museum ring toss across ten cities. Pump the water, loop rings onto famous landmarks and collect passport stamps.">
 <meta property="og:url" content="https://wanderwater.vercel.app/">
-<meta property="og:image" content="https://wanderwater.vercel.app/og.jpg">
+<meta property="og:image" content="https://wanderwater.vercel.app/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Wanderwater: a coral ring looped on a landmark spire under the sea">
+<meta property="og:image:alt" content="Wanderwater, an underwater museum ring toss game, shown inside a matte toy water tank">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Wanderwater">
 <meta name="twitter:description" content="An underwater museum ring toss across ten cities.">
-<meta name="twitter:image" content="https://wanderwater.vercel.app/og.jpg">
+<meta name="twitter:image" content="https://wanderwater.vercel.app/og.jpg?v=2">
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVJMZG3NBL"></script>
@@ -2369,6 +2369,13 @@ function stepKelp(dt){
     k.wig = Math.max(0, k.wig - dt * .9);
   }
 }
+let bubbleSpr = null;
+function bubbleSprite(){ if (bubbleSpr) return bubbleSpr; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  const rg = g.createRadialGradient(32, 32, 0, 32, 32, 31); rg.addColorStop(0, 'rgba(255,255,255,0)'); rg.addColorStop(.62, 'rgba(255,255,255,.05)'); rg.addColorStop(.86, 'rgba(235,250,255,.32)'); rg.addColorStop(.96, 'rgba(255,255,255,.62)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = rg; g.beginPath(); g.arc(32, 32, 31, 0, Math.PI * 2); g.fill();
+  const hg = g.createRadialGradient(22, 21, 0, 22, 21, 9); hg.addColorStop(0, 'rgba(255,255,255,.85)'); hg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = hg; g.beginPath(); g.ellipse(22, 21, 8, 6, -.6, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = 2; g.beginPath(); g.arc(32, 32, 24, .3, 1.3); g.stroke();
+  return (bubbleSpr = c); }
 function bubble(x, y, r, vy){ if (bubbles.length < (lite() ? 120 : 340)) bubbles.push({ x, y, r:r || frand(1.5, 4), vx:0, vy:vy || -30, ph:frand(0, TAU) }); }
 function sparkle(x, y, col, n, slow){ for (let i = 0; i < (n || 10); i++) { const a = frand(0, TAU), s = frand(30, 100); sparks.push({ x, y, vx:Math.cos(a) * s, vy:Math.sin(a) * s, life:1, col, slow }); } }
 
@@ -2962,10 +2969,17 @@ function drawTurtle(){
   const tu = turtle, st = Math.sin(tu.ph), st2 = Math.sin(tu.ph - 1.2);
   ctx.save(); ctx.translate(tu.x, tu.y); ctx.rotate(Math.sin(tu.ph * .5) * .035 - (tu.hop > 0 ? .12 * Math.sin(tu.hop * Math.PI) : 0)); ctx.scale((Math.abs(tu.ft) < .1 ? .1 * Math.sign(tu.ft || 1) : tu.ft) * 1.2, 1.2);
   const skin = '#8a9a5e', skinD = '#6d7c45', scale = 'rgba(240,226,170,.55)';
-  const flipper = (ox, oy, len, wid, ang, col) => { ctx.save(); ctx.translate(ox, oy); ctx.rotate(ang); ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, -wid * .5); ctx.bezierCurveTo(len * .35, -wid * .9, len * .8, -wid * .3, len, 0); ctx.bezierCurveTo(len * .75, wid * .35, len * .3, wid * .7, 0, wid * .5); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = scale; for (let i = 1; i < 5; i++) E(len * i / 5.5, -wid * .08, wid * (.22 - i * .03), wid * (.16 - i * .02)); ctx.restore(); };
-  // far side flippers, a little darker
-  flipper(14, 4, 34, 11, 2.2 + st * .55, skinD); flipper(-26, 4, 13, 7, 2.6 + st2 * .3, skinD);
+  // a flipper is a long tapered paddle with a curved leading edge, hinged at a rounded shoulder tucked under the shell rim
+  const flipper = (ox, oy, len, wid, ang, col, bend) => { ctx.save(); ctx.translate(ox, oy); ctx.rotate(ang); ctx.fillStyle = col;
+    const b = bend || 0; ctx.beginPath(); ctx.moveTo(0, -wid * .45);
+    ctx.bezierCurveTo(len * .32, -wid * .78 + b * .3, len * .74, -wid * .42 + b, len, -wid * .04 + b);
+    ctx.bezierCurveTo(len * .9, wid * .22 + b, len * .46, wid * .58, 0, wid * .45); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.10)'; ctx.beginPath(); ctx.moveTo(len * .1, wid * .3); ctx.bezierCurveTo(len * .45, wid * .48, len * .85, wid * .2 + b, len, -wid * .04 + b); ctx.bezierCurveTo(len * .6, wid * .1 + b * .5, len * .3, wid * .12, len * .1, wid * .3); ctx.fill();
+    ctx.fillStyle = scale; for (let i = 1; i < 5; i++) E(len * i / 5.4, -wid * .16 + b * i / 6, wid * (.2 - i * .028), wid * (.14 - i * .02));
+    ctx.restore(); };
+  // front flippers sweep back along the body and beat up and down; the rear ones steer
+  const fA = 2.5 + st * .32, fB = 2.62 - st * .26, rA = 2.85 + st2 * .16;
+  flipper(16, 0, 34, 10.5, fB, skinD, st); flipper(-27, 1, 14, 8, rA + .1, skinD);
   // neck and head
   ctx.fillStyle = skin; ctx.beginPath(); ctx.moveTo(20, -6); ctx.quadraticCurveTo(32, -9, 38, -6); ctx.lineTo(38, 4); ctx.quadraticCurveTo(30, 6, 20, 5); ctx.fill();
   const hy = Math.sin(tu.ph * .8) * .8; ctx.save(); ctx.translate(44, -2 + hy); ctx.rotate(-.06);
@@ -2974,6 +2988,8 @@ function drawTurtle(){
   ctx.fillStyle = '#d8cea9'; ctx.beginPath(); ctx.moveTo(3, 3.4); ctx.quadraticCurveTo(8, 3.8, 10.3, 2.4); ctx.quadraticCurveTo(7, 5.6, 2, 5); ctx.fill();
   ctx.strokeStyle = 'rgba(50,55,30,.8)'; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(4, 2.6); ctx.quadraticCurveTo(8, 3.4, 10.8, 1.4); ctx.stroke();
   ctx.fillStyle = '#1b1d14'; E(4.5, -3.2, 2.1, 2.3); ctx.fillStyle = '#fff'; E(5.2, -3.9, .7, .7); ctx.restore();
+  // near flippers sit just under the shell rim
+  flipper(-25, 3, 15, 8.5, rA, skin); flipper(15, 2, 40, 12, fA, skin, st * 1.5);
   // shell: underside first, then the domed carapace with its scutes
   ctx.fillStyle = '#d4c9a3'; ctx.beginPath(); ctx.moveTo(-32, 3); ctx.quadraticCurveTo(-2, 11, 28, 3); ctx.quadraticCurveTo(-2, 6, -32, 3); ctx.fill();
   const shell = () => { ctx.beginPath(); ctx.moveTo(-34, 3); ctx.bezierCurveTo(-34, -14, -16, -27, 2, -27); ctx.bezierCurveTo(18, -27, 30, -15, 30, 2); ctx.quadraticCurveTo(-2, 8, -34, 3); ctx.closePath(); };
@@ -2990,7 +3006,6 @@ function drawTurtle(){
   ctx.strokeStyle = 'rgba(60,40,20,.55)'; ctx.lineWidth = 1; ctx.beginPath(); for (let i = 0; i <= 12; i++) { const f = i / 12, x = -33 + f * 62, y = 3 + Math.sin(f * Math.PI) * 3.4; ctx.moveTo(x, y - 2.2); ctx.lineTo(x, y); } ctx.stroke();
   ctx.fillStyle = skinD; ctx.beginPath(); ctx.moveTo(-34, 2); ctx.lineTo(-40, 4); ctx.lineTo(-33, 5); ctx.fill();
   // near side flippers on top
-  flipper(-24, 5, 14, 8, 2.75 + st2 * .35, skin); flipper(16, 5, 38, 12, 2.0 + st * .65, skin);
   ctx.restore();
 }
 function drawDiver(){
@@ -3027,7 +3042,11 @@ function drawSpeech(){
 function wrapText(text, maxW){ const words = text.split(' '), lines = []; let c = ''; for (const w of words) { const t = c ? c + ' ' + w : w; if (ctx.measureText(t).width > maxW && c) { lines.push(c); c = w; } else c = t; } if (c) lines.push(c); return lines; }
 function drawBubbles(){
   ctx.lineWidth = 1;
-  for (const b of bubbles) { ctx.strokeStyle = 'rgba(255,255,255,.72)'; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.3)'; E(b.x - b.r * .35, b.y - b.r * .35, b.r * .32, b.r * .32); }
+  // soft, glassy bubbles: a thin bright rim, a clear middle, one small highlight, and a gentle wobble as they rise
+  const bs = bubbleSprite();
+  for (const b of bubbles) { const r = b.r, w = 1 + Math.sin(T * 8 + b.ph) * .07, h = 2 - w;
+    ctx.globalAlpha = (night ? .5 : .62) * Math.min(1, .45 + r / 7); ctx.drawImage(bs, b.x - r * w, b.y - r * h, r * 2 * w, r * 2 * h); }
+  ctx.globalAlpha = 1;
   for (const s of sand) { ctx.globalAlpha = s.life * .8; ctx.fillStyle = city.sand; E(s.x, s.y, 1.6, 1.6); }
   for (const s of sparks) { if (s.sky) continue; ctx.globalAlpha = Math.max(0, s.life); ctx.fillStyle = s.col; ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(T * 4); R(-2, -.6, 4, 1.2); R(-.6, -2, 1.2, 4); ctx.restore(); }
   ctx.globalAlpha = 1;
