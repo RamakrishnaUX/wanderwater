@@ -2062,7 +2062,9 @@ function newTarget(f){
 /* ---------- creatures ---------- */
 function initCreatures(){
   mantas = [{ x:-160, y:SURF + 230, dir:1, t:0, roll:0, spd:30, depth:.6, wait:0, ft:1 }];
-  jellies = [0, 1, 2].map(i => mkJelly(frand(80, W - 80), frand(SURF + 160, FB - 160), [320, 200, 270][i]));
+  // phones get two jellies, one in each outer third so the middle stays clear; wider screens get three, one per third
+  const jx = window.innerWidth < 760 ? [W * .16, W * .84] : [W * .17, W * .5, W * .83], jh = [320, 200, 270];
+  jellies = jx.map((x, i) => mkJelly(clamp(x + frand(-W * .05, W * .05), 70, W - 70), frand(SURF + 160, FB - 160), jx.length === 2 ? [320, 270][i] : jh[i]));
   turtle = { x:W * .2, y:FB - 260, ty:FB - 260, dir:1, ft:1, ph:0, hop:0 };
   boat = { x:W * .65, dir:-1, spd:16, horn:0 };
   diver = { side:1, hx:W - 70, x:W - 70, y:FB - 330, vx:0, vy:0, ft:-1, face:-1, item:null, kick:0, wave:0, bub:2, tx:W - 160, ty:FB - 330, wt:6, zoom:0, flip:0 };
