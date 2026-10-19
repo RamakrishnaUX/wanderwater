@@ -930,6 +930,10 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 .ctl:focus:not(:focus-visible), button:focus:not(:focus-visible){outline:none!important; box-shadow:none}
 .ctl.pri:focus-visible{outline:2px solid var(--ink); outline-offset:3px}
 @media (prefers-reduced-motion: reduce){ #done.play *, #done.play .sheet{animation:none!important; opacity:1!important} #done.play .dStamp svg{opacity:1} }
+
+/* splash sky is always the light "paper" sky, so its text must never take the dark-mode tokens */
+#splash .sky{color-scheme:light; --ink:#0B1E2A; --ink-soft:#566A72; --ink-faint:rgba(11,30,42,.14); --accent:#0B1E2A; color:#0B1E2A}
+#splash .sky h1, #splash .sky h1 span{color:#0B1E2A!important; -webkit-text-fill-color:#0B1E2A}
 </style>
 </head>
 <body>
