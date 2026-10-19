@@ -830,12 +830,14 @@ body.toy #pad #hud .ctl.arrow.on, body.toy #pad #hud .ctl.arrow:active{transform
 
 /* ---------- stamp moment ---------- */
 #done .sheet{width:min(392px, 100%)!important; align-items:center; text-align:center; gap:0!important; padding:30px 26px 22px!important; overflow:hidden}
-#done .dHero{position:relative; width:148px; height:148px; display:grid; place-items:center; margin:0 auto 18px}
-#done .dRays{position:absolute; inset:-56px; border-radius:50%; background:repeating-conic-gradient(from 0deg, rgba(242,179,61,0) 0deg 9deg, rgba(242,179,61,.16) 9deg 18deg);
+#done .dHero{position:relative; width:172px; height:172px; display:grid; place-items:center; margin:0 auto 18px}
+#done .dRays{position:absolute; inset:-56px; border-radius:50%; background:repeating-conic-gradient(from 0deg, rgba(242,179,61,0) 0deg 9deg, rgba(242,179,61,.10) 9deg 18deg);
   -webkit-mask:radial-gradient(circle, #000 18%, transparent 66%); mask:radial-gradient(circle, #000 18%, transparent 66%); opacity:0}
 #done .dGlow{position:absolute; inset:-10px; border-radius:50%; background:radial-gradient(circle, rgba(242,179,61,.28), rgba(242,179,61,0) 70%); opacity:0}
-#done .dStamp{position:relative; width:100%; display:grid; place-items:center; color:var(--stamp)}
-#done .dStamp svg{width:100%!important; height:auto; opacity:0}
+#done .dStamp{position:relative; width:100%; height:100%; display:grid; place-items:center; color:var(--stamp)}
+#done .dStamp svg{width:172px!important; height:172px!important; opacity:0}
+#done .dStamp svg text{fill:currentColor}
+#done .dStamp svg{overflow:visible; mix-blend-mode:multiply}
 #done .dRing{position:absolute; inset:14%; border-radius:50%; border:2px solid currentColor; opacity:0}
 #done .dEb{margin:0 0 6px}
 #done h2{margin:0 0 8px!important; font-size:38px!important}
@@ -890,7 +892,8 @@ body:not(.toy) #pad{background:linear-gradient(180deg, #24343D, #16232A)!importa
   #done .sheet > h2, #done .sheet > .eb{position:static!important; margin:0 0 8px!important; padding:0!important; background:none!important}
   #done .sheet > h2::before, #done .sheet > .eb::before{display:none!important}
   #done .sheet > .btns{position:static!important; border:0!important; background:none!important; padding:0!important; margin:0!important; box-shadow:none!important}
-  #done .dHero{width:132px; height:132px; margin-bottom:16px}
+  #done .dHero{width:150px; height:150px; margin-bottom:16px}
+  #done .dStamp svg{width:150px!important; height:150px!important}
   #done .sheet{width:100%!important; max-width:none!important; margin:0 auto!important}
 }
 
