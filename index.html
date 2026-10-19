@@ -2015,7 +2015,7 @@ const SP = {
   butterfly:{ kind:'pair', L:14, h:11.5, col:'#dbc266', back:'#bb9938', fin:'#e3cf88', speed:34, n:[2, 2], mark:'band', dors:1.3 },
   clown:{ kind:'home', L:13, h:6.5, col:'#d68c4f', back:'#b5673a', fin:'#da9a63', speed:40, n:[2, 3], mark:'clown' },
   parrot:{ kind:'solo', L:27, h:11, col:'#5ab39c', back:'#378777', fin:'#e388ad', speed:38, n:[1, 1], mark:'parrot' },
-  grouper:{ kind:'solo', L:42, h:17, col:'#8f6f58', back:'#5b4434', fin:'#7a5c47', speed:22, n:[1, 1], mark:'spots', dors:1.2, bottom:true },
+  puffer:{ kind:'solo', L:32, h:16, col:'#f7f1df', back:'#e0b44c', fin:'#efcd6e', speed:15, n:[1, 1], puffer:true },
   barracuda:{ kind:'solo', L:50, h:6.4, col:'#cfdae0', back:'#6d8695', fin:'#9fb2bd', speed:30, n:[1, 1], mark:'bars' }
 };
 let GID = 0;
@@ -2048,7 +2048,7 @@ function populate(){
   spawnGroup('sardine', { inside:true, depth:.35 }); spawnGroup('anthias', { inside:true, depth:.75 });
   spawnGroup('tang', { inside:true }); spawnGroup('butterfly', { inside:true });
   anemones.forEach(a => spawnGroup('clown', { home:a, depth:.95 }));
-  spawnGroup('parrot', { inside:true, depth:.8 }); spawnGroup('grouper', { inside:true, depth:.55 }); spawnGroup('barracuda', { inside:true, depth:.45 });
+  spawnGroup('parrot', { inside:true, depth:.8 }); spawnGroup('puffer', { inside:true, depth:.78 }); spawnGroup('barracuda', { inside:true, depth:.45 });
   if (W > 1100) { spawnGroup('sardine', { inside:true, depth:.9 }); spawnGroup('tang', { inside:true }); }
 }
 function newTarget(f){
@@ -2089,7 +2089,7 @@ function stepJelly(j, dt){
   j.vx = 0; j.vy += (-thrust - j.vy * drag + 7) * dt;
   j.y += j.vy * dt; if (j.y > FB - 150) { j.y = FB - 150; j.vy = Math.min(0, j.vy); }
   j.x = clamp(j.x, 40, W - 40); j.glow = Math.max(0, j.glow - dt * .45);
-  j.ang = Math.sin(T * .55 + j.hue) * .035;
+  j.ang = clamp(Math.sin(T * .55 + j.hue) * .09 + Math.sin(T * 1.3 + j.hue * 2) * .04 + j.vy * -.0012 * Math.sin(T * .9 + j.hue), -.14, .14);
   const { W:BW, H:BH, S } = jellyBell(j);
   const rope = (nodes, ax, ay, L, damp, sink) => {
     nodes[0].x = ax; nodes[0].y = ay; nodes[0].px = ax; nodes[0].py = ay;
@@ -2288,6 +2288,10 @@ function stepFish(dt){
     f.vx += ax * dt; f.vy += ay * dt; f.vy *= Math.exp(-1.3 * dt);
     const spd = Math.hypot(f.vx, f.vy), maxS = f.dart > 0 ? base * 4.2 + 80 : base * 1.5, minS = f.idle > 0 ? 0 : base * .35;
     if (spd > maxS) { f.vx *= maxS / spd; f.vy *= maxS / spd; } else if (spd < minS && spd > .01) { f.vx *= minS / spd; f.vy *= minS / spd; }
+    if (sp.puffer) { f.pt = Math.max(0, (f.pt || 0) - dt); const tg = f.pt > 0 ? 1 : 0, up = tg > (f.puff || 0); f.puff = f.puff || 0; f.pv = f.pv || 0;
+      f.pv += ((tg - f.puff) * (up ? 120 : 9) - f.pv * (up ? 12 : 5.5)) * dt; f.puff = clamp(f.puff + f.pv * dt, -.05, 1.12);
+      if (!up && f.wasUp && Math.random() < dt * 14 && f.puff > .15) bubble(f.x + f.ft * SP.puffer.L * .5, f.y, frand(1.2, 3));
+      f.wasUp = f.puff > .4; if (f.puff > .02) { const k = Math.exp(-3.2 * f.puff * dt); f.vx *= k; f.vy = f.vy * k - 7 * f.puff * dt; f.dart = 0; } }
     f.dart = Math.max(0, f.dart - dt); f.x += f.vx * dt; f.y += f.vy * dt;
     if (Math.abs(f.vx) > 4) f.face = f.vx > 0 ? 1 : -1;
     f.ft += (f.face - f.ft) * Math.min(1, dt * 5); f.ph += dt * (4 + Math.hypot(f.vx, f.vy) / (sp.L * f.size) * 1.3);
@@ -2880,7 +2884,62 @@ function drawRoute(){
     P([[7, 0], [-5, -1.3], [-5, 1.3]]); P([[1, 0], [-3, -6], [-1, -6], [3, 0]]); P([[1, 0], [-3, 6], [-1, 6], [3, 0]]); P([[-4, 0], [-7, -3], [-6, -3], [-3, 0]]); P([[-4, 0], [-7, 3], [-6, 3], [-3, 0]]); ctx.restore(); }
 }
 function fishBody(L, h){ ctx.beginPath(); ctx.moveTo(L, 0); ctx.bezierCurveTo(L * .95, -h * .98, L * .05, -h * 1.08, -L * .82, -h * .28); ctx.lineTo(-L * .82, h * .28); ctx.bezierCurveTo(L * .05, h * 1.08, L * .95, h * .98, L, 0); ctx.closePath(); }
+/* Pufferfish: a blunt, round-headed fish with a golden back, a cream belly and big gold-ringed eyes.
+   It sculls along with tiny fluttering fins. Tapped, it gulps water and swells into a ball in half a second,
+   prickles standing up all over, hangs there slowly drifting, then lets the water out and shrinks back. */
+function drawPuffer(f, sc){
+  const p = Math.max(0, f.puff || 0), L = SP.puffer.L, h = SP.puffer.h, rx = L * .6 * (1 + .48 * p), ry = h * .62 * (1 + 1.55 * p), tH = ry * (.34 + .58 * Math.min(1, p));
+  let fx = f.ft; if (Math.abs(fx) < .1) fx = .1 * (fx < 0 ? -1 : 1);
+  const tilt = clamp(Math.atan2(f.vy, Math.abs(f.vx) + 2), -.3, .3) * (1 - p);
+  ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.ft >= 0 ? tilt : -tilt); ctx.scale(fx * sc, sc);
+  const wag = Math.sin(f.ph * 1.2) * (.28 - .12 * p), flut = Math.sin(T * 17 + f.w) * .5;
+  // tail: a small rounded fan
+  ctx.save(); ctx.translate(-rx * .96, 0); ctx.rotate(wag); ctx.fillStyle = '#e9c45f';
+  ctx.beginPath(); ctx.moveTo(1, 0); ctx.quadraticCurveTo(-3, -h * .55, -h * .62, -h * .44); ctx.quadraticCurveTo(-h * .5, 0, -h * .62, h * .44); ctx.quadraticCurveTo(-3, h * .55, 1, 0); ctx.fill();
+  ctx.fillStyle = 'rgba(150,105,30,.25)'; ctx.beginPath(); ctx.moveTo(-1, 0); ctx.lineTo(-h * .55, -h * .3); ctx.lineTo(-h * .5, 0); ctx.lineTo(-h * .55, h * .3); ctx.closePath(); ctx.fill(); ctx.restore();
+  // dorsal and anal fins sit far back and flutter
+  ctx.fillStyle = 'rgba(236,198,98,.92)';
+  const tq0 = (1 - tH / ry) * (1 - Math.min(1, p)), finY = ry * .866 * (1 - tq0 * Math.pow(.25, .8)) * .96;
+  for (const sd of [-1, 1]) { ctx.save(); ctx.translate(-rx * .5, sd * finY); ctx.rotate(sd * (.5 + flut * .35)); ctx.beginPath(); ctx.ellipse(-h * .12, sd * h * .12, h * .2, h * .12, sd * -.6, 0, TAU); ctx.fill(); ctx.restore(); }
+  // body
+  // the outline is an ellipse whose back half tapers into the tail; inflating fills the taper out into a ball
+  const tq = (1 - tH / ry) * (1 - Math.min(1, p)), body = () => { ctx.beginPath();
+    for (let i = 0; i <= 56; i++) { const a = i / 56 * TAU, c = Math.cos(a), sn = Math.sin(a), back = c < 0 ? c * c : 0, blunt = c > 0 ? 1 + .08 * (1 - p) * c * c : 1;
+      const x = rx * c * (c > 0 ? 1 : 1 + .04 * (1 - p)), y = ry * sn * (1 - tq * Math.pow(back, .8)) * Math.min(1.06, blunt); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.closePath(); };
+  const g = ctx.createLinearGradient(0, -ry, 0, ry);
+  g.addColorStop(0, '#c99632'); g.addColorStop(.22, '#e3b84e'); g.addColorStop(.48, '#efcf74'); g.addColorStop(.6, '#f6ecd0'); g.addColorStop(1, '#fffaf0');
+  body(); ctx.fillStyle = g; ctx.fill();
+  ctx.save(); body(); ctx.clip();
+  // freckles on the back, spreading apart and fading as the skin stretches
+  const spots = f.spots || (f.spots = Array.from({ length:15 }, () => [frand(-.85, .75), frand(-.9, -.12), frand(.55, 1)]));
+  ctx.fillStyle = `rgba(92,64,18,${.5 - .2 * p})`; for (const [u, v, r] of spots) E(u * rx, v * ry, r * (1 + .35 * p), r * (1 + .35 * p));
+  // a soft dark saddle behind the pectoral fin and a gloss on top
+  ctx.fillStyle = `rgba(120,80,20,${.16 - .06 * p})`; E(-rx * .05, -ry * .05, rx * .22, ry * .3);
+  ctx.fillStyle = 'rgba(255,255,255,.28)'; E(rx * .1, -ry * .62, rx * .55, ry * .16);
+  ctx.fillStyle = 'rgba(160,120,60,.12)'; E(0, ry * .92, rx * .9, ry * .2);
+  ctx.restore();
+  // prickles stand up as it inflates
+  if (p > .12) { const k = Math.min(1, (p - .12) / .7), n = 34;
+    ctx.lineCap = 'round'; ctx.lineWidth = .9;
+    for (let i = 0; i < n; i++) { const a = i / n * TAU + .09, cx = Math.cos(a), sy = Math.sin(a); if (cx < -.82) continue;
+      const bx = cx * rx * .97, by = sy * ry * .97, len = (1.6 + 1.6 * k) * k; ctx.strokeStyle = sy < .15 ? `rgba(120,86,24,${.75 * k})` : `rgba(196,176,128,${.8 * k})`;
+      ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + cx * len * (rx / Math.max(rx, ry)) * 1.1, by + sy * len * 1.1); ctx.stroke(); } }
+  // pectoral fin, a tiny fan that never stops sculling
+  ctx.save(); ctx.translate(rx * .12, ry * .12); ctx.rotate(.4 + flut); ctx.fillStyle = 'rgba(239,205,110,.9)'; ctx.beginPath(); ctx.ellipse(-h * .14, 0, h * .2, h * .13, 0, 0, TAU); ctx.fill(); ctx.restore();
+  // eye: big, gold-ringed, with a bright catchlight
+  const ex = rx * .5, ey = -ry * .3 - h * .04, er = h * .2 * (1 + .22 * p);
+  ctx.fillStyle = 'rgba(80,52,10,.35)'; E(ex, ey, er * 1.22, er * 1.22);
+  const ig = ctx.createRadialGradient(ex - er * .2, ey - er * .2, er * .1, ex, ey, er); ig.addColorStop(0, '#ffe08a'); ig.addColorStop(1, '#d99a1e');
+  ctx.fillStyle = ig; E(ex, ey, er, er); ctx.fillStyle = '#0f1418'; E(ex + er * .1, ey + er * .04, er * .58, er * .58);
+  ctx.fillStyle = 'rgba(255,255,255,.95)'; E(ex - er * .18, ey - er * .26, er * .2, er * .2);
+  // mouth: a small beak, which rounds into an O when it is puffed
+  ctx.fillStyle = '#c08a4a'; if (p > .4) { ctx.strokeStyle = '#a06a30'; ctx.lineWidth = .9; ctx.beginPath(); ctx.ellipse(rx * .99, ry * .14, 1.1, 1.3, 0, 0, TAU); ctx.stroke(); }
+  else { ctx.beginPath(); ctx.moveTo(rx + .6, ry * .05); ctx.quadraticCurveTo(rx + 1.6, ry * .16, rx - .6, ry * .24); ctx.lineTo(rx - .2, ry * .1); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
+}
 function drawFish(f){
+  if (SP[f.sp].puffer) return drawPuffer(f, f.size * (.46 + .54 * f.depth));
   const sp = SP[f.sp], sc = f.size * (.46 + .54 * f.depth), L = sp.L, h = sp.h, detail = sc * L > 8, a = clamp(Math.atan2(f.vy, Math.abs(f.vx) + 2), -.5, .5);
   let fx = f.ft; if (Math.abs(fx) < .1) fx = .1 * (fx < 0 ? -1 : 1);
   ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.ft >= 0 ? a : -a); ctx.scale(fx * sc, sc);
@@ -3196,7 +3255,8 @@ function tap(x, y){
     return;
   }
   if (y < surfY(x) + 18) { splash(x, -28); SFX.splash(); for (let i = 0; i < 6; i++) bubble(x + frand(-10, 10), y + 10, frand(1.5, 3.5)); return; }
-  let best = null, bd = 22; for (const f of fish) { const sc = f.size * (.46 + .54 * f.depth), dd = Math.hypot(f.x - x, f.y - y) - SP[f.sp].L * sc * .6; if (dd < bd) { bd = dd; best = f; } }
+  let best = null, bd = 22; for (const f of fish) { const sc = f.size * (.46 + .54 * f.depth), dd = Math.hypot(f.x - x, f.y - y) - SP[f.sp].L * sc * (.6 + .5 * (f.puff || 0)); if (dd < bd) { bd = dd; best = f; } }
+  if (best && SP[best.sp].puffer) { if (best.pt > 0) best.pt = Math.max(best.pt, 2.5); else { best.pt = 4.2; SFX.pop(); for (let i = 0; i < 4; i++) bubble(best.x + frand(-6, 6), best.y - 6, frand(1, 2.4)); } return; }
   if (best) { const a = Math.atan2(best.y - y, best.x - x) || frand(0, TAU); best.vx = Math.cos(a) * 260; best.vy = Math.sin(a) * 200; best.dart = .8;
     for (const f of fish) { if (f === best || (f.g !== best.g && Math.hypot(f.x - x, f.y - y) > 60)) continue; const dx = f.x - x, dy = f.y - y, dd = Math.hypot(dx, dy) || 1; if (dd < 130) { f.vx += dx / dd * 140; f.vy += dy / dd * 100; f.dart = .5; } }
     SFX.blip(); return; }
