@@ -3333,15 +3333,19 @@ function drawPuffer(f, sc){
   ctx.restore();
 }
 /* ---------- the shark ----------
-   Tap a clownfish and a shark streaks in from the nearer side, snaps it up and shoots off the other side.
-   The clownfish swims back to its anemone a few seconds later, none the worse. */
+   Tap a clownfish and a shark glides in from the nearer side, slows to eye it up, lunges, holds it with a
+   little head shake, gulps (you can see the lump go down) and then powers off the far side.
+   The clownfish swims back out of its anemone a few seconds later, none the worse. */
 let shark = null; const sharkBack = [];
+const SHK = 120, SHH = 24, shSize = s => s.sc * .58;   // body length in drawing units, and the on-screen scale
+const easeOut = u => 1 - Math.pow(1 - u, 3), easeIn = u => u * u * u;
 function startShark(f){
   if (shark) return false;
-  const dir = f.x < W / 2 ? 1 : -1, sc = .85 + .35 * f.depth;
-  shark = { x:dir > 0 ? -170 * sc : W + 170 * sc, y:f.y + 6, dir, sc, prey:f, ate:false, jaw:0, t:0, ft:dir };
+  const dir = f.x < W / 2 ? 1 : -1, sc = .9 + .25 * f.depth, k = .58 * sc, L = SHK * k;
+  const x0 = dir > 0 ? -L * 1.7 : W + L * 1.7, xs = f.x - dir * (L * .95 + 34);
+  shark = { dir, sc, prey:f, ph:'enter', pt:0, t:0, x:x0, y:f.y + 4, x0, y0:f.y + 4, xs, dur:clamp(Math.abs(xs - x0) / 560, 1, 1.7), jaw:0, rot:0, bulge:-1, vx:0, held:false };
   f.caught = true; f.face = dir; f.ft = dir;
-  swoosh(.45, 260, 1300, .14, 2); track('shark', { city:city.id });
+  swoosh(.9, 180, 700, .1, 1.5); track('shark', { city:city.id });
   return true;
 }
 function stepShark(dt){
@@ -3350,59 +3354,79 @@ function stepShark(dt){
     Object.assign(f, { caught:false, x:f.home.x + frand(-6, 6), y:f.home.y - 26, vx:frand(-10, 10), vy:-12, dart:0, idle:0, tgt:null, timer:0 }); fish.push(f);
     f.home.ret = 1.2; for (let k = 0; k < 4; k++) bubble(f.x + frand(-5, 5), f.y, frand(1, 2.2)); }
   const s = shark; if (!s) return;
-  s.t += dt; const L = 120 * s.sc, sp = 1500;
-  const prey = s.prey;
-  if (!s.ate && !fish.includes(prey)) s.ate = true; // the city changed under it: just pass through
-  if (!s.ate) {
-    s.y += (prey.y + 6 * s.sc - s.y) * Math.min(1, dt * 9);
-    const mouth = s.x + s.dir * L * .95, gap = (prey.x - mouth) * s.dir;
-    s.jaw += ((gap < L * 1.6 ? 1 : 0) - s.jaw) * Math.min(1, dt * 14);
-    if (gap <= 4) {
-      s.ate = true; s.jaw = 1; s.chomp = .25;
-      fish = fish.filter(f => f !== prey); prey.caught = false; sharkBack.push({ f:prey, at:T + 6 });
-      for (let k = 0; k < 14; k++) bubble(prey.x + frand(-14, 14), prey.y + frand(-10, 10), frand(1.5, 4));
+  const K = shSize(s), L = SHK * K, prey = s.prey, d = s.dir;
+  s.t += dt; s.pt += dt;
+  const gone = !fish.includes(prey) && !s.held && (s.ph === 'enter' || s.ph === 'lunge');
+  if (gone) { s.ph = 'exit'; s.pt = 0; s.vx = 120; }   // the city changed under it: just swim on
+  const next = ph => { s.ph = ph; s.pt = 0; };
+  if (s.ph === 'enter') {          // glide in and slow right down, eyeing the fish
+    const u = Math.min(1, s.pt / s.dur);
+    s.x = s.x0 + (s.xs - s.x0) * easeOut(u); s.y = s.y0 + (prey.y + 4 - s.y0) * easeOut(u);
+    s.jaw = Math.max(0, (u - .7) / .3) * .45; s.rot = Math.sin(s.t * 3) * .03;
+    if (u >= 1) next('eye');
+  } else if (s.ph === 'eye') {     // a short, menacing pause
+    s.jaw = .45 + Math.sin(s.pt * 9) * .05; s.y += (prey.y + 4 - s.y) * Math.min(1, dt * 6);
+    if (s.pt > .45) { next('lunge'); s.lx = s.x; }
+  } else if (s.ph === 'lunge') {   // mouth wide, a quick snap forward
+    const u = Math.min(1, s.pt / .2); s.jaw = .45 + .55 * u; s.x = s.lx + d * 40 * K / .58 * easeIn(u);
+    if (u >= 1) {
+      s.held = true; s.jaw = .15; next('shake');
+      fish = fish.filter(f => f !== prey); prey.caught = false; sharkBack.push({ f:prey, at:T + 7 });
       tone(170, .08, 'triangle', .24, 60); tone(140, .08, 'triangle', .2, 50, .11);
-      if (prey.home) prey.home.ret = 2.6;
-      for (const f of fish) { const dx = f.x - prey.x, dy = f.y - prey.y, d = Math.hypot(dx, dy) || 1; if (d < 170) { f.vx += dx / d * 260; f.vy += dy / d * 160; f.dart = .9; } }
+      for (let k = 0; k < 10; k++) bubble(s.x + d * L * .95 + frand(-8, 8), s.y + frand(-8, 8), frand(1.5, 3.5));
+      if (prey.home) prey.home.ret = 2.8;
+      for (const f of fish) { const dx = f.x - s.x, dy = f.y - s.y, dd = Math.hypot(dx, dy) || 1; if (dd < 190) { f.vx += dx / dd * 260; f.vy += dy / dd * 160; f.dart = .9; } }
     }
-  } else { s.chomp = Math.max(0, (s.chomp || 0) - dt); s.jaw += ((s.chomp > 0 ? 1 : 0) - s.jaw) * Math.min(1, dt * 16); s.y -= 26 * dt; }
-  s.x += s.dir * sp * (s.ate ? 1.1 : 1) * dt;
-  if (Math.random() < dt * 30) bubble(s.x - s.dir * L * 1.05, s.y + frand(-8, 8), frand(1, 2.4));
-  if ((s.dir > 0 && s.x > W + 200 * s.sc) || (s.dir < 0 && s.x < -200 * s.sc)) shark = null;
+  } else if (s.ph === 'shake') {   // holds on and shakes its head side to side
+    const u = s.pt / .9; s.rot = Math.sin(s.pt * 26) * .2 * (1 - u * .6); s.jaw = .12 + Math.abs(Math.sin(s.pt * 13)) * .1;
+    s.x += Math.sin(s.pt * 26) * 12 * dt; if (Math.random() < dt * 14) bubble(s.x + d * L * .9, s.y + frand(-6, 6), frand(1, 2.4));
+    if (u >= 1) { next('gulp'); s.held = false; s.jaw = 0; tone(110, .16, 'sine', .22, 70); }
+  } else if (s.ph === 'gulp') {    // the lump travels down its throat
+    const u = Math.min(1, s.pt / .7); s.bulge = u; s.rot *= Math.exp(-8 * dt); s.jaw = u < .15 ? .2 : 0;
+    if (u >= 1) { next('exit'); s.bulge = -1; s.vx = 60; swoosh(.6, 300, 1100, .1, 2); }
+  } else {                         // powers away, speeding up as it goes
+    s.vx = Math.min(1500, s.vx + 1100 * dt); s.x += d * s.vx * dt; s.rot *= Math.exp(-6 * dt); s.y -= 14 * dt;
+    if (Math.random() < dt * 24) bubble(s.x - d * L * 1.05, s.y + frand(-6, 6), frand(1, 2.2));
+    if ((d > 0 && s.x > W + L * 1.8) || (d < 0 && s.x < -L * 1.8)) shark = null;
+  }
 }
 function drawShark(){
   const s = shark; if (!s) return;
-  const L = 120, H = 24, sw = Math.sin(s.t * 22) * .16, j = s.jaw;
-  ctx.save(); ctx.translate(s.x, s.y); ctx.scale(s.dir * s.sc, s.sc);
-  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
-  for (const [y, l] of [[-H * .6, 70], [H * .1, 95], [H * .7, 60]]) { ctx.beginPath(); ctx.moveTo(-L * 1.3, y); ctx.lineTo(-L * 1.3 - l, y); ctx.stroke(); }
+  const L = SHK, H = SHH, j = s.jaw, K = shSize(s);
+  const beat = s.ph === 'exit' ? 9 + s.vx / 60 : s.ph === 'enter' ? 9 : 5, amp = s.ph === 'exit' ? .26 : s.ph === 'enter' ? .2 : .1, sw = Math.sin(s.t * beat) * amp;
+  ctx.save(); ctx.translate(s.x, s.y); ctx.scale(s.dir * K, K); ctx.translate(L * .5, 0); ctx.rotate(s.rot); ctx.translate(-L * .5, 0);
+  if (s.ph === 'exit' && s.vx > 600) { ctx.strokeStyle = `rgba(255,255,255,${Math.min(.35, (s.vx - 600) / 2000)})`; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+    for (const [y, l] of [[-H * .6, 70], [H * .1, 95], [H * .7, 60]]) { ctx.beginPath(); ctx.moveTo(-L * 1.35, y); ctx.lineTo(-L * 1.35 - l, y); ctx.stroke(); } }
   const top = '#5d7685', side = '#7d95a2', belly = '#e9eef0', fin = '#566e7c';
-  // tail
+  // tail, swinging from the tail stock
   ctx.save(); ctx.translate(-L * .9, 0); ctx.rotate(sw); ctx.fillStyle = fin; ctx.beginPath();
   ctx.moveTo(0, -H * .18); ctx.quadraticCurveTo(-L * .18, -H * .9, -L * .36, -H * 1.75); ctx.quadraticCurveTo(-L * .26, -H * .4, -L * .2, 0);
   ctx.quadraticCurveTo(-L * .27, H * .45, -L * .3, H * 1.1); ctx.quadraticCurveTo(-L * .12, H * .55, 0, H * .18); ctx.closePath(); ctx.fill(); ctx.restore();
-  // fins behind the body
   ctx.fillStyle = fin;
   ctx.beginPath(); ctx.moveTo(L * .18, -H * .82); ctx.quadraticCurveTo(L * .02, -H * 1.5, -L * .1, -H * 2.05); ctx.quadraticCurveTo(-L * .12, -H * 1.2, -L * .28, -H * .72); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.moveTo(-L * .58, -H * .45); ctx.lineTo(-L * .66, -H * .85); ctx.lineTo(-L * .72, -H * .34); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.moveTo(-L * .55, H * .42); ctx.lineTo(-L * .64, H * .78); ctx.lineTo(-L * .7, H * .32); ctx.closePath(); ctx.fill();
-  // body
+  // the gulp: a lump that rides along the belly from throat to middle
+  const bx = s.bulge >= 0 ? L * (.62 - s.bulge * .85) : null, bh = s.bulge >= 0 ? H * (.32 * Math.sin(Math.PI * Math.min(1, s.bulge * 1.15))) : 0;
   const body = () => { ctx.beginPath(); ctx.moveTo(L, H * .05);
     ctx.bezierCurveTo(L * .94, -H * .78, L * .45, -H * 1.02, -L * .1, -H * .86); ctx.bezierCurveTo(-L * .5, -H * .62, -L * .78, -H * .28, -L * .94, -H * .12);
-    ctx.lineTo(-L * .94, H * .12); ctx.bezierCurveTo(-L * .72, H * .36, -L * .32, H * .78, L * .2, H * .8); ctx.bezierCurveTo(L * .62, H * .8, L * .9, H * .52, L, H * .05); ctx.closePath(); };
+    ctx.lineTo(-L * .94, H * .12); ctx.bezierCurveTo(-L * .72, H * .36, -L * .32, H * .78, L * .2, H * .8); ctx.bezierCurveTo(L * .62, H * .8, L * .9, H * .52, L, H * .05); ctx.closePath();
+    if (bx != null) ctx.ellipse(bx, H * .62, L * .16, H * .22 + bh, 0, 0, TAU); };
   const g = ctx.createLinearGradient(0, -H, 0, H); g.addColorStop(0, top); g.addColorStop(.55, side); g.addColorStop(1, side);
-  body(); ctx.fillStyle = g; ctx.fill();
-  ctx.save(); body(); ctx.clip(); ctx.fillStyle = belly; ctx.beginPath(); ctx.moveTo(L * 1.05, H * .12);
-  ctx.bezierCurveTo(L * .6, H * .05, L * .1, H * .32, -L, H * .1); ctx.lineTo(-L, H * 2); ctx.lineTo(L * 1.1, H * 2); ctx.closePath(); ctx.fill();
-  // mouth: a dark gape with a row of little teeth, opening wide as it closes in
+  body(); ctx.fillStyle = g; ctx.fill('nonzero');
+  ctx.save(); body(); ctx.clip('nonzero'); ctx.fillStyle = belly; ctx.beginPath(); ctx.moveTo(L * 1.05, H * .12);
+  ctx.bezierCurveTo(L * .6, H * .05, L * .1, H * .32, -L, H * .1); ctx.lineTo(-L, H * 3); ctx.lineTo(L * 1.1, H * 3); ctx.closePath(); ctx.fill();
   if (j > .02) { ctx.fillStyle = '#2b2026'; ctx.beginPath(); ctx.moveTo(L * 1.02, H * .12); ctx.quadraticCurveTo(L * .7, H * .2, L * .52, H * .46); ctx.quadraticCurveTo(L * .78, H * (.46 + j * .6), L * 1.02, H * (.2 + j * .95)); ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#ffffff'; for (let k = 0; k < 6; k++) { const tx = L * (.95 - k * .07), ty = H * (.14 + k * .05); ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx - L * .025, ty); ctx.lineTo(tx - L * .012, ty + H * .16 * j); ctx.closePath(); ctx.fill(); } }
-  else { ctx.strokeStyle = 'rgba(40,40,45,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(L * .98, H * .16); ctx.quadraticCurveTo(L * .74, H * .26, L * .58, H * .42); ctx.stroke(); }
+  else { ctx.strokeStyle = 'rgba(40,40,45,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(L * .98, H * .16); ctx.quadraticCurveTo(L * .74, H * .26, L * .58, H * .42); ctx.stroke(); }
   ctx.restore();
-  // gills, pectoral fin, eye
-  ctx.strokeStyle = 'rgba(40,55,65,.45)'; ctx.lineWidth = 1.1; for (let k = 0; k < 3; k++) { const gx = L * (.5 - k * .06); ctx.beginPath(); ctx.moveTo(gx, -H * .35); ctx.quadraticCurveTo(gx - L * .03, 0, gx, H * .35); ctx.stroke(); }
-  ctx.fillStyle = fin; ctx.beginPath(); ctx.moveTo(L * .36, H * .5); ctx.quadraticCurveTo(L * .18, H * 1.1, L * .02, H * 1.55); ctx.quadraticCurveTo(L * .14, H * .9, L * .18, H * .58); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#121619'; E(L * .74, -H * .3, 2.6, 2.6); ctx.fillStyle = 'rgba(255,255,255,.85)'; E(L * .75, -H * .36, .9, .9);
+  // while it holds on, the clownfish's tail flicks out of the side of its mouth
+  if (s.held) { ctx.save(); ctx.translate(L * .9, H * .32); ctx.rotate(.5 + Math.sin(s.t * 30) * .35); ctx.fillStyle = '#d68c4f';
+    ctx.beginPath(); ctx.moveTo(0, -3); ctx.lineTo(13, -9); ctx.quadraticCurveTo(10, 0, 13, 9); ctx.lineTo(0, 3); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.fillRect(2, -4, 3, 8); ctx.restore(); }
+  ctx.strokeStyle = 'rgba(40,55,65,.45)'; ctx.lineWidth = 1.3; for (let k = 0; k < 3; k++) { const gx = L * (.5 - k * .06); ctx.beginPath(); ctx.moveTo(gx, -H * .35); ctx.quadraticCurveTo(gx - L * .03, 0, gx, H * .35); ctx.stroke(); }
+  ctx.fillStyle = fin; ctx.save(); ctx.translate(L * .3, H * .55); ctx.rotate(Math.sin(s.t * 4) * .12); ctx.beginPath(); ctx.moveTo(L * .06, -H * .05); ctx.quadraticCurveTo(-L * .12, H * .55, -L * .28, H * 1); ctx.quadraticCurveTo(-L * .16, H * .35, -L * .12, H * .03); ctx.closePath(); ctx.fill(); ctx.restore();
+  ctx.fillStyle = '#121619'; E(L * .74, -H * .3, 3.4, 3.4); ctx.fillStyle = 'rgba(255,255,255,.85)'; E(L * .755, -H * .37, 1.2, 1.2);
   ctx.restore();
 }
 function drawFish(f){
