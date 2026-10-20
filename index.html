@@ -3692,18 +3692,21 @@ function openSheet(o){
   fitPhoto();
   sheet.style.transform = ''; sheet.classList.add('open'); $('shBack').classList.add('on'); sheetOn = true; sheetAt = performance.now();
 }
-// size the photo column so the photo is as tall as the text beside it: even padding on every side, nothing cropped
+// desktop: the text keeps a comfortable fixed column and the pop-up grows or shrinks around the photo,
+// which is sized to stand as tall as the text so the padding is even on every side
 function fitPhoto(){
-  const body = $('shBody'), ph = $('shPh'), info = body.querySelector('.shInfo'); body.style.gridTemplateColumns = ''; ph.style.aspectRatio = '';
+  const body = $('shBody'), ph = $('shPh'), info = body.querySelector('.shInfo');
+  body.style.gridTemplateColumns = ''; ph.style.aspectRatio = ''; sheet.style.width = '';
   if (ph.hidden || !matchMedia('(min-width: 601px)').matches) return;
-  const ar = parseFloat(ph.style.getPropertyValue('--ar')) || 1, maxH = Math.min(560, innerHeight * .88 - 40);
-  let lo = .34, hi = .64;
-  for (let k = 0; k < 9; k++) { const m = (lo + hi) / 2; body.style.gridTemplateColumns = `minmax(0, ${m}fr) minmax(0, ${1 - m}fr)`;
-    const h = ph.offsetWidth / ar; if (h > maxH || h > info.offsetHeight) hi = m; else lo = m; }
-  body.style.gridTemplateColumns = `minmax(0, ${lo}fr) minmax(0, ${1 - lo}fr)`;
-  // a wide photo can still come up short of the text: let it grow a little taller, trimming only a sliver off its sides, never the top or bottom
-  const w = ph.offsetWidth, need = Math.min(info.offsetHeight, maxH);
-  if (w / ar < need - 2) ph.style.aspectRatio = String(Math.max(w / need, ar * .8));
+  const ar = parseFloat(ph.style.getPropertyValue('--ar')) || 1, TW = 420, GAP = 22, CH = 34;
+  const room = Math.min(innerWidth - 32, 1000) - CH - GAP - TW, maxH = Math.min(420, innerHeight * .88 - 40);
+  body.style.gridTemplateColumns = `0px ${TW}px`; sheet.style.width = (CH + GAP + TW) + 'px';
+  const h = Math.max(260, Math.min(info.offsetHeight, maxH));
+  let w = Math.round(h * ar), shown = ar;
+  const cap = Math.min(room, 480);
+  if (w > cap) { w = Math.max(160, Math.round(cap)); shown = Math.max(w / h, ar * .8); } // only ever trims a sliver off the sides
+  ph.style.aspectRatio = String(shown);
+  body.style.gridTemplateColumns = `${w}px ${TW}px`; sheet.style.width = (CH + w + GAP + TW) + 'px';
 }
 window.addEventListener('resize', () => { if (sheetOn) fitPhoto(); });
 function closeSheet(){ if (!sheetOn) return; sheet.style.transform = ''; sheet.classList.remove('open'); $('shBack').classList.remove('on'); sheetOn = false; setTimeout(() => { if (!sheetOn) sheetArt = null; }, 360); }
