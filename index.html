@@ -2858,10 +2858,17 @@ function silImg(key, col){
   try { for (const q of p.parts || [p]) drawBody(q, {}, 0, 0); if (p.lm.after) p.lm.after(p); }
   catch(e) {} finally { ctx = keep; ART = art; }
   const g = c.getContext('2d'); g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, SW, SH);
-  return silCache[id] = { c, ox:SW / 2, oy:PAD + LH };
+  const px = g.getImageData(0, 0, SW, SH).data; let top = 0; while (top < SH) { let hit = false; for (let x = 0; x < SW; x++) if (px[(top * SW + x) * 4 + 3] > 40) { hit = true; break; } if (hit) break; top++; }
+  let lx = SW, rx = 0; for (let y = top; y < SH; y++) for (let x = 0; x < SW; x++) if (px[(y * SW + x) * 4 + 3] > 40) { if (x < lx) lx = x; if (x > rx) rx = x; }
+  return silCache[id] = { c, ox:SW / 2, oy:PAD + LH, hgt:Math.max(1, PAD + LH - top), lx, rx };
 }
-function drawSkySil(key, x, baseY, sc, col){
-  const s = silImg(key, col); ctx.drawImage(s.c, x - s.ox * sc, baseY - s.oy * sc, s.c.width * sc, s.c.height * sc);
+// real heights in metres, so a low hall reads low on the skyline and a supertall reads tall
+const skyScale = (key, k, s) => Math.min(96, 24 + (SKYH[key] || 120) * .088) * (k / .5) / s.hgt;
+// the stretch of skyline a landmark's outline covers, so the generic blocks step aside and its shape reads clearly
+function skyGap(key, x, k, col){ const s = silImg(key, col), sc = skyScale(key, k, s); return [x + (s.lx - s.ox) * sc - 7, x + (s.rx - s.ox) * sc + 7]; }
+const SKYH = { eiffel:330, obelisk:23, notredame:96, burj:828, burjarab:321, minaret:40, qutub:73, ironpillar:7, tajminaret:73, empire:443, chrysler:319, liberty:93, skytree:634, pagoda:53, tokyotower:333, bigben:96, shard:310, nelson:52, duomo:114, campanile:85, palazzovecchio:94, westertoren:85, munttoren:30, windmill:26, cityhall:66, holmenkollen:60, domkirke:60, peacepalace:80, ridderzaal:30, hoftoren:142, galata:67, bluemosque:64, hagiasophia:55, sagrada:172, glories:144, colom:60, petronas:452, kltower:421, merdeka118:679, pearl:468, shanghaitower:632, jinmao:421, taipei101:508, cksmemorial:70, grandhotel:87 };
+function drawSkySil(key, x, baseY, k, col){
+  const s = silImg(key, col), sc = skyScale(key, k, s); ctx.drawImage(s.c, x - s.ox * sc, baseY - s.oy * sc, s.c.width * sc, s.c.height * sc);
 }
 function drawPegs(){
   for (const p of pegs) {
@@ -3541,7 +3548,9 @@ function drawSky(){
     crescent(mx, my, 14, '#fbf6e2'); }
   else { const sg = ctx.createRadialGradient(W * .84, 50, 4, W * .84, 50, 70); sg.addColorStop(0, 'rgba(255,248,214,1)'); sg.addColorStop(.25, 'rgba(255,240,190,.8)'); sg.addColorStop(1, 'rgba(255,240,190,0)'); ctx.fillStyle = sg; ctx.fillRect(W * .84 - 70, -20, 140, 140); }
   const hc = night ? '#13222c' : '#B2C2C4';
-  ctx.fillStyle = hc; for (const b of horizon) ctx.fillRect(b[0], SURF - 2 - b[2], b[1], b[2] + 20);
+  const gaps = [skyGap(city.lms[0], W * .62, .5, hc), skyGap(city.lms[2], W * .36, .38, hc)];
+  ctx.save(); ctx.beginPath(); ctx.rect(-10, 0, W + 20, SURF + 30); for (const [a, b] of gaps) ctx.rect(a, 0, b - a, SURF + 30); ctx.clip('evenodd');
+  ctx.fillStyle = hc; for (const b of horizon) ctx.fillRect(b[0], SURF - 2 - b[2], b[1], b[2] + 20); ctx.restore();
   drawSkySil(city.lms[0], W * .62, SURF + 4, .5, hc); drawSkySil(city.lms[2], W * .36, SURF + 4, .38, hc);
   if (night) { ctx.fillStyle = 'rgba(255,214,120,.8)'; for (const b of horizon) if (b[3] > .55) R(b[0] + b[1] * .4, SURF - b[2] + 4, 1.6, 1.6); }
   for (const s of sparks) if (s.sky) { ctx.globalAlpha = Math.max(0, s.life); ctx.fillStyle = s.col; E(s.x, s.y, 1.6, 1.6); } ctx.globalAlpha = 1;
