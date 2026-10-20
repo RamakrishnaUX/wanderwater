@@ -754,9 +754,9 @@ body.coach #hints{opacity:0}
   --e-out:cubic-bezier(.16,1,.3,1); --e-io:cubic-bezier(.65,0,.35,1); --spring:cubic-bezier(.34,1.3,.5,1);
   --graphite:#18262E; --graphite-2:#22323B;
 }
-:root[data-theme="dark"]{ --ink:#E9EEEB; --ink-soft:#97A8AD; --ink-faint:rgba(233,238,235,.16); --accent:#E9EEEB; --foam:#111E26; --paper:#15232C; --line:rgba(255,255,255,.08);
+:root[data-theme="dark"]{ --stamp:#FF7A66; --ink:#E9EEEB; --ink-soft:#97A8AD; --ink-faint:rgba(233,238,235,.16); --accent:#E9EEEB; --foam:#111E26; --paper:#15232C; --line:rgba(255,255,255,.08);
   --mat:rgba(17,30,38,.86); --mat-line:rgba(255,255,255,.07); --mat-shadow:0 1px 1px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); --glass:rgba(17,30,38,.9); --glass-line:rgba(255,255,255,.08); --sky:#111E26 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ink:#E9EEEB; --ink-soft:#97A8AD; --ink-faint:rgba(233,238,235,.16); --accent:#E9EEEB; --foam:#111E26; --paper:#15232C; --line:rgba(255,255,255,.08);
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --stamp:#FF7A66; --ink:#E9EEEB; --ink-soft:#97A8AD; --ink-faint:rgba(233,238,235,.16); --accent:#E9EEEB; --foam:#111E26; --paper:#15232C; --line:rgba(255,255,255,.08);
   --mat:rgba(17,30,38,.86); --mat-line:rgba(255,255,255,.07); --mat-shadow:0 1px 1px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); --glass:rgba(17,30,38,.9); --glass-line:rgba(255,255,255,.08); --sky:#111E26 } }
 body{font-family:var(--ui); -webkit-font-smoothing:antialiased; font-feature-settings:"ss01","cv11"}
 #scene{filter:saturate(.9)}
@@ -838,6 +838,8 @@ body.toy #pad #hud .ctl.arrow.on, body.toy #pad #hud .ctl.arrow:active{transform
 #done .dStamp svg{width:172px!important; height:172px!important; opacity:0}
 #done .dStamp svg text{fill:currentColor}
 #done .dStamp svg{overflow:visible; mix-blend-mode:multiply}
+:root[data-theme="dark"] #done .dStamp svg{mix-blend-mode:normal}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) #done .dStamp svg{mix-blend-mode:normal} }
 #done .dRing{position:absolute; inset:14%; border-radius:50%; border:2px solid currentColor; opacity:0}
 #done .dEb{margin:0 0 6px}
 #done h2{margin:0 0 8px!important; font-size:38px!important}
@@ -4177,6 +4179,10 @@ function celebrate(){
   lastResult = { gi:cityIdx, city:city.name, pumps, best:store.best[city.id], daily, day:dayNo, date, newBest:!prevBest || pumps < prevBest, first };
   setTimeout(showDone, 1500);
 }
+function nightInk(hex){ // the passport inks are dark; on a night sheet lift them to a bright, readable tone of the same hue
+  const n = parseInt(hex.slice(1), 16), r = (n >> 16) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0; if (d) h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return 'hsl(' + Math.round((h * 60 + 360) % 360) + ', ' + Math.round(Math.max(55, d / (1 - Math.abs(mx + mn - 1) || 1) * 100)) + '%, 74%)'; }
 function showDone(){
   const r = lastResult; if (!r) return;
   $('doneEb').textContent = r.daily ? 'Daily #' + r.day + ' · ' + r.city : 'Gallery ' + pad2(r.gi + 1) + ' · ' + r.city;
@@ -4185,7 +4191,7 @@ function showDone(){
   $('doneBest').textContent = r.best; $('donePass').textContent = Object.keys(store.stamps).length + '/' + CITIES.length;
   const n = Object.keys(store.stamps).length, nx = CITIES[(r.gi + 1) % CITIES.length];
   $('doneEb').textContent = r.daily ? 'Daily #' + r.day : 'Stamp ' + n + ' of ' + CITIES.length;
-  $('doneStamp').innerHTML = stampSVG(CITIES[r.gi], r.gi); $('doneStamp').style.color = INK[r.gi];
+  const inkD = night ? nightInk(INK[r.gi]) : INK[r.gi]; $('doneStamp').innerHTML = night ? stampSVG(CITIES[r.gi], r.gi).split(INK[r.gi]).join(inkD) : stampSVG(CITIES[r.gi], r.gi); $('doneStamp').style.color = inkD;
   $('doneLine').innerHTML = r.first ? 'All three landmarks looped in <b>' + r.pumps + (r.pumps === 1 ? ' pump' : ' pumps') + '</b>.'
     : r.newBest ? 'Looped in <b>' + r.pumps + ' pumps</b>. That beats your old best.' : 'Looped in <b>' + r.pumps + ' pumps</b>. Your best is ' + r.best + '.';
   $('doneTrack').innerHTML = CITIES.map((c, k) => `<i class="${store.stamps[c.id] ? 'on' : ''}${k === r.gi && r.first ? ' new' : ''}"></i>`).join('');
