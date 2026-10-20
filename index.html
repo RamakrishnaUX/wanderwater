@@ -3435,10 +3435,30 @@ function drawShark(){
   ctx.fillStyle = belly; ctx.beginPath(); let first = true;
   for (let i = 2; i <= N; i++) { const u = i / N, hb = bot[i][1] - mid[i], y = mid[i] + Math.min(hb - H * .03, H * (.1 + .24 * Math.sin(Math.PI * Math.pow(u, 1.25)))); if (first) { ctx.moveTo(top[i][0], y); first = false; } else ctx.lineTo(top[i][0], y); }
   ctx.quadraticCurveTo(L * 1.04, mid[N] + H * .06, bot[N][0], bot[N][1]); for (let i = N; i >= 2; i--) ctx.lineTo(bot[i][0], bot[i][1]); ctx.closePath(); ctx.fill();
-  // mouth on the underside of the snout, teeth showing as it opens
-  { const m = midAt(.95); if (j > .02) { ctx.fillStyle = '#2b2026'; ctx.beginPath(); ctx.moveTo(L * 1.03, m + H * .1); ctx.quadraticCurveTo(L * .72, m + H * .2, L * .55, m + H * .46); ctx.quadraticCurveTo(L * .8, m + H * (.46 + j * .62), L * 1.03, m + H * (.18 + j * 1.0)); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#fff'; for (let k = 0; k < 6; k++) { const tx = L * (.97 - k * .07), ty = m + H * (.12 + k * .05); ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx - L * .025, ty); ctx.lineTo(tx - L * .012, ty + H * .16 * j); ctx.closePath(); ctx.fill(); } }
-    else { ctx.strokeStyle = 'rgba(40,40,45,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(L * 1.0, m + H * .14); ctx.quadraticCurveTo(L * .76, m + H * .25, L * .6, m + H * .42); ctx.stroke(); } }
+  // mouth: tucked under the snout, with a hinged lower jaw that drops open to show a dark gullet and teeth
+  { const hU = .79, fU = .965, M = 7, hp = at(bot, hU), fx = -L * .94 + fU * L * 1.94, hx = hp[0], mH = midAt(hU), mF = midAt(fU);
+    const hy = mH + H * .4, fy = mF + H * .2, a = j * .55;
+    const lip = []; for (let k = 0; k <= M; k++) { const t = k / M, x = hx + (fx - hx) * t; lip.push([x, hy + (fy - hy) * t - Math.sin(t * Math.PI) * H * .05]); }
+    const chin = []; for (let k = M; k >= 0; k--) { const u = hU + (fU - hU) * k / M, b = at(bot, u); chin.push([b[0], Math.max(b[1], lip[k][1] + H * .06)]); }
+    const rot = ([x, y]) => { const dx = x - hx, dy = y - hy; return [hx + dx * Math.cos(a) - dy * Math.sin(a), hy + dx * Math.sin(a) + dy * Math.cos(a)]; };
+    if (a > .01) {
+      const low = lip.map(rot), jaw = lip.concat(chin).map(rot);
+      // gullet: the gap between the upper jaw and the dropped lower jaw
+      const gg = ctx.createLinearGradient(hx, 0, fx, 0); gg.addColorStop(0, '#2a141b'); gg.addColorStop(1, '#5c2a35');
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.moveTo(hx, hy); for (const q of lip) ctx.lineTo(q[0], q[1]); ctx.lineTo(fx + L * .02, fy + H * .02); for (let k = low.length - 1; k >= 0; k--) ctx.lineTo(low[k][0], low[k][1]); ctx.closePath(); ctx.fill();
+      // tongue
+      ctx.fillStyle = 'rgba(150,70,82,.75)'; { const t1 = low[2], t2 = low[5]; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.quadraticCurveTo(t1[0], t1[1] - H * .12, t2[0], t2[1] - H * .04); ctx.lineTo(low[1][0], low[1][1]); ctx.closePath(); ctx.fill(); }
+      // teeth, upper row hanging down and lower row standing up, growing into view as the jaw opens
+      const th = H * .15 * Math.min(1, a / .25); ctx.fillStyle = '#f4f2ea';
+      for (let k = 2; k <= M; k++) { const [x, y] = lip[k], w = L * .022; ctx.beginPath(); ctx.moveTo(x - w, y - .5); ctx.lineTo(x + w, y - .5); ctx.lineTo(x, y + th); ctx.closePath(); ctx.fill(); }
+      for (let k = 2; k < M; k++) { const [x, y] = low[k], w = L * .02; ctx.beginPath(); ctx.moveTo(x - w, y + .5); ctx.lineTo(x + w, y + .5); ctx.lineTo(x, y - th * .85); ctx.closePath(); ctx.fill(); }
+      // the lower jaw itself, belly coloured, swung down on its hinge
+      ctx.fillStyle = belly; ctx.beginPath(); ctx.moveTo(jaw[0][0], jaw[0][1]); for (const q of jaw) ctx.lineTo(q[0], q[1]); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(60,40,48,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(low[0][0], low[0][1]); for (const q of low) ctx.lineTo(q[0], q[1]); ctx.stroke();
+    }
+    ctx.strokeStyle = a > .01 ? 'rgba(40,32,38,.5)' : 'rgba(40,40,45,.5)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(lip[0][0], lip[0][1]); for (const q of lip) ctx.lineTo(q[0], q[1]); ctx.stroke();
+    if (a <= .01) { ctx.beginPath(); ctx.moveTo(hx, hy); ctx.quadraticCurveTo(hx - L * .03, hy + H * .02, hx - L * .05, hy - H * .06); ctx.stroke(); } }
   // gills, pectoral fin (it angles to steer and brake), eye
   ctx.strokeStyle = 'rgba(40,55,65,.45)'; ctx.lineWidth = 1.3; for (let k = 0; k < 3; k++) { const u = .73 - k * .03, x = -L * .94 + u * L * 1.94, m = midAt(u); ctx.beginPath(); ctx.moveTo(x, m - H * .35); ctx.quadraticCurveTo(x - L * .03, m, x, m + H * .35); ctx.stroke(); }
   { const a = at(bot, .64), brake = s.ph === 'enter' ? Math.max(0, (s.pt / s.dur - .5)) * .3 : 0; ctx.save(); ctx.translate(a[0], a[1] - H * .2); ctx.rotate(Math.sin(s.wph * .5) * .06 - brake);
