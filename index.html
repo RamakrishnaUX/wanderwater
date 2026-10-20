@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="description" content="Wanderwater: an underwater museum ring toss game. Pump water to loop rings onto famous landmarks from ten cities.">
+<meta name="description" content="Wanderwater: an underwater museum ring toss game. Pump water to loop rings onto famous landmarks from fifteen cities.">
 <meta name="theme-color" content="#3398ad">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Wanderwater">
 <meta property="og:title" content="Wanderwater">
-<meta property="og:description" content="An underwater museum ring toss across ten cities. Pump the water, loop rings onto famous landmarks and collect passport stamps.">
+<meta property="og:description" content="An underwater museum ring toss across fifteen cities. Pump the water, loop rings onto famous landmarks and collect passport stamps.">
 <meta property="og:url" content="https://wanderwater.vercel.app/">
 <meta property="og:image" content="https://wanderwater.vercel.app/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
@@ -19,7 +19,7 @@
 <meta property="og:image:alt" content="Wanderwater, an underwater museum ring toss game, shown inside a matte toy water tank">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Wanderwater">
-<meta name="twitter:description" content="An underwater museum ring toss across ten cities.">
+<meta name="twitter:description" content="An underwater museum ring toss across fifteen cities.">
 <meta name="twitter:image" content="https://wanderwater.vercel.app/og.jpg?v=2">
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -950,6 +950,10 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 #nameSh .nsBtns{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
 #nameSh button{font:600 15px/1 var(--ui, system-ui); border:0; border-radius:999px; padding:12px 18px; cursor:pointer; color:#0B1E2A; background:rgba(11,30,42,.07)}
 #nameSh #nameOk{background:#0B1E2A; color:#FBFBF8}
+
+.log.many div{padding:1.15cqw 0; font-size:2.5cqw}
+.log.many b{font-size:3cqw}
+.slot.blankslot{visibility:hidden}
 </style>
 </head>
 <body>
@@ -965,7 +969,7 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
   <div class="pills glass">
     <button class="pill cityp" id="cityPill" aria-label="Change city"><span class="n" id="cityN">Paris</span><svg viewBox="0 0 12 8" width="11" height="8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="psep" aria-hidden="true"></span>
     <span class="pill" id="chipLoop" title="Landmarks looped"><span class="ldots" aria-hidden="true"><i></i><i></i><i></i></span><span class="vh"><span id="loopN">0</span> of 3 landmarks looped</span></span>
-    <button class="pill" id="passBtn" aria-label="Open your passport" title="Passport"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M9 17h6"/></svg><b><span id="passN">0</span>/10</b></button>
+    <button class="pill" id="passBtn" aria-label="Open your passport" title="Passport"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M9 17h6"/></svg><b><span id="passN">0</span>/<span id="passT">15</span></b></button>
     <span class="pill zero" id="chipPump" title="Pump presses this round"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 5 6.5 8 6.5 11.2a6.5 6.5 0 0 1-13 0C5.5 11 8 8 12 3z"/></svg><b id="pumpN">0</b> <span class="lbl">pumps</span></span>
   </div>
   <div class="menuWrap">
@@ -1017,7 +1021,7 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
   <div class="sky">
     <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
     <h1 id="spT">Wander<span>water</span></h1>
-    <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>Ten cities. One very soggy museum.</p>
+    <p class="mean"><b>Wander</b> the world, under <b>water</b>.<br>Fifteen cities. One very soggy museum.</p>
   </div>
   <div class="sea">
     <div class="surf" aria-hidden="true"><i></i><i></i></div>
@@ -1062,7 +1066,7 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
         </svg>
       <h3 id="spShT">Yes, that toy.</h3>
       <p>A little box of water, a few pegs, a flurry of rings. You mash the two buttons, the water whooshes up, and you hope a ring lands. Usually it doesn't. When it does, it's glorious.</p>
-      <p>Wanderwater is that same toy, now with an underwater museum of ten cities inside.</p>
+      <p>Wanderwater is that same toy, now with an underwater museum of fifteen cities inside.</p>
       <small>Illustration of the classic toy.</small>
       <button id="spShX">Take me back</button>
     </div>
@@ -1071,14 +1075,14 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 <div id="how" class="modal" hidden>
   <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="howTitle">
     <h2 id="howTitle">How to play</h2>
-    <p class="sub">The water toy you loved, with ten cities hiding inside.</p>
+    <p class="sub">The water toy you loved, with fifteen cities hiding inside.</p>
     <ol class="steps">
       <li><div><b>Pump</b>Press the two pump buttons, or A and L. Water rockets up from the seabed and takes the rings with it. Hold a current, or the arrow keys, to nudge things sideways.</div></li>
       <li><div><b>Ring the landmarks</b>Drop a ring onto the tip of a landmark and it slides down and stays. Ring all three to win the city's stamp. Fewer pumps, more bragging rights.</div></li>
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Poke around</b>Tap a landmark to hear its story. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
-    <details class="credits"><summary>Credits and licences</summary><p>Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0).</p></details>
+    <details class="credits"><summary>Credits and licences</summary><p>Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Istanbul: Hüseynî Saz Semaisi, traditional (public domain). Barcelona: Recuerdos de la Alhambra by Francisco Tárrega, played by Carlo Alberto Boni (CC BY-SA 3.0). Kuala Lumpur: Rasa Sayang, Syntax Media (CC0). Shanghai: Erquan Yingyue by Abing, recorded by David290 (CC BY-SA 4.0). Taipei: Bang Chhun Hong by Teng Yu-hsien, Columbia Records, 1933 (public domain). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0); Istanbul by A.Savin (Free Art License); Barcelona by kallerna (CC BY-SA 4.0); Kuala Lumpur and Taipei by CEphoto, Uwe Aranas (CC BY-SA 3.0); Shanghai by King of Hearts (CC BY-SA 4.0).</p></details>
     <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
   </div>
 </div>
@@ -1086,7 +1090,7 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 <div id="gal" class="modal" hidden>
   <div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="galT">
     <div class="shHead"><h2 id="galT">Atlas</h2><button class="x sx" id="galX" aria-label="Close">×</button></div>
-    <p class="sub">Ten cities, thirty landmarks, one tiny passport. Where to next?</p>
+    <p class="sub">Fifteen cities, forty-five landmarks, one tiny passport. Where to next?</p>
     <div class="galgrid" id="galGrid"></div>
     <div class="btns"><button class="ctl" id="galClose">Close</button></div>
   </div>
@@ -1266,6 +1270,11 @@ const TRACKS = {
   amsterdam:{ url:'https://upload.wikimedia.org/wikipedia/commons/2/29/Bicycle_%28ISRC_USUAN1100870%29.mp3', name:'Bicycle, Kevin MacLeod', vol:0.75 },
   oslo:{ url:'https://upload.wikimedia.org/wikipedia/commons/8/83/Celtic_Impulse_%28ISRC_USUAN1100297%29.mp3', name:'Celtic Impulse, Kevin MacLeod', vol:0.7 },
   hague:{ url:'https://upload.wikimedia.org/wikipedia/commons/2/28/Cheery_Monday_%28ISRC_USUAN1700065%29.mp3', name:'Cheery Monday, Kevin MacLeod', vol:0.75 },
+  istanbul:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d3/Husseyni_Saz_Semayissi_.ogg/Husseyni_Saz_Semayissi_.ogg.mp3', name:'Hüseynî Saz Semaisi, traditional Ottoman', vol:0.85 },
+  barcelona:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/a/a3/Recuerdos_de_la_Alhambra.ogg/Recuerdos_de_la_Alhambra.ogg.mp3', name:'Recuerdos de la Alhambra, Francisco Tárrega', vol:0.9 },
+  kl:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/e/ee/Rasa_Sayang.ogg/Rasa_Sayang.ogg.mp3', name:'Rasa Sayang, Malay folk song', vol:0.8 },
+  shanghai:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/f/ff/%E4%BA%8C%E6%B3%89%E6%98%A0%E6%9C%88.ogg/%E4%BA%8C%E6%B3%89%E6%98%A0%E6%9C%88.ogg.mp3', name:'Erquan Yingyue, Abing (erhu)', vol:0.85 },
+  taipei:{ url:'https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d7/Bang_Chhun_Hong.ogg/Bang_Chhun_Hong.ogg.mp3', name:'Bang Chhun Hong, Teng Yu-hsien (1933)', vol:0.8 },
 };
 let trackEl = null, trackGain = null; const trackFails = {};
 function trackType(u){ return u.endsWith('.mp3') ? 'audio/mpeg' : u.endsWith('.flac') ? 'audio/flac' : 'audio/ogg'; }
@@ -1495,7 +1504,34 @@ const STYLES = {
     const bar = (i / 3) | 0, s = i % 3, CH = [[43, [7, 11, 2]], [48, [0, 4, 7]], [50, [2, 6, 9]], [43, [7, 11, 2]], [40, [4, 7, 11]], [48, [0, 4, 7]], [50, [2, 6, 9, 0]], [43, [7, 11, 2]]], [root, pcs] = CH[bar % 8];
     if (s === 0) pluck(mf(root - 12), t, .07, d, { dur:1, s:.18, decay:.99, peak:1800 }); else pluck(mf(voicing(pcs, 55)[s % 3]), t, .03, d, { dur:.6, s:.18, decay:.988, peak:2600 });
     if (s === 0) { const ph = bar % 4; let notes = ph === 2 && st.mot && rng() < .7 ? st.mot : mel(st, rng, poolFrom(55, [0, 2, 4, 5, 7, 9, 11], 67, 86), pcs, rng() < .5 ? [0, 1, 2] : [0, 2]); if (ph === 0) st.mot = notes;
-      playLine(notes, t, .24, 3, (f, tt, du) => { pluck(f, tt, .05, d, { dur:Math.max(.5, du * 1.5), s:.15, decay:.991, peak:3000 }); pluck(f * 2, tt + .008, .015, d, { dur:.4, s:.15, decay:.99 }); }); } } }
+      playLine(notes, t, .24, 3, (f, tt, du) => { pluck(f, tt, .05, d, { dur:Math.max(.5, du * 1.5), s:.15, decay:.991, peak:3000 }); pluck(f * 2, tt + .008, .015, d, { dur:.4, s:.15, decay:.99 }); }); } } },
+  istanbul:{ name:'Saz and darbuka', step:.2, play(i, t, d, st, rng){
+    const bar = (i / 8) | 0, s = i % 8, pool = poolFrom(50, [0, 1, 4, 5, 7, 8, 10], 62, 81);
+    if (s === 0 || s === 3 || s === 6) kickD(t, s === 0 ? .1 : .06, d, 140, 60, .16); if (s === 2 || s === 5 || s === 7) noiseHit(t, .06, .025, d, 'bandpass', 2600, 1.2);
+    if (s === 0) { pluck(mf(38), t, .08, d, { dur:1.4, s:.4, decay:.995 }); voice('sawtooth', mf(50), t, 1.6, .006, d, { sus:true, a:.2, r:.3, lp:900 });
+      const R = [[0, 1, 2, 3, 4, 6], [0, 2, 3, 4, 6], [0, 1, 2, 4, 5, 6]], notes = bar % 4 === 2 && st.mot && rng() < .7 ? st.mot : mel(st, rng, pool, [2, 6, 9], R[(rng() * R.length) | 0]); if (bar % 4 === 0) st.mot = notes;
+      playLine(notes, t, .2, 8, (f, tt, du) => pluck(f, tt, .07, d, { dur:Math.max(.5, du * 1.6), s:.25, decay:.993, peak:2400 })); } } },
+  barcelona:{ name:'Spanish guitar', step:.18, play(i, t, d, st, rng){
+    const bar = (i / 8) | 0, s = i % 8, CH = [[45, [9, 0, 4]], [43, [7, 11, 2]], [41, [5, 9, 0]], [40, [4, 8, 11]]], [root, pcs] = CH[bar % 4], v = voicing(pcs, 57);
+    if (s === 0) pluck(mf(root), t, .09, d, { dur:1.6, s:.45, decay:.995 }); if (s % 2 === 1) pluck(mf(v[(s >> 1) % v.length]), t, .045, d, { dur:.8, s:.4, decay:.99 });
+    if (s === 0 && bar % 4 === 3) v.forEach((m, k) => pluck(mf(m), t + .03 * k, .05, d, { dur:1, s:.4, decay:.992 }));
+    if (s === 0) { const notes = bar % 4 === 2 && st.mot && rng() < .7 ? st.mot : mel(st, rng, poolFrom(57, [0, 2, 3, 5, 7, 8, 10, 11], 64, 81), pcs, rng() < .5 ? [0, 2, 3, 4, 6] : [0, 1, 2, 4, 6]); if (bar % 4 === 0) st.mot = notes;
+      playLine(notes, t, .18, 8, (f, tt, du) => pluck(f, tt, .07, d, { dur:Math.max(.5, du * 1.4), s:.35, decay:.994, peak:2200 })); } } },
+  kl:{ name:'Gamelan and kompang', step:.24, play(i, t, d, st, rng){
+    const s = i % 8, bar = (i / 8) | 0, pool = poolFrom(62, [0, 2, 4, 7, 9], 62, 86);
+    if (s === 0) { voice('sine', 98, t, 3, .05, d, { a:.01, vib:3, vibR:4 }); voice('sine', 198, t, 2, .015, d, { a:.01 }); }
+    if (s % 2 === 0) { const m = pool[(bar * 3 + s) % pool.length]; voice('sine', mf(m), t, .9, .03, d, { a:.002 }); voice('sine', mf(m) * 2.76, t, .3, .008, d, { a:.002 }); }
+    if (s === 1 || s === 3 || s === 5 || s === 6) noiseHit(t, .07, s === 6 ? .045 : .03, d, 'bandpass', s === 6 ? 500 : 1100, 1.4);
+    if (s === 0 && rng() < .7) { const notes = mel(st, rng, pool, [2, 6, 9], [0, 2, 3, 4, 6]); playLine(notes, t, .24, 8, (f, tt, du) => flute(f, tt, du, .03, d, { vib:10 })); } } },
+  shanghai:{ name:'Erhu and guzheng', step:.3, play(i, t, d, st, rng){
+    const s = i % 8, bar = (i / 8) | 0, pool = poolFrom(62, [0, 2, 4, 7, 9], 62, 86), CH = [[50, [2, 9]], [45, [9, 4]], [43, [7, 2]], [50, [2, 9]]], [root, pcs] = CH[bar % 4];
+    if (s % 2 === 0) pluck(mf(voicing(pcs.concat([4]), 55)[(s / 2) % 3]), t, .05, d, { dur:1.6, s:.2, decay:.997 }); if (s === 0) pluck(mf(root - 12), t, .07, d, { dur:2, s:.3, decay:.997 });
+    if (s === 0) { const notes = bar % 4 === 2 && st.mot && rng() < .7 ? st.mot : mel(st, rng, pool, pcs, rng() < .5 ? [0, 2, 3, 4, 6] : [0, 3, 4, 6]); if (bar % 4 === 0) st.mot = notes;
+      playLine(notes, t, .3, 8, (f, tt, du) => voice('sawtooth', f, tt, du, .022, d, { sus:true, a:.06, r:.1, lp:1900, q:2, vib:22, vibD:.25, from:f * .985, slide:.08 })); } } },
+  taipei:{ name:'Bamboo flute and pipa', step:.26, play(i, t, d, st, rng){
+    const s = i % 8, bar = (i / 8) | 0, CH = [[48, [0, 7]], [45, [9, 4]], [41, [5, 0]], [43, [7, 2]]], [root, pcs] = CH[bar % 4], pool = poolFrom(60, [0, 2, 4, 7, 9], 67, 88);
+    if (s === 0 || s === 4) pluck(mf(root), t, .07, d, { dur:1.4, s:.3, decay:.996 }); if (s % 2 === 1) for (let r = 0; r < 3; r++) pluck(mf(voicing(pcs, 60)[r % 2]), t + r * .04, .025, d, { dur:.4, s:.3, decay:.99 });
+    if (s === 0) { const notes = bar % 4 === 2 && st.mot && rng() < .7 ? st.mot : mel(st, rng, pool, pcs, [0, 2, 3, 4, 6]); if (bar % 4 === 0) st.mot = notes; playLine(notes, t, .26, 8, (f, tt, du) => flute(f, tt, du, .04, d, { vib:14 })); } } }
 };
 
 /* ---------- landmarks ----------
@@ -1511,6 +1547,13 @@ function pagodaProf(){
   p.push([.978, 16], [1, 16]);
   return p;
 }
+function sagradaProf(){ const p = [[0, .4], [.012, 1.6], [.024, .9], [.03, 2.4], [.045, 3], [.06, 2.4], [.07, 3.2], [.085, 3.6], [.1, 3], [.11, 2.4], [.12, 2.8]];
+  for (let k = 1; k <= 22; k++) { const t = .12 + k / 22 * .88, u = (t - .12) / .88; p.push([t, 2.8 + 10.6 * Math.pow(u, .62)]); } return p; }
+function jinmaoProf(){ const p = [[0, .3], [.07, .6], [.075, 1.4], [.1, 1.8], [.105, 3], [.135, 3.4], [.14, 4.4], [.165, 4.8], [.17, 5.6]], steps = [.2, .24, .28, .325, .375, .43, .5, .58, .68, .8];
+  let last = 5.6; steps.forEach((t, k) => { const w = 6 + 6.4 * (k / (steps.length - 1)); p.push([t, last + .2], [t + .006, w]); last = w; }); p.push([1, last + .4]); return p; }
+function t101Prof(){ const p = [[0, .3], [.1, .6], [.105, 1.6], [.13, 2], [.135, 3.2], [.16, 3.6], [.165, 4.8], [.19, 5.2], [.195, 6.4]];
+  for (let k = 0; k < 8; k++) { const t0 = .2 + k * .0725, t1 = t0 + .0725; p.push([t0, 9.2], [t0 + .003, 12], [t1 - .003, 9.6]); }
+  p.push([.785, 9.8], [.79, 10.6], [.86, 11.6], [.865, 12.6], [1, 14.4]); return p; }
 const LM = {
   eiffel:{ name:'Eiffel Tower', meta:'Paris · 1889', text:'Built as the entrance arch for the 1889 World\'s Fair. Its first permit only allowed it to stand for 20 years. Every evening it sparkles for five minutes on the hour.', fx:'twinkle', pal:['#b08b69', '#7d5f45', '#4c3828'],
     prof:[[0, .7], [.09, .7], [.12, 2.2], [.155, 2.6], [.16, 4.6], [.17, 4.6], [.172, 3.4], [.4, 7.2], [.64, 12.4], [.645, 17.5], [.665, 17.5], [.67, 13], [.8, 23], [.805, 27], [.825, 27], [.83, 24], [1, 36]], arch:{ w:22, h:34 },
@@ -1652,7 +1695,126 @@ const LM = {
       ctx.fillStyle = 'rgba(255,255,255,.12)'; for (let yy = y0 + 4; yy < y1; yy += 6) ctx.fillRect(x - 6, yy, 12, .8); ctx.fillStyle = '#3d4b55'; ctx.beginPath(); ctx.moveTo(x - 7.5, y0); ctx.lineTo(x, y0 - 22); ctx.lineTo(x + 7.5, y0); ctx.fill(); ctx.fillStyle = '#cab370'; E(x, y0 - 23, 1.4, 1.4); ctx.fillStyle = 'rgba(40,30,30,.6)'; ctx.fillRect(x - 1, y0 + 8, 2, 5); } } },
   hoftoren:{ name:'Hoftoren', meta:'The Hague · 2003', text:'A slim glass skyscraper with a sharp pointed top. Locals call it De Vulpen, the fountain pen.', fx:'gleam', pal:['#c9dbe6', '#97b7cb', '#55788f'],
     prof:[[0, .5], [.1, 3.4], [.24, 9.4], [.25, 10.4], [1, 12.6]],
-    detail(p, h){ h.zone(0, .25, '#a8c4d4', '#d5e4eb', '#6f90a6'); h.vlines(.25, 1, 3.2, 'rgba(40,70,95,.35)', .6); h.hlines(.27, 1, 3, 'rgba(255,255,255,.12)', .5); if (night) h.windows(.28, .98, 'rgba(255,240,200,.6)', 40); } }
+    detail(p, h){ h.zone(0, .25, '#a8c4d4', '#d5e4eb', '#6f90a6'); h.vlines(.25, 1, 3.2, 'rgba(40,70,95,.35)', .6); h.hlines(.27, 1, 3, 'rgba(255,255,255,.12)', .5); if (night) h.windows(.28, .98, 'rgba(255,240,200,.6)', 40); } },
+  galata:{ name:'Galata Tower', meta:'Istanbul · 1348', text:'A round stone tower built by the Genoese in 1348, when they ran the Galata district. Its pointed cap has watched over the Golden Horn for almost 700 years.', fx:'chime', pal:['#dccfb8', '#c4b59c', '#8b7c65'],
+    prof:[[0, .4], [.025, .7], [.03, 1.3], [.045, 1.3], [.05, 2.2], [.255, 15.4], [.26, 17.6], [.275, 17.6], [.28, 15.6], [.375, 15.6], [.38, 18], [.395, 18], [.4, 16.2], [1, 17.6]],
+    detail(p, h){ h.zone(0, .05, '#c9a650', '#ead08a', '#8a6a24'); h.zone(.05, .26, '#556673', '#7b8d9a', '#33404a'); h.hlines(.07, .255, 4.2, 'rgba(255,255,255,.1)', .5);
+      h.zone(.26, .28, '#b9ab93', '#d9ccb5', '#857761'); h.zone(.28, .38, '#d6c9b2', '#ece2cf', '#9b8c74'); h.arches(.295, .37, 5, 4.2, 'rgba(45,45,55,.62)'); h.railing(.38);
+      h.zone(.4, 1, '#cbbda6', '#e0d4bf', '#958670'); h.hlines(.41, 1, 3.4, 'rgba(90,70,45,.16)', .5);
+      h.arches(.5, .56, 2, 3, 'rgba(50,45,45,.55)'); h.arches(.66, .72, 2, 3, 'rgba(50,45,45,.55)'); h.arches(.9, .995, 1, 6, 'rgba(50,40,35,.6)'); if (night) h.windows(.29, .37, 'rgba(255,220,150,.8)', 14); } },
+  bluemosque:{ name:'Blue Mosque minaret', plate:'Blue Mosque', meta:'Istanbul · 1616', text:'The Sultan Ahmed Mosque has six slim pencil minarets. Everyone calls it the Blue Mosque because of the more than 20,000 blue İznik tiles inside.', fx:'chime', pal:['#eeece6', '#d6d3cb', '#9b978d'],
+    prof:[[0, .35], [.015, .9], [.022, .5], [.035, 1.3], [.042, .6], [.055, 1.5], [.18, 3.7], [.185, 4.6], [.19, 3.7], [.27, 3.7], [.275, 6], [.29, 6], [.295, 3.8], [.47, 4], [.475, 6.2], [.49, 6.2], [.495, 4.1], [.66, 4.3], [.665, 6.4], [.68, 6.4], [.685, 4.4], [.9, 4.7], [.905, 7.4], [1, 7.4]],
+    detail(p, h){ h.zone(0, .055, '#c9a650', '#efd68f', '#8a6a24'); h.zone(.055, .185, '#6f7d88', '#98a7b1', '#46525b'); h.vlines(.06, .18, 1.6, 'rgba(255,255,255,.12)', .4);
+      h.zone(.19, .9, '#e8e5dd', '#fbfaf5', '#b3afa5'); h.flutes(.3, .9, 1.5);
+      [.275, .475, .665].forEach(t => { h.zone(t, t + .015, '#d9d5cb', '#f7f5ef', '#a39f95'); h.muq(t + .016, 'rgba(120,110,95,.45)'); h.railing(t); });
+      h.zone(.905, 1, '#dcd8ce', '#f3f1ea', '#a8a49a'); h.hl(.905, 'rgba(255,255,255,.6)', .8);
+      if (night) [.275, .475, .665].forEach(t => h.hl(t + .006, 'rgba(255,225,150,.75)', 1.4)); },
+    after(p){ const y = p.tip - 4; ctx.fillStyle = '#d8b55c'; ctx.beginPath(); ctx.arc(p.x, y, 3, -1.3, 1.3, true); ctx.arc(p.x + 1.5, y, 2.5, 1.55, -1.55, false); ctx.fill(); } },
+  hagiasophia:{ name:'Hagia Sophia', meta:'Istanbul · 537', text:'Built as a cathedral in 537, it had the biggest dome in the world for almost a thousand years. Later it became a mosque, then a museum, and today it is a mosque again.', fx:'gleam', pal:['#dca783', '#c98f6a', '#93603f'],
+    prof:[[0, .35], [.035, .6], [.04, 1.6], [.055, 1.6], [.06, .9], [.07, 1.3], [.075, 3.2], [.095, 8], [.125, 13], [.16, 17.4], [.2, 20.6], [.235, 22.4], [.24, 22.4], [.245, 23.6], [.29, 23.6], [.295, 25], [.3, 25], [.32, 28], [.35, 30.6], [.39, 32.4], [.42, 33], [.425, 34.4], [.44, 34.4], [.445, 33.4], [.6, 33.4], [.605, 36], [.62, 36], [.625, 35], [1, 35]],
+    detail(p, h){ h.zone(0, .075, '#c9a650', '#efd68f', '#8a6a24'); h.zone(.075, .245, '#76848e', '#a2b0b9', '#4d5962');
+      ctx.strokeStyle = 'rgba(40,50,60,.25)'; ctx.lineWidth = .6; const cy = p.tip + LH * .245; for (let k = -6; k <= 6; k++) { ctx.beginPath(); ctx.moveTo(p.x, p.tip + LH * .075); ctx.quadraticCurveTo(p.x + k * 3.2, p.tip + LH * .12, p.x + k * 3.6, cy); ctx.stroke(); }
+      h.zone(.245, .295, '#d7a07c', '#ebbb98', '#a06d4e'); h.arches(.252, .288, 11, 2.2, 'rgba(60,40,35,.62)');
+      h.zone(.295, .425, '#7f8d96', '#a6b3bb', '#56636b'); ctx.fillStyle = '#d39b78'; ctx.fillRect(p.x - 25, p.tip + LH * .295, 50, LH * .13); h.arches(.31, .41, 4, 5, 'rgba(60,40,35,.5)');
+      ctx.strokeStyle = 'rgba(40,50,60,.22)'; for (const sd of [-1, 1]) for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(p.x + sd * 25, p.tip + LH * .3); ctx.quadraticCurveTo(p.x + sd * (25 + k * 2.4), p.tip + LH * .33, p.x + sd * (25 + k * 2.8), p.tip + LH * .425); ctx.stroke(); }
+      h.zone(.425, .445, '#c8916d', '#e2ad8a', '#94603f'); h.zone(.445, 1, '#d39b78', '#e8b896', '#9f6c4f'); h.vlines(.45, 1, 11, 'rgba(140,90,60,.3)', 1.4);
+      h.arches(.5, .59, 6, 4, 'rgba(60,40,35,.5)'); h.zone(.6, .625, '#c8916d', '#e2ad8a', '#94603f'); h.arches(.68, .84, 7, 4.2, 'rgba(60,40,35,.45)'); h.arches(.88, .99, 3, 7, 'rgba(60,40,35,.55)');
+      if (night) h.windows(.25, .29, 'rgba(255,215,140,.85)', 18); },
+    after(p){ for (const sd of [-1, 1]) { const x = p.x + sd * 42, y0 = p.tip + LH * .1, y1 = p.base, brick = sd < 0;
+      const g = ctx.createLinearGradient(x - 3, 0, x + 3, 0); g.addColorStop(0, brick ? '#c47e5c' : '#f2efe8'); g.addColorStop(.5, brick ? '#b06b4b' : '#dcd8cf'); g.addColorStop(1, brick ? '#7d4a33' : '#a8a49a'); ctx.fillStyle = g;
+      ctx.fillRect(x - 2.6, y0, 5.2, y1 - y0); ctx.fillStyle = '#6f7d88'; ctx.beginPath(); ctx.moveTo(x - 3, y0); ctx.lineTo(x, y0 - 20); ctx.lineTo(x + 3, y0); ctx.fill();
+      ctx.fillStyle = '#d8b55c'; ctx.fillRect(x - .5, y0 - 25, 1, 5);
+      for (const t of [.3, .55]) { const yy = y0 + (y1 - y0) * t; ctx.fillStyle = brick ? '#e0a17f' : '#fffdf8'; ctx.fillRect(x - 4.2, yy, 8.4, 2); ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(x - 3, yy + 2, 6, 1.4); } } } },
+  sagrada:{ name:'Sagrada Família', meta:'Barcelona · since 1882', text:'Antoni Gaudí\'s giant church has been under construction since 1882. Its spires are shaped like tall seed pods, topped with bright mosaic fruit and crosses.', fx:'chime', pal:['#dccaa8', '#c6ad86', '#8f7754'],
+    prof:sagradaProf(),
+    detail(p, h){ const r = seeded(p.i * 7 + 11), cols = ['#c8322b', '#f2c14e', '#f7f3e6', '#d97a2b', '#3b7d4f'];
+      h.zone(0, .12, '#c8322b', '#e45a4a', '#8c1f1a'); for (let y = p.tip; y < p.tip + LH * .12; y += 1.6) { const w = p.hwAt(y); for (let x = -w; x < w; x += 1.6) { ctx.fillStyle = cols[(r() * cols.length) | 0]; ctx.fillRect(p.x + x, y, 1.3, 1.3); } }
+      h.zone(.12, 1, '#d4bf99', '#e8d8b8', '#9c8460'); h.hlines(.13, 1, 5.5, 'rgba(110,85,55,.22)', .6);
+      ctx.fillStyle = 'rgba(70,50,30,.55)'; for (let y = p.tip + LH * .2, k = 0; y < p.base - 6; y += 6, k++) { const w = p.hwAt(y) * .62; for (const f of [-.6, 0, .6]) E(p.x + f * w + (k % 2 ? 1 : -1) * w * .12, y, .9, 1.6); }
+      if (night) h.glow('rgba(255,210,140,.18)'); },
+    after(p){ ctx.fillStyle = '#f7f3e6'; ctx.fillRect(p.x - .45, p.tip - 7, .9, 7); ctx.fillRect(p.x - 2.2, p.tip - 5, 4.4, .9);
+      for (const sd of [-1, 1]) { const x = p.x + sd * 19, t0 = p.tip + LH * .3, b = p.base, w0 = 1.6, w1 = 6.2;
+        const g = ctx.createLinearGradient(x - w1, 0, x + w1, 0); g.addColorStop(0, '#ddcaa6'); g.addColorStop(.5, '#c6ad86'); g.addColorStop(1, '#8f7754'); ctx.fillStyle = g;
+        ctx.beginPath(); ctx.moveTo(x - w1, b); ctx.quadraticCurveTo(x - w1 * .9, t0 + (b - t0) * .3, x - w0, t0); ctx.lineTo(x + w0, t0); ctx.quadraticCurveTo(x + w1 * .9, t0 + (b - t0) * .3, x + w1, b); ctx.fill();
+        ctx.fillStyle = 'rgba(70,50,30,.45)'; for (let y = t0 + 8; y < b - 6; y += 7) E(x, y, .8, 1.5); ctx.fillStyle = '#e45a4a'; E(x, t0 - 3, 2.2, 3.6); ctx.fillStyle = '#f2c14e'; E(x, t0 - 6.5, 1.2, 1.2); } } },
+  glories:{ name:'Torre Glòries', meta:'Barcelona · 2005', text:'A rounded glass tower shaped like a geyser bursting out of the ground. At night thousands of coloured lights play across its skin.', fx:'twinkle', pal:['#6f9ccf', '#4b78ad', '#2b4c78'],
+    prof:[[0, .6], [.012, 5], [.035, 10], [.07, 14.6], [.115, 18.2], [.18, 20.8], [.27, 22.2], [.4, 22.8], [1, 23]],
+    detail(p, h){ const r = seeded(p.i * 3 + 5); for (let y = p.tip; y < p.base; y += 3) { const t = (y - p.tip) / LH, w = p.hwAt(y); for (let x = -w; x < w; x += 3) { const v = r(), hue = 215 - t * 205 + v * 26; ctx.fillStyle = `hsla(${hue},${42 + v * 26}%,${44 + v * 18}%,.55)`; ctx.fillRect(p.x + x, y, 2.6, 2.6); } }
+      h.hlines(.02, 1, 3, 'rgba(255,255,255,.12)', .4); ctx.fillStyle = 'rgba(255,255,255,.16)'; E(p.x - 7, p.tip + LH * .3, 4, 46);
+      if (night) for (let y = p.tip; y < p.base; y += 3) { const w = p.hwAt(y); for (let x = -w; x < w; x += 3) { if (r() < .5) continue; ctx.fillStyle = `hsla(${(T * 20 + y * .8 + x * 3) % 360},90%,65%,.35)`; ctx.fillRect(p.x + x, y, 2.6, 2.6); } } } },
+  colom:{ name:'Columbus Monument', plate:'Columbus Column', meta:'Barcelona · 1888', text:'A 60-metre iron column with a bronze statue of Christopher Columbus on top, built for the 1888 Universal Exhibition. It stands at the bottom of La Rambla, by the old port.', fx:'gleam', pal:['#7d6e59', '#665846', '#3f362b'],
+    prof:[[0, .7], [.012, 1.6], [.028, 1.6], [.032, 2.4], [.09, 2.8], [.095, 4.6], [.105, 5], [.115, 4.6], [.12, 3.6], [.128, 6.4], [.15, 5.2], [.155, 4], [.6, 4.8], [.605, 7.4], [.62, 7.4], [.625, 6.2], [.7, 6.2], [.705, 10.2], [.72, 10.2], [.725, 9.2], [.82, 9.6], [.825, 14], [.84, 14], [.845, 13], [.9, 13], [.905, 18], [.935, 18], [.94, 17], [1, 17]],
+    detail(p, h){ h.zone(0, .095, '#4f483c', '#776d5d', '#2e2a23'); h.zone(.095, .12, '#8a7a55', '#b8a46e', '#5f5232'); h.zone(.12, .155, '#b39554', '#dcc07c', '#7a6230');
+      h.zone(.155, .6, '#6b6150', '#8c8170', '#423b30'); h.flutes(.16, .6, 1.4); h.zone(.6, .625, '#b39554', '#dcc07c', '#7a6230');
+      h.zone(.625, 1, '#d8cebb', '#ece5d6', '#a59b88'); h.hlines(.63, 1, 4, 'rgba(110,95,70,.2)', .5); h.arches(.73, .81, 2, 4, 'rgba(90,80,65,.45)');
+      ctx.fillStyle = '#5a5146'; for (const sd of [-1, 1]) E(p.x + sd * 11, p.tip + LH * .89, 3.4, 2.2); },
+    after(p){ const sy = p.tip + LH * .045; ctx.strokeStyle = '#4f483c'; ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.x + 1.8, sy); ctx.lineTo(p.x + 7, sy - 3.4); ctx.stroke(); } },
+  petronas:{ name:'Petronas Twin Towers', plate:'Petronas Towers', meta:'Kuala Lumpur · 1998', text:'452 metres tall, the tallest twin towers in the world. Each floor is an eight-pointed star taken from Islamic geometry, and a two-storey skybridge joins the pair.', fx:'twinkle', pal:['#eef2f4', '#c2ccd3', '#7b8891'],
+    prof:[[0, .3], [.1, .5], [.105, 1.1], [.12, 1.3], [.125, 2.3], [.16, 2.9], [.165, 3.7], [.19, 4.1], [.195, 5.1], [.22, 5.3], [.225, 6.3], [.25, 6.5], [.255, 7.5], [.29, 7.7], [.295, 8.7], [.33, 8.9], [.335, 9.9], [1, 10.3]],
+    detail(p, h){ h.zone(.1, .335, '#d9e0e5', '#f4f7f9', '#8d9aa3'); [.125, .165, .195, .225, .255, .295, .335].forEach(t => h.hl(t, 'rgba(255,255,255,.75)', .7));
+      h.vlines(.34, 1, 1.5, 'rgba(70,85,95,.28)', .45); h.hlines(.34, 1, 2.6, 'rgba(255,255,255,.22)', .5); h.metal(.12, 1);
+      if (night) h.windows(.34, .98, 'rgba(255,236,190,.8)', 60); },
+    after(p){ const dx = 36, q = Object.assign({}, p, { x:p.x + dx, minX:p.minX + dx, maxX:p.maxX + dx, pts:p.pts.map(([x, y]) => [x + dx, y]), i:p.i + 50 }), [lc, bc, dc] = p.lm.pal;
+      ctx.save(); tracePoly(q.pts); const g = ctx.createLinearGradient(q.minX, 0, q.maxX, 0); g.addColorStop(0, lc); g.addColorStop(.42, bc); g.addColorStop(1, dc); ctx.fillStyle = g; ctx.fill(); ctx.clip(); p.lm.detail(q, helpers(q));
+      const vg = ctx.createLinearGradient(0, q.tip, 0, q.base); vg.addColorStop(0, 'rgba(255,255,255,.05)'); vg.addColorStop(1, 'rgba(0,10,20,.3)'); ctx.fillStyle = vg; ctx.fillRect(q.minX - 2, q.tip, q.maxX - q.minX + 4, LH); ctx.restore();
+      const by = p.tip + LH * .5, x0 = p.x + 10, x1 = q.x - 10; ctx.fillStyle = '#c9d2d8'; ctx.fillRect(x0, by, x1 - x0, 4.2); ctx.fillStyle = 'rgba(40,60,80,.55)'; for (let x = x0 + 1.5; x < x1 - 1; x += 2.6) ctx.fillRect(x, by + 1, 1.4, 2.2);
+      ctx.strokeStyle = '#aab5bd'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo((x0 + x1) / 2, by + 4.2); ctx.lineTo(x0, by + 24); ctx.moveTo((x0 + x1) / 2, by + 4.2); ctx.lineTo(x1, by + 24); ctx.stroke(); } },
+  kltower:{ name:'KL Tower', meta:'Kuala Lumpur · 1995', text:'Menara Kuala Lumpur is a 421-metre telecoms tower. Its pointed, dome-like pod was inspired by Islamic architecture, and it stands on a hill of protected rainforest.', fx:'wave', pal:['#eef1f2', '#d0d7da', '#8e9aa0'],
+    prof:[[0, .3], [.14, .6], [.145, 1.4], [.2, 1.6], [.205, 2.6], [.225, 3.2], [.23, 5], [.255, 8.4], [.275, 14.6], [.295, 18.4], [.33, 18.4], [.35, 14.2], [.37, 8.4], [.38, 5.8], [.385, 4.6], [.9, 5.6], [.905, 8.4], [1, 9]],
+    detail(p, h){ h.zone(0, .2, '#b9c1c6', '#e2e7ea', '#7c878d'); h.hl(.08, 'rgba(200,60,50,.8)', 1.6); h.hl(.15, 'rgba(200,60,50,.8)', 1.4);
+      h.zone(.23, .275, '#e9edef', '#ffffff', '#a3adb3'); h.zone(.275, .35, '#3e6f93', '#6f9fc2', '#23435e'); h.hlines(.28, .35, 2.6, 'rgba(255,255,255,.25)', .5); h.vlines(.28, .35, 3.2, 'rgba(255,255,255,.14)', .5);
+      h.muq(.35, 'rgba(70,90,110,.45)'); h.zone(.355, .385, '#e9edef', '#ffffff', '#a3adb3'); h.zone(.385, .9, '#e6eaec', '#fbfcfc', '#a2acb2'); h.vlines(.39, .9, 2.4, 'rgba(120,135,145,.18)', .5); h.zone(.905, 1, '#d6dcdf', '#eef1f2', '#98a3a9');
+      if (night) h.windows(.28, .35, 'rgba(160,220,255,.85)', 26); } },
+  merdeka118:{ name:'Merdeka 118', meta:'Kuala Lumpur · 2023', text:'679 metres tall, one of the tallest buildings in the world. Its faceted glass skin is inspired by songket, the glittering Malay fabric woven with gold thread.', fx:'gleam', pal:['#d3e6ec', '#99bccb', '#56798b'],
+    prof:[[0, .25], [.15, .6], [.155, 1.5], [.19, 1.9], [.195, 2.9], [.23, 3.5], [.24, 4.8], [.28, 6.2], [.33, 7.3], [.45, 8.6], [.6, 9.4], [1, 10.4]],
+    detail(p, h){ h.zone(0, .195, '#c3d2d8', '#eef4f6', '#7e939c'); ctx.strokeStyle = 'rgba(30,70,90,.32)'; ctx.lineWidth = .5; const y0 = p.tip + LH * .2;
+      for (let k = 0; k < 24; k++) { const y = y0 + k * 7; ctx.beginPath(); ctx.moveTo(p.x - 14, y); ctx.lineTo(p.x + 14, y + 16); ctx.moveTo(p.x + 14, y); ctx.lineTo(p.x - 14, y + 16); ctx.stroke(); }
+      const r = seeded(p.i + 21); for (let y = y0; y < p.base; y += 4) { const w = p.hwAt(y); for (let x = -w; x < w; x += 4) { const v = r(); if (v > .5) continue; ctx.fillStyle = `rgba(255,255,255,${v * .28})`; ctx.beginPath(); ctx.moveTo(p.x + x, y); ctx.lineTo(p.x + x + 2, y + 2); ctx.lineTo(p.x + x, y + 4); ctx.lineTo(p.x + x - 2, y + 2); ctx.fill(); } }
+      h.hl(.24, 'rgba(255,255,255,.6)', .8); if (night) h.windows(.25, .98, 'rgba(255,240,210,.7)', 50); } },
+  pearl:{ name:'Oriental Pearl Tower', plate:'Oriental Pearl', meta:'Shanghai · 1994', text:'A TV tower with pink pearls strung on giant columns. It was inspired by a Tang dynasty poem about big and small pearls falling onto a jade plate.', fx:'wave', pal:['#e3e6ea', '#c0c6cd', '#828a94'],
+    prof:[[0, .3], [.1, .6], [.105, 1.4], [.13, 1.6], [.135, 3], [.145, 4.6], [.16, 5], [.175, 4.6], [.185, 3], [.19, 1.8], [.25, 2.1], [.255, 4], [.27, 8.5], [.29, 12.4], [.315, 14.8], [.34, 15.6], [.365, 14.8], [.39, 12.4], [.41, 8.5], [.425, 4.4], [.43, 3.6], [.66, 4], [.665, 6], [.68, 11], [.7, 15], [.725, 17.6], [.75, 18.4], [.775, 17.6], [.8, 15], [.82, 11], [.835, 6], [.84, 5.4], [1, 15]], arch:{ w:8, h:20 },
+    detail(p, h){ const sph = (t0, t1) => { h.zone(t0, t1, '#cf5d88', '#f0a2c0', '#8a3255'); const yc = p.tip + LH * (t0 + t1) / 2, w = p.hwAt(yc), y = p.tip + LH * (t0 + (t1 - t0) * .35);
+        const g = ctx.createRadialGradient(p.x - w * .35, y, 0, p.x - w * .35, y, w * .9); g.addColorStop(0, 'rgba(255,255,255,.5)'); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; E(p.x - w * .35, y, w * .9, w * .9); h.hlines(t0, t1, 3.2, 'rgba(120,30,70,.16)', .5); };
+      h.zone(0, .135, '#c9ced4', '#eef0f3', '#848c95'); sph(.135, .19); h.zone(.19, .255, '#d8dce1', '#f4f5f7', '#9aa1a9'); sph(.255, .43); h.zone(.43, .665, '#d8dce1', '#f4f5f7', '#9aa1a9');
+      h.vlines(.43, .665, 5.2, 'rgba(90,100,110,.3)', .8); sph(.665, .84); h.zone(.84, 1, '#d2d7dc', '#eff1f3', '#949ba3'); h.diag(.84, 1, 'rgba(90,100,110,.2)');
+      if (night) h.glow('rgba(255,120,190,.16)'); } },
+  shanghaitower:{ name:'Shanghai Tower', meta:'Shanghai · 2015', text:'632 metres tall, the tallest building in China. Its glass skin twists a third of a turn as it rises, which cuts the push of the wind by about a quarter.', fx:'wave', pal:['#d6e7ea', '#a3c3cc', '#5b8391'],
+    prof:[[0, .6, 5.8], [.03, 4.6, 6.4], [.06, 5.4, 6.8], [1, 13.2, 12.6]],
+    detail(p, h){ h.hlines(.04, 1, 4.4, 'rgba(255,255,255,.2)', .5); h.vlines(.04, 1, 2.2, 'rgba(40,80,95,.16)', .4);
+      const spiral = () => { ctx.beginPath(); for (let k = 0; k <= 40; k++) { const t = k / 40, y = p.tip + LH * t, w = p.hwAt(y), x = p.x + Math.sin(t * 2.1 + .3) * w * .92; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } };
+      spiral(); ctx.lineTo(p.x + 20, p.base); ctx.lineTo(p.x + 20, p.tip); ctx.closePath(); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill();
+      spiral(); ctx.strokeStyle = 'rgba(40,75,90,.55)'; ctx.lineWidth = 1.4; ctx.stroke();
+      if (night) h.windows(.05, .98, 'rgba(220,240,255,.7)', 60); } },
+  jinmao:{ name:'Jin Mao Tower', meta:'Shanghai · 1999', text:'Its stepped tiers echo a traditional Chinese pagoda. It has 88 floors, because 8 is a lucky number in China.', fx:'gleam', pal:['#d6d8d2', '#a9ada6', '#6e736d'],
+    prof:jinmaoProf(),
+    detail(p, h){ h.zone(0, .17, '#bfc4bf', '#e6e8e3', '#7b817b'); h.winStrips(.17, 1, 2.6, 'rgba(70,78,74,.22)'); h.metal(.17, 1);
+      [.2, .24, .28, .325, .375, .43, .5, .58, .68, .8].forEach(t => { h.hl(t + .004, 'rgba(255,240,200,.7)', .9); h.hl(t + .01, 'rgba(60,60,55,.25)', .6); }); h.hlines(.18, 1, 2.2, 'rgba(255,255,255,.08)', .4);
+      if (night) h.windows(.18, .98, 'rgba(255,220,150,.75)', 55); } },
+  taipei101:{ name:'Taipei 101', meta:'Taipei · 2004', text:'Built like a stalk of bamboo: eight sections of eight floors, because eight is lucky. A 660-tonne golden ball hangs inside to steady it in typhoons and earthquakes.', fx:'twinkle', pal:['#9fcdc8', '#76aaa5', '#3f6d6a'],
+    prof:t101Prof(),
+    detail(p, h){ h.zone(0, .195, '#b8c7c4', '#e4ecea', '#748783'); h.hlines(.2, .785, 1.8, 'rgba(255,255,255,.14)', .4); h.vlines(.2, .785, 2.4, 'rgba(30,70,65,.18)', .4);
+      for (let k = 0; k < 8; k++) { const t0 = .2 + k * .0725; h.hl(t0 + .004, 'rgba(255,255,255,.55)', .8); h.hl(t0 + .068, 'rgba(20,50,45,.35)', .8); }
+      const y = p.tip + LH * .76; ctx.strokeStyle = 'rgba(230,200,110,.8)'; ctx.lineWidth = .8; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.arc(p.x + sd * 5, y, 2.4, 0, TAU); ctx.stroke(); }
+      h.zone(.79, 1, '#8fbcb7', '#b9dad6', '#4d7c78'); h.hlines(.8, 1, 2.6, 'rgba(255,255,255,.14)', .4);
+      if (night) h.glow(`hsla(${[0, 30, 55, 120, 200, 240, 280][new Date().getDay()]},80%,60%,.22)`); } },
+  cksmemorial:{ name:'Chiang Kai-shek Memorial Hall', plate:'Chiang Kai-shek', meta:'Taipei · 1980', text:'A white marble hall with a blue, eight-sided roof, standing at the end of a huge square. Its 89 steps stand for Chiang Kai-shek\'s age when he died.', fx:'chime', pal:['#f4f3ee', '#e0ded6', '#a9a69c'],
+    prof:[[0, .5], [.03, 1], [.035, 3.2], [.05, 3.2], [.055, 2], [.07, 6], [.17, 21], [.18, 23.4], [.19, 23.4], [.195, 19.6], [.25, 19.6], [.255, 23], [.36, 33], [.37, 35], [.38, 34], [.385, 29.6], [.66, 29.6], [.665, 33], [.7, 33], [.705, 35], [.76, 37], [1, 39]],
+    detail(p, h){ h.zone(0, .07, '#c9a650', '#efd68f', '#8a6a24'); h.zone(.07, .19, '#2e5da6', '#5486cc', '#1b3a6c'); h.vlines(.075, .19, 2.4, 'rgba(255,255,255,.18)', .5); h.hl(.185, '#d9b85a', .9);
+      h.zone(.195, .255, '#f1efe9', '#ffffff', '#b9b6ad'); h.arches(.205, .245, 4, 2, 'rgba(180,150,80,.55)');
+      h.zone(.255, .38, '#2e5da6', '#5486cc', '#1b3a6c'); h.vlines(.26, .38, 2.4, 'rgba(255,255,255,.18)', .5); h.hl(.375, '#d9b85a', 1);
+      h.zone(.385, .66, '#f3f2ed', '#ffffff', '#b3b0a6'); h.arches(.47, .66, 1, 15, 'rgba(45,60,90,.6)'); h.vlines(.39, .66, 6, 'rgba(160,155,145,.25)', .8);
+      h.zone(.665, .705, '#ece9e1', '#fbfaf6', '#aaa69c'); h.zone(.705, 1, '#e7e4dc', '#f8f7f2', '#a39f95'); h.hlines(.71, 1, 2.4, 'rgba(120,115,105,.28)', .5); h.centerStrip(.71, 1, .22, 'rgba(255,255,255,.35)'); } },
+  grandhotel:{ name:'The Grand Hotel', meta:'Taipei · 1973', text:'A 14-storey hotel built like a Chinese palace, with red columns and a golden tiled roof. It sits on a hill above the Keelung River.', fx:'chime', pal:['#cf5a47', '#b8402f', '#7d271b'],
+    prof:[[0, .6], [.012, 2.4], [.018, 6], [.028, 6], [.034, 4.6], [.1, 22], [.106, 26], [.12, 25], [.126, 20], [.17, 20], [.176, 22], [.24, 30], [.246, 32.4], [.262, 31.4], [.268, 26.4], [.7, 26.4], [.705, 30], [.755, 36.4], [.76, 37.6], [.77, 36.6], [.775, 33], [.79, 33], [1, 33.4]],
+    detail(p, h){ h.zone(0, .126, '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(.035, .12, 1.6, 'rgba(120,80,20,.35)', .5); h.zone(.126, .176, '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(.15, 3, 'rgba(200,60,50,.8)', 'rgba(255,230,150,.8)');
+      h.zone(.176, .268, '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(.18, .262, 1.6, 'rgba(120,80,20,.35)', .5); h.zone(.268, .3, '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(.285, 3, 'rgba(200,60,50,.8)', 'rgba(255,230,150,.8)');
+      h.zone(.3, .7, '#efe2c7', '#fbf3e1', '#b7a888'); h.hlines(.32, .7, 4.6, 'rgba(110,90,60,.35)', .6);
+      ctx.fillStyle = 'rgba(70,90,110,.45)'; for (let y = p.tip + LH * .32; y < p.tip + LH * .69; y += 4.6) for (let x = -24; x < 24; x += 4) ctx.fillRect(p.x + x + 1.2, y + .9, 1.6, 2.4);
+      ctx.fillStyle = '#b8322a'; for (let x = -24; x <= 24; x += 8) ctx.fillRect(p.x + x - 1.2, p.tip + LH * .3, 2.4, LH * .4);
+      h.zone(.7, .76, '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(.7, .76, 1.6, 'rgba(120,80,20,.35)', .5); h.zone(.76, .79, '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(.775, 3, 'rgba(200,60,50,.8)', 'rgba(255,230,150,.8)');
+      h.zone(.79, 1, '#efe2c7', '#fbf3e1', '#b7a888'); ctx.fillStyle = '#b8322a'; for (let x = -32; x <= 32; x += 8) ctx.fillRect(p.x + x - 1.4, p.tip + LH * .79, 2.8, LH * .21); h.hl(.79, 'rgba(255,255,255,.4)', .8);
+      if (night) h.windows(.32, .69, 'rgba(255,220,150,.85)', 50); },
+    after(p){ ctx.fillStyle = '#d9a83a'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(p.x + sd * 6, p.tip + 3); ctx.quadraticCurveTo(p.x + sd * 9, p.tip - 2, p.x + sd * 7.5, p.tip - 5); ctx.lineTo(p.x + sd * 6.2, p.tip + 1); ctx.fill(); } } }
 };
 
 const CITIES = [
@@ -1671,7 +1833,12 @@ const CITIES = [
   { id:'florence', name:'Florence', code:'FLR', lms:['duomo', 'campanile', 'palazzovecchio'], water:['#bbd8cf', '#3f9a8c', '#224449'], sand:'#d3c4a4', facts:["Florence was home to the Medici, the banking family who paid for much of the Renaissance.", "Shops have stood on the Ponte Vecchio since the Middle Ages. Since 1593 they have mostly been goldsmiths and jewellers.", "Michelangelo's David is more than 5 metres tall. The original stands in the Galleria dell'Accademia.", "Uffizi simply means offices. The building was made in the 1500s for the city's government offices.", "Modern Italian grew out of the Florentine dialect, the language Dante used for the Divine Comedy.", "A secret passage, the Vasari Corridor, runs over the Ponte Vecchio so the Medici could cross the river unseen.", "Rub the nose of Il Porcellino, the bronze boar in the market, and legend says you will return to Florence.", "Galileo, Michelangelo and Machiavelli are all buried in the church of Santa Croce.", "Gelato as we know it is often said to have been invented in Florence in the 1500s.", "Every June, Piazza Santa Croce hosts calcio storico, a rough old mix of football, rugby and wrestling.", "The Boboli Gardens behind Palazzo Pitti were laid out for the Medici in the 1500s.", "Florence's historic centre has been a UNESCO World Heritage Site since 1982."] },
   { id:'amsterdam', name:'Amsterdam', code:'AMS', lms:['westertoren', 'windmill', 'munttoren'], water:['#b5cbd9', '#4579a6', '#263a54'], sand:'#d8c8a6', facts:["Amsterdam has more than 100 kilometres of canals and well over a thousand bridges.", "There are more bicycles in Amsterdam than people.", "The ring of canals was dug in the 1600s and is now a UNESCO World Heritage Site.", "Many old canal houses lean forward on purpose, so furniture could be hauled up by a hook without hitting the windows.", "Anne Frank and her family hid for two years in a secret annex on the Prinsengracht, now the Anne Frank House.", "Much of the city stands on wooden poles driven deep into the soft ground.", "The Royal Palace on Dam Square rests on 13,659 wooden piles.", "A bicycle path runs right through the middle of the Rijksmuseum building.", "The Bloemenmarkt on the Singel canal is a flower market with stalls floating on the water.", "About 2,500 houseboats are moored along the city's canals.", "The three crosses of the city's coat of arms, XXX, appear on bollards all over town.", "In the 1600s Amsterdam was one of the busiest ports in the world."] },
   { id:'oslo', name:'Oslo', code:'OSL', lms:['cityhall', 'domkirke', 'holmenkollen'], water:['#bed8e1', '#51819a', '#1f3b52'], sand:'#d6ccb8', facts:["The Nobel Peace Prize is awarded in Oslo. All the other Nobel Prizes are given in Stockholm.", "For about 300 years Oslo was called Christiania. It got its old name back in 1925.", "You can walk right up onto the sloping marble roof of the Oslo Opera House.", "Vigeland Park has more than 200 sculptures, all by one artist, Gustav Vigeland.", "Since 1947 Oslo has sent a Christmas tree to London's Trafalgar Square every year, to say thank you for help in the Second World War.", "Thick forests surround the city, and the metro runs right up to the ski trails.", "Almost every new car sold in Norway is now electric.", "The Bygdøy peninsula is home to Viking ships more than 1,100 years old.", "In June the nights are so bright that it hardly gets dark at all.", "Akershus Fortress has guarded Oslo's harbour since around 1300.", "People have been ski jumping at Holmenkollen since 1892.", "The polar ship Fram, now in a museum in Oslo, sailed further north and south than any other wooden ship."] },
-  { id:'hague', name:'The Hague', code:'HAG', lms:['peacepalace', 'ridderzaal', 'hoftoren'], water:['#c7d5df', '#5d8db8', '#2e3f59'], sand:'#d3cab2', facts:["The Dutch government and parliament sit in The Hague, but Amsterdam is the capital.", "The King of the Netherlands works at Noordeinde Palace, right in the city centre.", "The International Court of Justice, the top court of the United Nations, is in The Hague.", "Scheveningen, the city's seaside resort, has a long sandy beach and a pier.", "At Madurodam you can see the whole of the Netherlands in miniature, at 1 to 25 scale.", "The Mauritshuis is a 1600s mansion that opened as an art museum in 1822.", "The city calls itself the international city of peace and justice.", "Every September on Prince's Day, the King rides through the streets in a royal coach.", "The Binnenhof is one of the oldest parliament buildings in the world still in use.", "Scheveningen is famously hard to say if you are not Dutch.", "Escher in Het Paleis shows the mind-bending art of M. C. Escher in a former royal palace.", "The city's official name, 's-Gravenhage, means the count's hedge."] }
+  { id:'hague', name:'The Hague', code:'HAG', lms:['peacepalace', 'ridderzaal', 'hoftoren'], water:['#c7d5df', '#5d8db8', '#2e3f59'], sand:'#d3cab2', facts:["The Dutch government and parliament sit in The Hague, but Amsterdam is the capital.", "The King of the Netherlands works at Noordeinde Palace, right in the city centre.", "The International Court of Justice, the top court of the United Nations, is in The Hague.", "Scheveningen, the city's seaside resort, has a long sandy beach and a pier.", "At Madurodam you can see the whole of the Netherlands in miniature, at 1 to 25 scale.", "The Mauritshuis is a 1600s mansion that opened as an art museum in 1822.", "The city calls itself the international city of peace and justice.", "Every September on Prince's Day, the King rides through the streets in a royal coach.", "The Binnenhof is one of the oldest parliament buildings in the world still in use.", "Scheveningen is famously hard to say if you are not Dutch.", "Escher in Het Paleis shows the mind-bending art of M. C. Escher in a former royal palace.", "The city's official name, 's-Gravenhage, means the count's hedge."] },
+  { id:'istanbul', name:'Istanbul', code:'IST', lms:['galata', 'bluemosque', 'hagiasophia'], water:['#a9d4dc', '#3f8ea8', '#1d4d66'], sand:'#d8c7a4', facts:["Istanbul is the only great city that sits on two continents, Europe and Asia, with the Bosphorus strait running between them.", "Over its long life the city has been called Byzantium, Constantinople and Istanbul.", "The Grand Bazaar is one of the oldest and biggest covered markets in the world, with about 4,000 shops.", "Tulips came to the rest of Europe from the Ottoman Empire. The Dutch fell in love with them later.", "Istanbul's street cats are so loved that a whole film, Kedi, was made about them.", "The Basilica Cistern under the old city is a forest of 336 stone columns that once held water for the palace.", "Turkish delight was made famous by a sweet maker called Hacı Bekir, whose shop opened in Istanbul in 1777.", "Simit, a ring of bread covered in sesame seeds, is sold from little red carts on almost every corner.", "The Bosphorus is about 30 kilometres long, and dolphins are often seen swimming through it.", "Galata Tower was once a fire lookout. Watchmen at the top kept an eye on the wooden houses below."] },
+  { id:'barcelona', name:'Barcelona', code:'BCN', lms:['sagrada', 'glories', 'colom'], water:['#b2dde0', '#3aa0b4', '#1c5a70'], sand:'#e1cfa3', facts:["Most of Barcelona's city beaches were created for the 1992 Olympic Games.", "In the Eixample district every block has its corners cut off, so people and carts could see around them. The plan was drawn by Ildefons Cerdà.", "Park Güell was first planned as a housing estate for rich families. Only two houses were ever built.", "Catalan and Spanish are both official languages in Barcelona.", "Camp Nou, home of FC Barcelona, is the biggest football stadium in Europe.", "La Rambla is a tree-lined promenade that runs for about a kilometre from Plaça de Catalunya down to the old port.", "Picasso spent his teenage years in Barcelona. The Picasso Museum here opened in 1963.", "Under the Gothic Quarter lie the streets of Barcino, the Roman town. You can walk among them beneath the city museum.", "On Sant Jordi's Day, 23 April, people give each other roses and books.", "Gaudí was hit by a tram in 1926 and died a few days later. He is buried in the crypt of the Sagrada Família."] },
+  { id:'kl', name:'Kuala Lumpur', code:'KUL', lms:['petronas', 'kltower', 'merdeka118'], water:['#b5dccb', '#3f9a86', '#1d5a52'], sand:'#d6c39c', facts:["Kuala Lumpur means \"muddy confluence\" in Malay. It began where the Klang and Gombak rivers meet.", "The city started in the 1850s as a tin-mining town.", "The Petronas Towers were the tallest buildings in the world from 1998 to 2004.", "Just north of the city, the Batu Caves are guarded by a golden statue of Lord Murugan, 43 metres tall, at the top of 272 rainbow steps.", "Nasi lemak, rice cooked in coconut milk and served with sambal, is often called Malaysia's national dish.", "Merdeka means independence. It was declared at Stadium Merdeka in 1957, right next to where Merdeka 118 stands today.", "KL Forest Eco Park is a patch of old rainforest in the middle of the city, with a walkway through the treetops.", "Durian, the spiky king of fruits, smells so strong that many hotels do not allow it inside.", "Petaling Street is Kuala Lumpur's Chinatown, famous for its night market."] },
+  { id:'shanghai', name:'Shanghai', code:'SHA', lms:['pearl', 'shanghaitower', 'jinmao'], water:['#c7d3d8', '#6a8fa0', '#2b4554'], sand:'#cfc2a8', facts:["Shanghai means \"upon the sea\".", "The Bund is a riverside row of grand old banks and trading houses, looking across the Huangpu River at the towers of Pudong.", "Pudong was mostly farmland until the 1990s.", "Xiaolongbao, soup dumplings, come from Nanxiang, a town that is now part of Shanghai.", "The Shanghai Metro is one of the longest metro systems in the world.", "Yu Garden is a classical Chinese garden of rocks, ponds and pavilions, first laid out in the 1500s.", "Shanghai's Maglev train floats above its track on magnets and runs to the airport at about 300 km/h.", "The Jin Mao Tower has 88 floors, because 8 is a lucky number in China.", "The three tallest towers in Pudong stand side by side. Locals jokingly call them the bottle opener, the syringe and the whisk."] },
+  { id:'taipei', name:'Taipei', code:'TPE', lms:['taipei101', 'cksmemorial', 'grandhotel'], water:['#bfdcd4', '#4e9a8e', '#244f52'], sand:'#d4c7a8', facts:["Taipei 101 was the tallest building in the world from 2004 to 2010.", "A 660-tonne golden steel ball hangs inside Taipei 101 and sways to keep the tower steady in typhoons.", "Every New Year's Eve, fireworks shoot out from the sides of Taipei 101.", "Bubble tea was invented in Taiwan in the 1980s.", "Night markets like Shilin are famous for street food, from oyster omelettes to stinky tofu.", "The National Palace Museum holds nearly 700,000 treasures from Chinese history.", "Garbage trucks in Taipei play classical music, so people know to bring their rubbish out.", "Beitou, in the north of the city, is full of natural hot springs.", "The Maokong Gondola carries you over the hills to tea farms south of the city."] }
 ];
 CITIES.forEach(c => { c.water = c.water.map((h, i) => mix(h, ['#A4C2C4', '#3e646e', '#1c333f'][i], [.58, .6, .52][i])); c.nightWater = c.water.map((h, i) => mix(h, '#030c14', [.62, .66, .7][i])); });
 
@@ -1706,13 +1873,30 @@ const INFO = {
   domkirke:{ h:'', built:'1694 to 1697', by:'', where:'Stortorvet, Oslo', wiki:'Oslo_Cathedral', more:['It is the main church for the royal family and the government.', 'The tower got its present shape in the 1850s.'] },
   peacepalace:{ h:'', built:'1907 to 1913', by:'Louis M. Cordonnier', where:'Carnegieplein, The Hague', wiki:'Peace_Palace', more:['It was paid for by the American steel tycoon Andrew Carnegie.', 'It houses the International Court of Justice, the main court of the United Nations.'] },
   ridderzaal:{ h:'', built:'About 1280', by:'Built for Count Floris V', where:'Binnenhof, The Hague', wiki:'Ridderzaal', more:['The King traditionally reads the Speech from the Throne here on Prince\'s Day in September.', 'The Binnenhof around it has been the seat of Dutch politics for centuries.'] },
-  hoftoren:{ h:'142 m', built:'2001 to 2003', by:'Kohn Pedersen Fox', where:'Near Central Station, The Hague', wiki:'Hoftoren', more:['Its nickname, De Vulpen, means the fountain pen.', 'It was the tallest building in The Hague when it opened.'] }
+  hoftoren:{ h:'142 m', built:'2001 to 2003', by:'Kohn Pedersen Fox', where:'Near Central Station, The Hague', wiki:'Hoftoren', more:['Its nickname, De Vulpen, means the fountain pen.', 'It was the tallest building in The Hague when it opened.'] },
+  galata:{ h:'67 m', built:'1348', by:'The Genoese colony of Galata', where:'Beyoğlu, Istanbul', wiki:'Galata_Tower', more:['A legend says that in the 1630s Hezârfen Ahmed Çelebi flew from the top across the Bosphorus on homemade wings.', 'In Ottoman times it was used to watch for fires across the city.'] },
+  bluemosque:{ h:'64 m', built:'1609 to 1616', by:'Sedefkâr Mehmed Ağa', where:'Sultanahmet, Istanbul', wiki:'Sultan_Ahmed_Mosque', more:['Four of its minarets have three balconies each, and the other two have two.', 'It is still a working mosque, so it closes to visitors at prayer times.'] },
+  hagiasophia:{ h:'55 m', built:'532 to 537', by:'Anthemius of Tralles and Isidore of Miletus', where:'Sultanahmet, Istanbul', wiki:'Hagia_Sophia', more:['Its dome seems to float because it rests on a ring of 40 windows.', 'The minarets were added by the Ottomans after 1453.'] },
+  sagrada:{ h:'172 m when finished', built:'Since 1882', by:'Antoni Gaudí', where:'Eixample, Barcelona', wiki:'Sagrada_Família', more:['Gaudí worked on it for more than 40 years and is buried in its crypt.', 'The tallest tower was planned to stay just below the height of Montjuïc hill.'] },
+  glories:{ h:'144 m', built:'1999 to 2005', by:'Jean Nouvel', where:'22@ district, Barcelona', wiki:'Torre_Glòries', more:['It was first called Torre Agbar, after the water company that built it.', 'Its outer skin has about 59,000 glass louvres that tilt to let in light and air.'] },
+  colom:{ h:'60 m', built:'1882 to 1888', by:'Gaietà Buïgas', where:'Port Vell, Barcelona', wiki:'Columbus_Monument,_Barcelona', more:['Columbus points out to sea, over the Mediterranean.', 'A tiny lift inside the column takes visitors up to a viewing deck just below the statue.'] },
+  petronas:{ h:'452 m', built:'1993 to 1996', by:'César Pelli', where:'KLCC, Kuala Lumpur', wiki:'Petronas_Towers', more:['The skybridge is not fixed solidly to the towers, so it can slide as they sway in the wind.', 'Each tower was built by a different construction company, racing each other to the top.'] },
+  kltower:{ h:'421 m', built:'1991 to 1995', by:'Kumpulan Senireka', where:'Bukit Nanas, Kuala Lumpur', wiki:'Kuala_Lumpur_Tower', more:['It stands in Bukit Nanas, a protected patch of rainforest in the city centre.', 'Astronomers use it to look for the new moon that marks the start of Ramadan and Eid.'] },
+  merdeka118:{ h:'679 m', built:'2014 to 2023', by:'Fender Katsalidis', where:'Next to Stadium Merdeka, Kuala Lumpur', wiki:'Merdeka_118', more:['Its name comes from its 118 floors.', 'Its outline is said to echo the raised hand of Tunku Abdul Rahman as he declared independence in 1957.'] },
+  pearl:{ h:'468 m', built:'1991 to 1994', by:'Jiang Huancheng', where:'Lujiazui, Pudong, Shanghai', wiki:'Oriental_Pearl_Tower', more:['Its upper pearl has a glass-floored walkway 259 metres above the ground.', 'It was the tallest structure in China until 2007.'] },
+  shanghaitower:{ h:'632 m', built:'2008 to 2015', by:'Gensler', where:'Lujiazui, Pudong, Shanghai', wiki:'Shanghai_Tower', more:['It has two glass skins, with gardens in the gap between them.', 'Its lifts are some of the fastest in the world, at more than 18 metres per second.'] },
+  jinmao:{ h:'421 m', built:'1994 to 1999', by:'Skidmore, Owings & Merrill', where:'Lujiazui, Pudong, Shanghai', wiki:'Jin_Mao_Tower', more:['Its hotel atrium is a hollow cylinder more than 30 floors high.', 'Brave visitors can walk around the outside of the 88th floor, clipped to a safety harness.'] },
+  taipei101:{ h:'508 m', built:'1999 to 2004', by:'C.Y. Lee & Partners', where:'Xinyi, Taipei', wiki:'Taipei_101', more:['It was the tallest building in the world from 2004 to 2010.', 'Its golden damper ball can be seen from a viewing floor near the top.'] },
+  cksmemorial:{ h:'70 m', built:'1976 to 1980', by:'Yang Cho-cheng', where:'Liberty Square, Taipei', wiki:'Chiang_Kai-shek_Memorial_Hall', more:['A changing of the guard takes place inside every hour.', 'The great square in front is called Liberty Square.'] },
+  grandhotel:{ h:'87 m', built:'1971 to 1973', by:'Yang Cho-cheng', where:'Zhongshan, Taipei', wiki:'Grand_Hotel_(Taipei)', more:['It was once one of the tallest buildings in Taipei.', 'Two secret escape tunnels run under the hotel, and one is now open for tours.'] }
 };
 
 /* ---------- landmark effects: each one is its own moment ---------- */
 function band(p, y, h, col){ ctx.fillStyle = col; ctx.fillRect(p.minX - 4, y, p.maxX - p.minX + 8, h); }
 function burst(x, y, ph, t0, hue, n, R){ const k = ph - t0; if (k < 0 || k > 1.4) return; const a = Math.max(0, 1 - k / 1.4), r = R * (1 - Math.exp(-k * 3.2));
   for (let i = 0; i < n; i++) { const an = i / n * TAU, px = x + Math.cos(an) * r, py = y + Math.sin(an) * r + k * k * 14; ctx.fillStyle = `hsla(${hue + (i % 3) * 18},100%,${70 + (i % 2) * 15}%,${a})`; E(px, py, 1.6, 1.6); ctx.fillStyle = `hsla(${hue},100%,80%,${a * .35})`; E(px - Math.cos(an) * 4, py - Math.sin(an) * 4, 1, 1); } }
+function lanterns(p, a, ph, rgb){ const r = seeded(p.i + 13); for (let k = 0; k < 6; k++) { const t = Math.max(0, ph - r() * 1.5); if (t <= 0) continue; const x = p.x + (r() - .5) * 60 + Math.sin(T + k) * 3, y = p.tip + LH * .3 - t * 22, al = a * Math.max(0, 1 - t / 4);
+  ctx.fillStyle = `rgba(${rgb},${al})`; RR(x - 2.4, y - 3.2, 4.8, 6.4, 2); ctx.fill(); ctx.fillStyle = `rgba(255,240,200,${.7 * al})`; ctx.fillRect(x - .8, y - 1, 1.6, 2); } }
 const LFX = {
   eiffel:{ inside(p, a, ph){ const r = seeded(p.i * 13 + ((ph * 9) | 0)); for (let k = 0; k < 60; k++) { const y = p.tip + r() * LH, hw = p.hwAt(y); if (hw < 1.2) continue; const x = p.x - hw + r() * hw * 2; ctx.fillStyle = `rgba(255,250,228,${a * (.35 + .65 * r())})`; E(x, y, 1.1, 1.1); } ctx.fillStyle = `rgba(255,200,110,${.12 * a})`; ctx.fillRect(p.minX, p.tip, p.maxX - p.minX, LH); },
     outside(p, a, ph, on){ if (!on) return; const bx = p.x, by = p.tip + LH * .14; for (const s of [0, Math.PI]) { const c = Math.cos(ph * 1.7 + s), len = 170 * Math.abs(c) + 20; const g = ctx.createLinearGradient(bx, by, bx + Math.sign(c) * len, by); g.addColorStop(0, `rgba(255,236,170,${.55 * a})`); g.addColorStop(1, 'rgba(255,236,170,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(bx, by - 1.5); ctx.lineTo(bx + Math.sign(c) * len, by - 9); ctx.lineTo(bx + Math.sign(c) * len, by + 9); ctx.lineTo(bx, by + 1.5); ctx.fill(); } ctx.fillStyle = `rgba(255,248,210,${a})`; E(bx, by, 2.6, 2.6); } },
@@ -1788,7 +1972,31 @@ const LFX = {
       for (let k = 1; k < 7; k++) { const t = k / 7, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t + Math.sin(t * Math.PI) * 10, fl = Math.sin(T * 9 + k) * 1.2; ctx.fillStyle = `rgba(255,${120 + (k % 2) * 30},20,${a})`; ctx.beginPath(); ctx.moveTo(x - 2.2, y); ctx.lineTo(x + 2.2, y); ctx.lineTo(x + fl, y + 5); ctx.fill(); } } } },
   hoftoren:{ inside(p, a, ph){ const k = (ph % 1.6) / 1.6, sx = p.minX - 20 + k * (p.maxX - p.minX + 40); ctx.save(); ctx.translate(sx, p.tip + LH * .5); ctx.rotate(.5); const g = ctx.createLinearGradient(-8, 0, 8, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, `rgba(255,255,255,${.7 * a})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(-8, -LH, 16, LH * 2); ctx.restore(); },
     outside(p, a, ph, on){ if (!on) return; const n = Math.min(60, (ph / 3) * 60 | 0); ctx.strokeStyle = `rgba(30,60,140,${.8 * a})`; ctx.lineWidth = 1.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.x, p.tip);
-      for (let i = 1; i <= n; i++) { const t = i / 60; ctx.lineTo(p.x + 10 + t * 60 + Math.sin(t * 18) * 6, p.tip - 6 - Math.cos(t * 18) * 8 + t * 4); } ctx.stroke(); } }
+      for (let i = 1; i <= n; i++) { const t = i / 60; ctx.lineTo(p.x + 10 + t * 60 + Math.sin(t * 18) * 6, p.tip - 6 - Math.cos(t * 18) * 8 + t * 4); } ctx.stroke(); } },
+  galata:{ inside(p, a){ const y = p.tip + LH * .28, g = ctx.createLinearGradient(0, y, 0, y + LH * .1); g.addColorStop(0, `rgba(255,214,140,${.75 * a})`); g.addColorStop(1, 'rgba(255,214,140,0)'); ctx.fillStyle = g; ctx.fillRect(p.minX, y, p.maxX - p.minX, LH * .1); },
+    outside(p, a, ph, on){ if (!on) return; for (let k = 0; k < 3; k++) { const an = ph * 1.4 + k * 2.1, x = p.x + Math.cos(an) * 34, y = p.tip + LH * .14 + Math.sin(an) * 9, f = Math.sin(T * 10 + k) * 2.4; ctx.strokeStyle = `rgba(255,255,255,${a})`; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x - 5, y - f); ctx.quadraticCurveTo(x - 2, y - 2.5, x, y); ctx.quadraticCurveTo(x + 2, y - 2.5, x + 5, y - f); ctx.stroke(); } } },
+  bluemosque:{ inside(p, a, ph){ [.275, .475, .665].forEach((t, k) => { const on = Math.sin(ph * 4 - k) > -.2 ? 1 : .4; ctx.fillStyle = `rgba(255,226,150,${.85 * a * on})`; ctx.fillRect(p.minX, p.tip + LH * t, p.maxX - p.minX, 3); }); },
+    outside(p, a, ph, on){ if (!on) return; const x = p.x + 24, y = p.tip + 14 - Math.min(1, ph / 2) * 8; ctx.fillStyle = `rgba(255,240,190,${a})`; ctx.beginPath(); ctx.arc(x, y, 6, -1.3, 1.3, true); ctx.arc(x + 3, y, 5, 1.55, -1.55, false); ctx.fill(); } },
+  hagiasophia:{ inside(p, a, ph){ const y = p.tip + LH * .27; for (let k = 0; k < 12; k++) { const x = p.x - 21 + k * 3.8, g = ctx.createLinearGradient(0, y, 0, y + LH * .5); g.addColorStop(0, `rgba(255,220,140,${.35 * a})`); g.addColorStop(1, 'rgba(255,220,140,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 1, y); ctx.lineTo(x + 1, y); ctx.lineTo(x + 6 + Math.sin(ph + k) * 2, y + LH * .5); ctx.lineTo(x - 6, y + LH * .5); ctx.fill(); } } },
+  sagrada:{ inside(p, a, ph){ const cols = ['255,90,80', '255,200,80', '90,170,255', '120,220,140']; for (let k = 0; k < 4; k++) { const y = p.tip + LH * (.15 + ((ph * .18 + k * .22) % 1) * .85); ctx.fillStyle = `rgba(${cols[k]},${.35 * a})`; ctx.fillRect(p.minX, y, p.maxX - p.minX, 14); } },
+    outside(p, a, ph, on){ if (!on) return; const r = seeded(p.i + 3); for (let k = 0; k < 14; k++) { const t = (ph * .5 + r()) % 1, x = p.x + (r() - .5) * 50 + Math.sin(T * 2 + k) * 4, y = p.tip + 10 - t * 60; ctx.fillStyle = `rgba(255,${200 + r() * 55 | 0},${120 + r() * 100 | 0},${a * (1 - t)})`; E(x, y, 1.4, 1.4); } } },
+  glories:{ inside(p, a, ph){ for (let y = p.tip; y < p.base; y += 3) { const w = p.hwAt(y); for (let x = -w; x < w; x += 3) { ctx.fillStyle = `hsla(${(ph * 90 + y * 1.4 + x * 4) % 360},95%,62%,${.5 * a})`; ctx.fillRect(p.x + x, y, 2.6, 2.6); } } } },
+  colom:{ inside(p, a){ const y = p.tip + LH * .108, g = ctx.createRadialGradient(p.x, y, 0, p.x, y, 9); g.addColorStop(0, `rgba(255,236,170,${.9 * a})`); g.addColorStop(1, 'rgba(255,236,170,0)'); ctx.fillStyle = g; E(p.x, y, 9, 9); },
+    outside(p, a, ph, on){ if (!on) return; const sy = p.tip + LH * .045, k = Math.min(1, ph / 1.2); ctx.strokeStyle = `rgba(255,240,200,${.6 * a})`; ctx.lineWidth = 1; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(p.x + 7, sy - 3.4); ctx.lineTo(p.x + 7 + 70 * k, sy - 3.4 - 26 * k); ctx.stroke(); ctx.setLineDash([]); } },
+  petronas:{ inside(p, a, ph){ const r = seeded(p.i * 9 + ((ph * 6) | 0)); for (let k = 0; k < 50; k++) { const y = p.tip + LH * (.34 + r() * .64), w = p.hwAt(y) - 1; ctx.fillStyle = `rgba(255,244,210,${a * r()})`; ctx.fillRect(p.x - w + r() * w * 2, y, 1.2, 1.4); } },
+    outside(p, a, ph, on){ if (!on) return; const by = p.tip + LH * .5, k = (Math.sin(ph * 5) + 1) / 2; ctx.fillStyle = `rgba(255,236,170,${(.4 + .5 * k) * a})`; ctx.fillRect(p.x + 10, by + .6, 16, 3); } },
+  kltower:{ inside(p, a){ ctx.fillStyle = `rgba(150,215,255,${.45 * a})`; ctx.fillRect(p.minX, p.tip + LH * .275, p.maxX - p.minX, LH * .075); },
+    outside(p, a, ph, on){ if (!on) return; ctx.save(); ctx.translate(p.x, p.tip + 2); ctx.rotate(Math.sin(ph * 1.6) * .9 - Math.PI / 2); const g = ctx.createLinearGradient(0, 0, 120, 0); g.addColorStop(0, `rgba(255,250,220,${.55 * a})`); g.addColorStop(1, 'rgba(255,250,220,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(120, -10); ctx.lineTo(120, 10); ctx.fill(); ctx.restore(); } },
+  merdeka118:{ inside(p, a, ph){ const k = (ph % 1.8) / 1.8, y = p.base - k * (LH + 40), g = ctx.createLinearGradient(0, y - 20, 0, y + 20); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, `rgba(255,250,215,${.65 * a})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(p.minX, y - 20, p.maxX - p.minX, 40); } },
+  pearl:{ inside(p, a, ph){ ctx.fillStyle = `hsla(${(320 + ph * 70) % 360},90%,62%,${.4 * a})`; [[.135, .19], [.255, .43], [.665, .84]].forEach(([t0, t1]) => ctx.fillRect(p.minX, p.tip + LH * t0, p.maxX - p.minX, LH * (t1 - t0))); } },
+  shanghaitower:{ inside(p, a, ph){ const n = Math.min(40, (ph / 2.4) * 40 | 0); ctx.strokeStyle = `rgba(200,240,255,${.9 * a})`; ctx.lineWidth = 2.2; ctx.beginPath(); for (let k = 0; k <= n; k++) { const t = 1 - k / 40, y = p.tip + LH * t, w = p.hwAt(y), x = p.x + Math.sin(t * 2.1 + .3) * w * .92; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); } },
+  jinmao:{ inside(p, a, ph){ const y = p.base - Math.min(1, ph / 2.2) * LH, g = ctx.createLinearGradient(0, y, 0, p.base); g.addColorStop(0, `rgba(255,214,120,${.55 * a})`); g.addColorStop(1, `rgba(255,214,120,${.15 * a})`); ctx.fillStyle = g; ctx.fillRect(p.minX, y, p.maxX - p.minX, p.base - y); } },
+  taipei101:{ inside(p, a, ph){ for (let k = 0; k < 8; k++) { if (ph * 3 <= 7 - k) continue; ctx.fillStyle = `hsla(${k * 45},85%,62%,${.42 * a})`; ctx.fillRect(p.minX, p.tip + LH * (.2 + k * .0725), p.maxX - p.minX, LH * .0725); } },
+    outside(p, a, ph, on){ if (!on) return; for (let k = 0; k < 5; k++) burst(p.x + (k % 2 ? 1 : -1) * (14 + k * 4), p.tip + LH * (.2 + k * .12), ph, .3 + k * .45, (k * 70) % 360, 12, 18); } },
+  cksmemorial:{ inside(p, a, ph){ const k = (ph % 1.6) / 1.6, sx = p.minX - 20 + k * (p.maxX - p.minX + 40); ctx.fillStyle = `rgba(255,255,255,${.35 * a})`; ctx.fillRect(sx, p.tip, 6, LH * .39); },
+    outside(p, a, ph, on){ if (!on) return; lanterns(p, a, ph, '255,180,80'); } },
+  grandhotel:{ inside(p, a){ ctx.fillStyle = `rgba(255,214,140,${.3 * a})`; ctx.fillRect(p.minX, p.tip + LH * .3, p.maxX - p.minX, LH * .66); },
+    outside(p, a, ph, on){ if (!on) return; lanterns(p, a, ph, '230,70,50'); } }
 };
 
 /* ---------- landmark sounds, matched to each place ---------- */
@@ -1841,6 +2049,21 @@ function landmarkSound(p){
     case 'peacepalace': [0, .55].forEach(o => voice('sine', 420, t + o, .45, .04, d, { from:500, slide:.25, vib:50, vibR:8, a:.04 })); chime(1568, t + 1.1, .02, d); chime(2093, t + 1.5, .016, d); break;
     case 'ridderzaal': [[67, 0, .18], [72, .22, .18], [76, .44, .18], [79, .66, .5], [76, 1.2, .2], [79, 1.45, .9]].forEach(([m, o, du]) => brass(mf(m), t + o, du, .05, d, { vib:du > .5 ? 12 : 0 })); break;
     case 'hoftoren': for (let k = 0; k < 18; k++) noiseHit(t + k * .07 + Math.random() * .03, .03, .03, d, 'highpass', 4500, 1); voice('sine', 1760, t + 1.4, 1.6, .03, d, { a:.002 }); voice('sine', 2637, t + 1.4, 1, .012, d, { a:.002 }); break;
+    case 'galata': [62, 63, 66, 67, 69, 67, 66, 63, 62].forEach((m, i) => pluck(mf(m), t + i * .14, .09, d, { dur:.9, s:.2, decay:.993, peak:2600 })); break;
+    case 'bluemosque': [[62, .5], [63, .3], [66, .3], [67, .6], [66, .3], [63, .3], [62, 1]].reduce((tt, [m, du]) => { flute(mf(m), tt, du, .05, d, { vib:22 }); return tt + du; }, t); break;
+    case 'hagiasophia': pad(mf(50), t, 3, .014, d, 1100); pad(mf(57), t, 3, .012, d, 1100); pad(mf(62), t + .4, 2.6, .01, d, 1400); chime(392, t + .2, .03, d); chime(587, t + 1.2, .02, d); break;
+    case 'sagrada': [76, 74, 72, 71, 69, 67, 69, 72].forEach((m, i) => chime(mf(m), t + i * .22, .018, d)); break;
+    case 'glories': [64, 68, 71, 76, 80, 83, 88].forEach((m, i) => vibes(mf(m), t + i * .09, .8, .05, d)); break;
+    case 'colom': voice('sawtooth', 110, t, 1.4, .05, d, { sus:true, a:.08, r:.3, lp:600 }); voice('sawtooth', 165, t, 1.4, .03, d, { sus:true, a:.08, r:.3, lp:600 }); for (let k = 0; k < 3; k++) voice('sine', 1500, t + 1.6 + k * .28, .18, .02, d, { from:2000, slide:.16 }); break;
+    case 'petronas': [[62, 0], [65, .3], [67, .6], [69, .9], [72, 1.2]].forEach(([m, o]) => { voice('sine', mf(m), t + o, 1.8, .04, d, { a:.002 }); voice('sine', mf(m) * 2.4, t + o, .6, .014, d, { a:.002 }); }); voice('sine', 98, t + 1.6, 2.4, .06, d, { a:.01, vib:4, vibR:5 }); break;
+    case 'kltower': for (let k = 0; k < 8; k++) { noiseHit(t + k * .16, .08, .05, d, 'bandpass', k % 2 ? 900 : 500, 1.2); kickD(t + k * .16, .06, d, 160, 80, .12); } voice('sine', 880, t + 1.3, .8, .03, d, { from:440, slide:.6 }); break;
+    case 'merdeka118': [72, 76, 79, 83, 86, 91].forEach((m, i) => chime(mf(m), t + i * .12, .016, d)); break;
+    case 'pearl': [62, 64, 67, 69, 72, 74, 76, 79, 81].forEach((m, i) => pluck(mf(m), t + i * .06, .07, d, { dur:1.2, s:.2, decay:.996 })); break;
+    case 'shanghaitower': noiseHit(t, 1.6, .05, d, 'bandpass', 700, .6, .8); voice('sine', 600, t + .4, 1.4, .025, d, { from:300, slide:1.2, vib:20 }); break;
+    case 'jinmao': voice('sine', 82, t, 3, .07, d, { a:.005, vib:3, vibR:4 }); voice('sine', 164, t, 2, .03, d, { a:.005 }); [[69, .5], [67, .5], [64, .8]].reduce((tt, [m, du]) => { voice('sawtooth', mf(m), tt, du, .03, d, { sus:true, a:.05, r:.1, lp:1800, vib:24, vibD:.2, from:mf(m) * .97, slide:.1 }); return tt + du; }, t + .6); break;
+    case 'taipei101': for (let k = 0; k < 16; k++) noiseHit(t + k * .06 + Math.random() * .03, .05, .05, d, 'highpass', 2500, .8); voice('sine', 98, t + 1.1, 2.4, .06, d, { a:.005, vib:3 }); break;
+    case 'cksmemorial': [0, 1.1].forEach(o => { voice('sine', 130, t + o, 2.6, .05, d, { a:.004 }); voice('sine', 351, t + o, 1.2, .014, d, { a:.004 }); }); break;
+    case 'grandhotel': [69, 72, 74, 76].forEach((m, i) => { for (let r = 0; r < 4; r++) pluck(mf(m), t + i * .32 + r * .05, .05, d, { dur:.5, s:.3, decay:.99 }); }); break;
   }
 }
 
@@ -2509,7 +2732,7 @@ function drawPegs(){
     drawLandmark(p);
     const pg = ctx.createLinearGradient(p.x - 24, 0, p.x + 24, 0); pg.addColorStop(0, '#efe9dd'); pg.addColorStop(.5, '#d8d0bf'); pg.addColorStop(1, '#a9a08d');
     ctx.fillStyle = pg; RR(p.x - 24, p.base, 48, 18, 2); ctx.fill(); ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(p.x - 24, p.bot - 4, 48, 4); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(p.x - 24, p.base, 48, 1.2);
-    ctx.fillStyle = 'rgba(40,44,48,.85)'; ctx.font = '600 4.4px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillText(p.lm.name.toUpperCase().slice(0, 16), p.x, p.base + 9.6);
+    ctx.fillStyle = 'rgba(40,44,48,.85)'; ctx.font = '600 4.4px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillText((p.lm.plate || p.lm.name).toUpperCase().slice(0, 16), p.x, p.base + 9.6);
     for (const r of p.stack) drawRing(r, 'front');
   }
 }
@@ -2714,10 +2937,27 @@ const ARTWORKS = {
     more:['Munch made several versions. This painted one from 1893 hangs in the National Museum, and others are at the Munch Museum.', 'The view is from the hill of Ekeberg, looking over the Oslofjord.'] },
   hague:{ title:'Girl with a Pearl Earring', by:'Johannes Vermeer', year:'About 1665', where:'Mauritshuis, The Hague', style:'Dutch Golden Age', wiki:'Girl_with_a_Pearl_Earring',
     text:'A girl in a blue and yellow turban glances over her shoulder at us, lips parted, a large pearl catching the light. Nobody knows who she was.',
-    more:['It is not a portrait but a tronie, a Dutch painting of an imagined face or character.', 'The famous pearl is painted with just a few strokes of white paint.'] }
+    more:['It is not a portrait but a tronie, a Dutch painting of an imagined face or character.', 'The famous pearl is painted with just a few strokes of white paint.'] },
+  istanbul:{ title:'The Tortoise Trainer', by:'Osman Hamdi Bey', year:'1906', where:'Pera Museum, Istanbul', style:'Ottoman oil painting', wiki:'The_Tortoise_Trainer',
+    text:'An old man in a red robe plays a reed pipe to train a group of tortoises, as if they might learn a tune. Many people read it as a gentle joke about how slowly old ways change.',
+    more:['In 2004 it sold for a record price for a Turkish painting, and it now hangs in the Pera Museum.', 'Osman Hamdi Bey was also an archaeologist, and he founded the Istanbul Archaeology Museums.'] },
+  barcelona:{ title:'Ramon Casas and Pere Romeu on a Tandem', by:'Ramon Casas', year:'1897', where:'Museu Nacional d\'Art de Catalunya, Barcelona', style:'Catalan Modernisme', wiki:'Ramon_Casas_and_Pere_Romeu_on_a_Tandem',
+    text:'The painter Ramon Casas and his friend Pere Romeu pedal a tandem bicycle, with Barcelona far behind them. It was painted for Els Quatre Gats, the café where a teenage Picasso held his first show.',
+    more:['A few years later Casas painted the two friends again, this time in a motor car.', 'Els Quatre Gats is still open in the Gothic Quarter.'] },
+  kl:{ title:'Songket of Terengganu', by:'Malay weavers', year:'Mid 1800s', where:'Textile Museum, Washington DC, and still woven in Terengganu today', style:'Hand-woven silk with gold thread', wiki:'Songket',
+    text:'Songket is a royal Malay fabric, woven by hand in silk with gold or silver threads that glitter as you move. This hip wrapper from Terengganu is about 170 years old.',
+    more:['Weaving a single piece can take weeks, and the patterns are passed down through families.', 'In 2021 UNESCO listed songket as part of Malaysia\'s cultural heritage.'] },
+  shanghai:{ title:'Flowers and Birds', by:'Ren Bonian', year:'Late 1800s', where:'Shanghai Museum and others', style:'Shanghai School ink and colour', wiki:'Ren_Bonian',
+    text:'Ren Bonian was the star of the Shanghai School, painters who sold bright, lively scrolls to the merchants of booming 19th-century Shanghai. Birds, flowers and people were his favourite subjects.',
+    more:['He settled in Shanghai in 1868 and worked there for the rest of his life.', 'His mix of loose ink and bold colour shaped Chinese painting in the 20th century.'] },
+  taipei:{ title:'Travelers Among Mountains and Streams', by:'Fan Kuan', year:'About 1000', where:'National Palace Museum, Taipei', style:'Song dynasty ink on silk', wiki:'Travelers_Among_Mountains_and_Streams',
+    text:'A giant mountain towers over a tiny line of travellers and their mules at the bottom of the scroll. It is one of the most famous Chinese landscape paintings ever made.',
+    more:['Fan Kuan hid his signature among the leaves in the bottom corner. It was only spotted in 1958.', 'It is so fragile that the museum only shows it for short periods.'] }
 };
 const ARTIMG = {}; ['paris', 'nyc', 'tokyo', 'london', 'delhi', 'florence', 'amsterdam', 'oslo', 'hague'].forEach(k => { const im = new Image(); im.src = 'art/' + k + '.jpg'; ARTIMG[k] = im; });
-const ART_AR = { paris:.67, nyc:1.6, tokyo:1.8, london:.79, delhi:.75, dubai:1.4, florence:1.62, amsterdam:.85, oslo:.79, hague:.84 };
+const ARTURL = { istanbul:'Osman Hamdi Bey - The Tortoise Trainer.jpg', barcelona:'Ramon Casas - Ramon Casas and Pere Romeu on a Tandem - Google Art Project.jpg', kl:'Kain limar songket bertabur (hip wrapper), Malaysian people, Malaya, Terengganu, mid 19th century AD, silk, metal-wrapped silk, view 1 - Textile Museum, George Washington University - DSC09786.JPG', shanghai:'Flowers and birds (Ren Bonian).jpg', taipei:'Fan K\'uan 001.jpg' };
+Object.keys(ARTURL).forEach(k => { const im = new Image(); im.src = 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(ARTURL[k]) + '?width=900'; ARTIMG[k] = im; });
+const ART_AR = { paris:.67, nyc:1.6, tokyo:1.8, london:.79, delhi:.75, dubai:1.4, florence:1.62, amsterdam:.85, oslo:.79, hague:.84, istanbul:.54, barcelona:1.15, kl:1.85, shanghai:.48, taipei:.5 };
 function artReady(id){ const im = ARTIMG[id]; return im && im.complete && im.naturalWidth > 0; }
 function artAspect(id){ return artReady(id) ? ARTIMG[id].naturalWidth / ARTIMG[id].naturalHeight : ART_AR[id] || 1.4; }
 function paintArt(id, w, h){
@@ -3479,7 +3719,7 @@ function renderTickets(){
     b.addEventListener('click', () => { audio(); daily = false; setCity(i); }); tix.appendChild(b); });
   measure();
 }
-const PHOTOS = {"paris": "Pont des Invalides et Tour Eiffel - 01.jpg", "dubai": "Dubai Skyline mit Burj Khalifa (cropped).jpg", "delhi": "India Gate, New Delhi from West.jpg", "nyc": "Brooklyn Bridge and the Lower Manhattan skyline from Pebble Beach, New York.jpg", "tokyo": "Tokyo Tower at night 7.JPG", "london": "Palace of Westminster, London - Feb 2007.jpg", "florence": "Panorama di Firenze centro visto dal Piazzale Michelangelo.jpg", "amsterdam": "Colorful windows and canal houses at blue hour with water reflection in Damrak Amsterdam Netherlands.jpg", "oslo": "Oslo Opera House - 2025.jpg", "hague": "Den Haag, het Binnenhof diverse RM met de Hofvijver op de voorgrond foto8 2015-08-05 18.56.jpg"};
+const PHOTOS = {"paris": "Pont des Invalides et Tour Eiffel - 01.jpg", "dubai": "Dubai Skyline mit Burj Khalifa (cropped).jpg", "delhi": "India Gate, New Delhi from West.jpg", "nyc": "Brooklyn Bridge and the Lower Manhattan skyline from Pebble Beach, New York.jpg", "tokyo": "Tokyo Tower at night 7.JPG", "london": "Palace of Westminster, London - Feb 2007.jpg", "florence": "Panorama di Firenze centro visto dal Piazzale Michelangelo.jpg", "amsterdam": "Colorful windows and canal houses at blue hour with water reflection in Damrak Amsterdam Netherlands.jpg", "oslo": "Oslo Opera House - 2025.jpg", "hague": "Den Haag, het Binnenhof diverse RM met de Hofvijver op de voorgrond foto8 2015-08-05 18.56.jpg", "istanbul": "Istanbul asv2020-02 img45 Hagia Sophia.jpg", "barcelona": "Sagrada Familia Barcelona 2.jpg", "kl": "Kuala Lumpur Malaysia Petronas-Twin-Towers-01.jpg", "shanghai": "Pudong Shanghai November 2017 panorama.jpg", "taipei": "Taipei Taiwan Taipei-101-Tower-01.jpg"};
 const photoURL = id => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(PHOTOS[id]) + '?width=640';
 function openGallery(){
   const g = $('galGrid'); g.innerHTML = '';
@@ -3491,7 +3731,7 @@ function openGallery(){
 }
 function renderStamps(){ renderPassport(); }
 /* ---------- passport ---------- */
-const INK = ['#b3262e', '#1f5fa8', '#6a3d9a', '#1d6b4f', '#c8322b', '#1f2d3d', '#8a3b12', '#c4531a', '#1f4e79', '#6b2a5a'], ROT = [-9, 6, -4, 8, -12, 5, 7, -6, 10, -8];
+const INK = ['#b3262e', '#1f5fa8', '#6a3d9a', '#1d6b4f', '#c8322b', '#1f2d3d', '#8a3b12', '#c4531a', '#1f4e79', '#6b2a5a', '#1f6f8b', '#b5481c', '#16467f', '#a41d2a', '#2e6b3c'], ROT = [-9, 6, -4, 8, -12, 5, 7, -6, 10, -8, 6, -7, 9, -5, 7];
 function ppDate(d){ return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase(); }
 function stampDate(id){ const iso = store.stampAt && store.stampAt[id]; return iso ? ppDate(new Date(iso)) : String(store.stamps[id] || '').toUpperCase(); }
 function arcT(id, r){ return `<path id="${id}" d="M${100 - r},100 A${r},${r} 0 0 1 ${100 + r},100" fill="none" stroke="none"/>`; }
@@ -3543,10 +3783,35 @@ function stampSVG(c, i){
     b = `<path d="M110 6L214 110L110 214L6 110Z" stroke-width="4" stroke-linejoin="round"/><path d="M110 20L200 110L110 200L20 110Z" stroke-width="1.3"/>
     ${T2(110, 60, 'ANKOMST', 9.5, { ls:2 })}${F('M72 94q38 16 76 0l-4 7q-34 10-68 0zM110 92V62h2v30zM95 64h32v22H95z')}<path d="M72 94q-10-10-3-20M148 94q10-10 3-20" stroke-width="2" stroke-linecap="round"/><path d="M95 71h32M95 78h32" stroke="#fff" stroke-width="1"/>
     <path d="M70 110q10-5 20 0t20 0t20 0t20 0" stroke-width="1.4"/>${B2(110, 136, 'OSLO', 26, 4)}${T2(110, 152, date, 10)}${T2(110, 166, 'NORGE', 8, { ls:2 })}`; }
-  else { vb = '0 0 220 200'; // The Hague: hexagon with the scales of justice
+  else if (i === 9) { vb = '0 0 220 200'; // The Hague: hexagon with the scales of justice
     b = `<path d="M60 6H160L214 100L160 194H60L6 100Z" stroke-width="4" stroke-linejoin="round"/><path d="M65 15H155L203 100L155 185H65L17 100Z" stroke-width="1.3"/>
     <path d="M110 24V62M98 64h24M82 32h56M88 32l-8 16M88 32l8 16M132 32l-8 16M132 32l8 16" stroke-width="1.6" stroke-linecap="round"/>${F('M78 48h20a10 6 0 0 1-20 0zM122 48h20a10 6 0 0 1-20 0z')}
     ${T2(110, 88, 'AANKOMST · ARRIVAL', 10, { ls:2 })}${B2(110, 118, 'THE HAGUE', 20)}${T2(110, 140, date, 10.5)}${T2(110, 160, 'VREDE EN RECHT', 8.5, { ls:1.4 })}`; }
+  else if (i === 10) { // Istanbul: octagon with an İznik tulip
+    b = `<path d="M62 6H138L194 62V138L138 194H62L6 138V62Z" stroke-width="4" stroke-linejoin="round"/><path d="M66 16H134L184 66V134L134 184H66L16 134V66Z" stroke-width="1.3"/>
+    ${T2(100, 46, 'GİRİŞ · ENTRY', 10, { ls:2.4 })}${F('M100 56c-6 6-9 14-6 21 2 4 5 6 6 6s4-2 6-6c3-7 0-15-6-21zM90 62c-4 6-3 14 3 19-6-1-9-6-9-11 0-3 2-6 6-8zM110 62c4 6 3 14-3 19 6-1 9-6 9-11 0-3-2-6-6-8z')}<path d="M100 84v14M100 92q-8-2-12-8M100 92q8-2 12-8" stroke-width="1.6" stroke-linecap="round"/>
+    ${B2(100, 124, 'İSTANBUL', 18)}${T2(100, 142, date, 10.5)}${T2(100, 160, 'TÜRKİYE · IST', 8.5, { ls:2 })}`; }
+  else if (i === 11) { vb = '0 0 200 210'; // Barcelona: Gaudí-style rounded stamp with the Sagrada Família spires
+    b = `<rect x="6" y="6" width="188" height="198" rx="40" stroke-width="4"/><rect x="16" y="16" width="168" height="178" rx="32" stroke-width="1.3" stroke-dasharray="5 3"/>
+    ${F('M78 98l4-40 4 40zM92 98l5-52 5 52zM108 98l5-52 5 52zM122 98l4-40 4 40z')}<circle cx="82" cy="54" r="2.4" fill="currentColor" stroke="none"/><circle cx="97" cy="42" r="2.6" fill="currentColor" stroke="none"/><circle cx="113" cy="42" r="2.6" fill="currentColor" stroke="none"/><circle cx="126" cy="54" r="2.4" fill="currentColor" stroke="none"/><path d="M66 100h78" stroke-width="2"/>
+    ${T2(100, 32, 'ENTRADA', 10, { ls:3 })}${B2(100, 130, 'BARCELONA', 17)}${T2(100, 150, date, 10.5)}${T2(100, 170, 'CATALUNYA · BCN', 8.5, { ls:1.8 })}`; }
+  else if (i === 12) { vb = '0 0 220 220'; // Kuala Lumpur: the eight-pointed star of the Petronas floor plan, with the twin towers
+    const star = (r1, r2) => { let s = ''; for (let k = 0; k < 16; k++) { const a = k / 16 * TAU - Math.PI / 2, r = k % 2 ? r2 : r1; s += (k ? 'L' : 'M') + (110 + Math.cos(a) * r).toFixed(1) + ' ' + (110 + Math.sin(a) * r).toFixed(1); } return s + 'Z'; };
+    b = `<path d="${star(104, 82)}" stroke-width="4" stroke-linejoin="round"/><path d="${star(92, 72)}" stroke-width="1.3" stroke-linejoin="round"/>
+    ${F('M90 112V72l2-4h6l2 4v40zM120 112V72l2-4h6l2 4v40z')}<path d="M95 68v-14M125 68v-14M100 88h20M110 88l-8 10M110 88l8 10" stroke-width="1.6"/>
+    ${T2(110, 50, 'MASUK', 9, { ls:3 })}${B2(110, 132, 'KUALA LUMPUR', 13)}${T2(110, 150, date, 10)}${T2(110, 166, 'MALAYSIA · KUL', 8, { ls:1.8 })}`; }
+  else if (i === 13) { // Shanghai: round seal with the Oriental Pearl Tower
+    b = `<circle cx="100" cy="100" r="92" stroke-width="4"/><circle cx="100" cy="100" r="82" stroke-width="1.3"/>
+    <text x="100" y="56" text-anchor="middle" font-size="24" font-weight="700" stroke="none" font-family="'Songti SC', 'Noto Serif SC', 'SimSun', serif" letter-spacing="4">上海入境</text>
+    <path d="M100 62v14M100 84v12M100 108v16M96 108l-7 16M104 108l7 16" stroke-width="1.8" stroke-linecap="round"/><circle cx="100" cy="80" r="4" fill="currentColor" stroke="none"/><circle cx="100" cy="102" r="6.5" fill="currentColor" stroke="none"/>
+    ${B2(100, 146, 'SHANGHAI', 19)}${T2(100, 164, date, 10.5)}${T2(100, 180, 'SHA', 8.5, { ls:3 })}`; }
+  else if (i === 14) { vb = '0 0 230 176'; // Taipei: rectangular entry stamp with Taipei 101
+    let seg = ''; for (let k = 0; k < 6; k++) seg += `M40 ${48 + k * 12}h16l-2 10h-12z`;
+    b = `<rect x="6" y="6" width="218" height="164" rx="8" stroke-width="4"/><rect x="14" y="14" width="202" height="148" rx="4" stroke-width="1.3"/>
+    ${F(seg + 'M46 48V36h4v12zM47 36l1-12 1 12zM36 120h24v14H36z')}
+    <text x="140" y="56" text-anchor="middle" font-size="24" font-weight="700" stroke="none" font-family="'Songti TC', 'Noto Serif TC', 'PMingLiU', serif" letter-spacing="3">臺北入境</text>
+    ${B2(140, 94, 'TAIPEI', 24)}<path d="M84 104h112" stroke-width="1"/>${T2(140, 122, date, 11)}${T2(140, 142, 'TAIWAN · TPE', 9, { ls:2 })}`; }
+  else { b = `<circle cx="100" cy="100" r="92" stroke-width="4"/><circle cx="100" cy="100" r="82" stroke-width="1.3"/>${B2(100, 106, CITY, 18)}${T2(100, 128, date, 10.5)}`; }
   const vbp = vb.split(' ').map(Number), arv = vbp[2] / vbp[3], sw = Math.min(46, 38 * arv).toFixed(1);
   return `<svg class="st" viewBox="${vb}" style="width:${sw}cqw; --r:${ROT[i]}deg; transform:rotate(${ROT[i]}deg); color:${ink}" fill="none" stroke="${ink}" aria-label="${c.name} stamp, ${date}"><g filter="url(#inkF)" fill="none" opacity=".88">${b}</g></svg>`;
 }
@@ -3567,15 +3832,15 @@ function ppPageHTML(n){
       <div><small>Issued by</small><b>Wanderwater Museum</b></div><div><small>Date of issue</small><b>${iss}</b></div><div><small>Galleries visited</small><b>${got} of ${CITIES.length}</b></div></div></div>
     <div class="sig">${nm.replace(/[<>]/g, '')}</div><p class="ppNote">Your name and photo are saved online so the museum can see who visited.</p>
     <div class="mrz">${mrzLine('P<WWR' + sur + '<<' + giv)}\n${mrzLine(store.pno + '<' + got + 'WWR' + iss.replace(/\s/g, '') + '<<<OCEAN')}</div>${no}</div>`; }
-  if (n >= 2 && n <= 6) { const pg = n - 2; let slots = '';
-    for (let k = 0; k < 2; k++) { const i = pg * 2 + k, c = CITIES[i];
-      slots += store.stamps[c.id] ? `<div class="slot${PP.slam === i ? ' slam' : ''}${k ? ' st-r' : ''}" style="transform:translate(${[1.5, -1.5, 2, -1, 1.5, -2, 1, -1.5, 2, -1.5][i]}cqw, ${[1, -.5, -1, 1.5, .5, -1.5, 1, 0, -1, .5][i]}cqw)">${stampSVG(c, i)}${store.best[c.id] ? `<span class="note">best ${store.best[c.id]} pumps</span>` : ''}</div>`
+  if (n >= 2 && n < PP_N - 1) { const pg = n - 2; let slots = '';
+    for (let k = 0; k < 2; k++) { const i = pg * 2 + k, c = CITIES[i]; if (!c) { slots += '<div class="slot empty blankslot"></div>'; continue; }
+      slots += store.stamps[c.id] ? `<div class="slot${PP.slam === i ? ' slam' : ''}${k ? ' st-r' : ''}" style="transform:translate(${[1.5, -1.5, 2, -1, 1.5, -2, 1, -1.5, 2, -1.5][i % 10]}cqw, ${[1, -.5, -1, 1.5, .5, -1.5, 1, 0, -1, .5][i % 10]}cqw)">${stampSVG(c, i)}${store.best[c.id] ? `<span class="note">best ${store.best[c.id]} pumps</span>` : ''}</div>`
         : `<div class="slot empty"><div><b>${c.code}</b></div><div>${c.name}</div><div>not visited yet</div></div>`; }
-    return `<div class="pg">${WM}<div class="hd"><span>Visas · ${CITIES[pg * 2].code} · ${CITIES[pg * 2 + 1].code}</span><span>${store.pno}</span></div><div class="slots">${slots}</div>${no}</div>`; }
+    return `<div class="pg">${WM}<div class="hd"><span>Visas · ${CITIES[pg * 2].code}${CITIES[pg * 2 + 1] ? ' · ' + CITIES[pg * 2 + 1].code : ''}</span><span>${store.pno}</span></div><div class="slots">${slots}</div>${no}</div>`; }
   const rows = CITIES.map(c => `<div><b>${c.code}</b><span>${c.name}</span><span class="${store.stamps[c.id] ? 'yes' : ''}">${store.stamps[c.id] ? stampDate(c.id) + (store.best[c.id] ? ' · ' + store.best[c.id] + ' pumps' : '') : 'not yet'}</span></div>`).join('');
-  return `<div class="pg">${WM}<div class="hd"><span>Travel record</span><span>${got} of ${CITIES.length}</span></div><div class="log">${rows}</div>${no}</div>`;
+  return `<div class="pg">${WM}<div class="hd"><span>Travel record</span><span>${got} of ${CITIES.length}</span></div><div class="log${CITIES.length > 10 ? ' many' : ''}">${rows}</div>${no}</div>`;
 }
-const PP_N = 8;
+const PP_N = 3 + Math.ceil(CITIES.length / 2);
 function ppSize(){
   const bk = $('book'), vw = window.innerWidth, vh = window.innerHeight, single = false;
   ppLastW = vw; let pw = Math.min(380, (vh - 210) / 1.42, (vw - 20) / 2); pw = Math.max(140, Math.floor(pw));
@@ -3754,7 +4019,7 @@ function renderStampsOld(){
 }
 function updateUI(){
   const looped = pegs.filter(p => p.stack.some(r => r.landed)).length;
-  $('loopN').textContent = looped; $('pumpN').textContent = pumps; $('passN').textContent = Object.keys(store.stamps).length;
+  $('loopN').textContent = looped; $('pumpN').textContent = pumps; $('passN').textContent = Object.keys(store.stamps).length; $('passT').textContent = CITIES.length;
   $('chipLoop').classList.toggle('on', looped > 0);
   document.querySelectorAll('#chipLoop .ldots i').forEach((el, k) => el.classList.toggle('on', k < looped));
   const cp = $('chipPump'); if (cp) { cp.classList.toggle('zero', pumps === 0); if (pumps && cp._n !== pumps) { cp.classList.remove('bump'); void cp.offsetWidth; cp.classList.add('bump'); } cp._n = pumps; }
@@ -3811,7 +4076,7 @@ function savePostcard(){
 }
 function introToast(){ showCityCard(); }
 function showCityCard(){
-  const el = $('cityCard'); if (!el) return; $('ccN').textContent = 'Now arriving · ' + pad2(cityIdx + 1) + ' of 10'; $('ccT').textContent = city.name;
+  const el = $('cityCard'); if (!el) return; $('ccN').textContent = 'Now arriving · ' + pad2(cityIdx + 1) + ' of ' + CITIES.length; $('ccT').textContent = city.name;
   const so = $('stage').getBoundingClientRect().top; el.style.top = Math.max(ttl.getBoundingClientRect().bottom - so + 18, SURF * S + 22) + 'px'; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 3600);
 }
