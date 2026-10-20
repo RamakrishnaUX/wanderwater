@@ -965,6 +965,17 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
   .galgrid .ok{top:50%!important; right:14px!important; transform:translateY(-50%)}
   .galgrid button:hover{transform:none}
 }
+
+/* landmark pop-up: a real photo, shown whole over a soft blur of itself */
+#shPh{position:relative; margin:0; overflow:hidden; border-radius:20px; background:#d9e3e6; min-height:380px; height:100%}
+#shPh img{position:absolute; inset:0; width:100%; height:100%; display:block}
+#shPh .bg{object-fit:cover; filter:blur(22px) saturate(1.15); transform:scale(1.25); opacity:.9}
+#shPh .fg{object-fit:contain; opacity:0; transition:opacity .45s ease}
+#shPh.ld .fg{opacity:1}
+#shPh figcaption{position:absolute; left:10px; bottom:10px; max-width:calc(100% - 20px); font:500 10.5px/1.3 var(--ui, system-ui); letter-spacing:.01em; padding:4px 9px; border-radius:999px; background:rgba(10,20,26,.42); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#shPh figcaption a{color:#fff; text-decoration:none; opacity:.92}
+#shArt[hidden] + #shPh[hidden] + .shInfo{grid-column:1 / -1}
+@media (max-width: 600px){ #shPh{min-height:0; height:280px; border-radius:18px} }
 </style>
 </head>
 <body>
@@ -1010,6 +1021,7 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
   <button class="x" id="shX" aria-label="Close">×</button>
   <div class="shBody" id="shBody">
     <canvas id="shArt" aria-hidden="true"></canvas>
+    <figure id="shPh" hidden><img class="bg" id="shPhB" alt="" aria-hidden="true"><img class="fg" id="shPhI" alt=""><figcaption><a id="shPhC" target="_blank" rel="noopener"></a></figcaption></figure>
     <div class="shInfo">
     <div class="eb" id="shEb"></div>
     <h2 id="shT"></h2>
@@ -1093,7 +1105,7 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
       <li class="howkeys"><div><b>Keyboard</b><dl class="keys"><dt><kbd>A</kbd> <kbd>L</kbd></dt><dd>left and right pumps</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>hold for a current</dd><dt><kbd>Space</kbd></dt><dd>release fish</dd><dt><kbd>M</kbd></dt><dd>call a manta ray</dd><dt><kbd>B</kbd></dt><dd>bubbles</dd><dt><kbd>C</kbd></dt><dd>next city</dd><dt><kbd>P</kbd></dt><dd>passport</dd><dt><kbd>R</kbd></dt><dd>reset the tank</dd></dl></div></li>
       <li><div><b>Poke around</b>Tap a landmark to hear its story. Ask Sage the turtle anything. Drag to stir the sea. Most things do something.</div></li>
     </ol>
-    <details class="credits"><summary>Credits and licences</summary><p>Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Istanbul: Hüseynî Saz Semaisi, traditional (public domain). Barcelona: Recuerdos de la Alhambra by Francisco Tárrega, played by Carlo Alberto Boni (CC BY-SA 3.0). Kuala Lumpur: Rasa Sayang, Syntax Media (CC0). Shanghai: Erquan Yingyue by Abing, recorded by David290 (CC BY-SA 4.0). Taipei: Bang Chhun Hong by Teng Yu-hsien, Columbia Records, 1933 (public domain). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0); Istanbul by A.Savin (Free Art License); Barcelona by kallerna (CC BY-SA 4.0); Kuala Lumpur and Taipei by CEphoto, Uwe Aranas (CC BY-SA 3.0); Shanghai by King of Hearts (CC BY-SA 4.0).</p></details>
+    <details class="credits"><summary>Credits and licences</summary><p>Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 3.0: Parisian, Hot Swing, Off to Osaka, Rock Over London, Bushwick Tarantella, Bicycle, Celtic Impulse and Cheery Monday. Dubai: Tareeq Sahraawee by Kaazim Zareb (Webbed Hand Records, CC BY-NC-ND 3.0). Delhi: Raag Bhopali sung by Kishori Amonkar, live at the Harballabh conference (CC BY 3.0). Istanbul: Hüseynî Saz Semaisi, traditional (public domain). Barcelona: Recuerdos de la Alhambra by Francisco Tárrega, played by Carlo Alberto Boni (CC BY-SA 3.0). Kuala Lumpur: Rasa Sayang, Syntax Media (CC0). Shanghai: Erquan Yingyue by Abing, recorded by David290 (CC BY-SA 4.0). Taipei: Bang Chhun Hong by Teng Yu-hsien, Columbia Records, 1933 (public domain). Via Wikimedia Commons and the Internet Archive. City photos via Wikimedia Commons: Paris by Carlos Delgado (CC BY-SA 3.0); Dubai by Tim Reckmann (CC BY-SA 3.0); Delhi by Nikhilb239 (CC BY-SA 4.0); New York by Christian David (CC BY-SA 4.0); Tokyo by Kakidai (CC BY-SA 4.0); London by Diliff (CC BY-SA 2.5); Florence by PROPOLI87 (CC BY-SA 4.0); Amsterdam by Basile Morin (CC BY-SA 4.0); Oslo by Pierre Blaché (CC0); The Hague by Michielverbeek (CC BY-SA 4.0); Istanbul by A.Savin (Free Art License); Barcelona by kallerna (CC BY-SA 4.0); Kuala Lumpur and Taipei by CEphoto, Uwe Aranas (CC BY-SA 3.0); Shanghai by King of Hearts (CC BY-SA 4.0).</p><p>Landmark photos in each exhibit are from Wikimedia Commons, credited on the photo with its photographer and licence, and linked to its source page.</p></details>
     <div class="btns"><button class="ctl pri" id="howGo">Let's go</button></div>
   </div>
 </div>
@@ -3657,6 +3669,9 @@ cv.addEventListener('pointerleave', () => { ptr.down = false; ptr.t = -9; });
 ttl.addEventListener('click', () => { audio(); const x = (ttlX + ttlW / 2) / S; splash(x, -40); SFX.splash(); for (let i = 0; i < 20; i++) bubble(x + frand(-ttlW / S / 2, ttlW / S / 2), SURF + frand(10, 40), frand(1.5, 4)); });
 
 /* ---------- bottom sheet ---------- */
+// a real, freely licensed photo of each landmark from Wikimedia Commons: [file, photographer, licence]
+const LMPHOTO = {"eiffel": ["Tour Eiffel Wikimedia Commons (cropped).jpg", "Benh Lieu Song", "Public domain"], "obelisk": ["Paris, Obelisk in the Place de la Concorde, July 22, 2008.jpg", "Craig Booth", "CC BY 2.0"], "notredame": ["Notre-Dame de Paris, 4 October 2017.jpg", "Ali Sabbagh", "CC0"], "burj": ["Burj Khalifa (16260269606).jpg", "Laika ac", "CC BY-SA 2.0"], "burjarab": ["Madinat Jumeirah-Dubai3303.JPG", "Diego Delso", "CC BY-SA 4.0"], "minaret": ["Jumeira Mosque Dubai.jpg", "Vicharam", "CC BY-SA 3.0"], "qutub": ["Qutb Minar 2022.jpg", "Wasir kasab", "CC BY 4.0"], "ironpillar": ["Iron Pillar, Delhi, May 2008.jpg", "Mark A. Wilson", "Public domain"], "tajminaret": ["Taj Mahal (Edited).jpeg", "Yann, edited by Jim Carter", "CC BY-SA 4.0"], "empire": ["Empire State Building (aerial view).jpg", "Sam Valadi", "Public domain"], "chrysler": ["Chrysler Building - 05.jpg", "Carlos Delgado", "CC BY-SA 3.0"], "liberty": ["Front view of Statue of Liberty (cropped).jpg", "AskALotl", "CC0"], "skytree": ["Tokyo Skytree 2014 Ⅲ.jpg", "Kakidai", "CC BY-SA 3.0"], "pagoda": ["Five-storied Pagoda, Sensoji, Tokyo, 20240824 1103 5616.jpg", "Jakub Hałun", "CC BY 4.0"], "tokyotower": ["Tokyo Tower 2023.jpg", "Akonnchiroll", "CC BY-SA 4.0"], "bigben": ["Elizabeth Tower and the north front of the Palace of Westminster, London.jpg", "Christian David", "CC BY-SA 4.0"], "shard": ["The Shard at sunset 2017 (cropped).jpg", "Colin", "CC BY-SA 4.0"], "nelson": ["Nelson's Column, Trafalgar Square, London.JPG", "Beata May", "CC BY-SA 3.0"], "duomo": ["Cattedrale di Santa Maria del Fiore – Il Duomo di Firenze.jpg", "Gary Campbell-Hall", "CC BY 2.0"], "campanile": ["CampanileGiotto-01.jpg", "Thermos", "CC BY-SA 2.5"], "palazzovecchio": ["Piazza della signoria, palazzo vecchio, veduta 01.jpg", "Francesco Bini", "CC BY-SA 4.0"], "westertoren": ["Amsterdam (NL), Westerkerk -- 2015 -- 7186.jpg", "Dietmar Rabich", "CC BY-SA 4.0"], "munttoren": ["Munttoren (Amsterdam).JPG", "P.H. Louw", "CC BY 2.5 NL"], "windmill": ["Windmill De Gooyer in Amsterdam.jpg", "Zeljko Filipin", "CC BY-SA 3.0"], "cityhall": ["Lhôtel de ville dOslo (4854168964).jpg", "Jean-Pierre Dalbéra", "CC BY 2.0"], "holmenkollen": ["Bakken2.jpg", "Gislus", "CC BY-SA 3.0"], "domkirke": ["Oslo Cathedral.jpg", "J. P. Fagerback", "BSD"], "peacepalace": ["Friedenspalast Den Haag (100MP).jpg", "Thomas Wolf, foto-tw.de", "CC BY-SA 3.0 DE"], "ridderzaal": ["Den Haag Binnenhof Ridderzaal 4.jpg", "Zairon", "CC BY-SA 4.0"], "hoftoren": ["Hoftoren 1.jpg", "Jensbn", "Public domain"], "galata": ["Galata tower 01 23.jpg", "GrandEscogriffe", "CC BY-SA 4.0"], "bluemosque": ["Istanbul (34223582516) (cropped).jpg", "Pedro Szekely", "CC BY-SA 2.0"], "hagiasophia": ["Hagia Sophia Mars 2013.jpg", "Arild Vågen", "CC BY-SA 3.0"], "sagrada": ["SF maig 2 cropped.jpg", "Canaan", "CC BY-SA 4.0"], "glories": ["Torre Agbar - Barcelona, Spain - Jan 2007.jpg", "Diliff", "CC BY 2.5"], "colom": ["Photo of Colombus Monument taken with iPhone 13 Pro.jpg", "RayAdvait", "CC BY-SA 4.0"], "petronas": ["Petronas Twin Towers (230715-1406).jpg", "Wee Hong", "CC BY-SA 4.0"], "kltower": ["Kuala Lumpur Tower 20250822 (1).jpg", "DvTor8303", "CC0"], "merdeka118": ["Merdeka Tower 20241022 - full 2 (Cropped).jpg", "Ahmad Ali Karim", "CC0"], "pearl": ["Oriental Pearl Tower 20251126.jpg", "Supanut Arunoprayote", "CC BY 4.0"], "shanghaitower": ["20191114 Shanghai Tower (2).jpg", "Balon Greyjoy", "CC0"], "jinmao": ["Jin Mao Tower Pudong 21860-Shanghai (32939744091).jpg", "xiquinhosilva", "CC BY 2.0"], "taipei101": ["Taipei 101 2009 amk.jpg", "AngMoKio", "CC BY-SA 3.0"], "cksmemorial": ["Chiang Kai-shek memorial amk.jpg", "AngMoKio", "CC BY-SA 3.0"], "grandhotel": ["Yuanshan Great Hotel (Grand Hotel) in Taipei.jpg", "Mosbatho", "CC BY 4.0"]};
+const commonsImg = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(f) + '?width=' + w;
 const sheet = $('sheet'), shCv = $('shArt'); let sheetOn = false, sheetArt = null, shCtx = null, sheetAt = 0;
 function openSheet(o){
   $('shEb').textContent = o.eb || ''; $('shT').textContent = o.title; $('shM').textContent = o.meta || ''; $('shP').textContent = o.text || '';
@@ -3664,6 +3679,13 @@ function openSheet(o){
   $('shMore').innerHTML = (o.more || []).map(m => `<li>${m}</li>`).join(''); $('shMore').hidden = !(o.more || []).length;
   const l = $('shLink'); if (o.wiki) { l.href = 'https://en.wikipedia.org/wiki/' + o.wiki; l.hidden = false; } else l.hidden = true;
   sheetArt = o.art || null; shCv.hidden = !sheetArt; $('shBody').scrollTop = 0;
+  const ph = $('shPh'), phI = $('shPhI'); ph.hidden = true; ph.classList.remove('ld'); phI.onload = phI.onerror = null;
+  if (o.photo) { const [f, by, lic] = o.photo, art = sheetArt;
+    phI.onerror = () => { if (!sheetOn) return; ph.hidden = true; sheetArt = art; shCv.hidden = !art; };
+    phI.onload = () => ph.classList.add('ld');
+    phI.alt = 'Photo of ' + o.title; phI.src = commonsImg(f, 1100); $('shPhB').src = commonsImg(f, 120);
+    const c = $('shPhC'); c.textContent = 'Photo: ' + by + ' · ' + lic; c.href = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(f.replace(/ /g, '_'));
+    ph.hidden = false; shCv.hidden = true; sheetArt = null; }
   sheet.style.transform = ''; sheet.classList.add('open'); $('shBack').classList.add('on'); sheetOn = true; sheetAt = performance.now();
 }
 function closeSheet(){ if (!sheetOn) return; sheet.style.transform = ''; sheet.classList.remove('open'); $('shBack').classList.remove('on'); sheetOn = false; setTimeout(() => { if (!sheetOn) sheetArt = null; }, 360); }
@@ -3683,7 +3705,7 @@ function openLandmark(p){ track('landmark_open', { landmark:p.id || '', city:cit
   p.glow = 1; p.fxT = 5; landmarkSound(p);
   const inf = INFO[p.key] || {}, peg = makePeg(p.lm, p.key, 0, 38, p.i); peg.fxT = 5;
   openSheet({ eb:'Exhibit · ' + city.name, title:p.lm.name, meta:p.lm.meta, text:p.lm.text, more:inf.more, wiki:inf.wiki,
-    facts:[['Height', inf.h], ['Built', inf.built], ['Designed by', inf.by], ['Where', inf.where]], art:{ kind:'lm', peg, wait:0 } });
+    facts:[['Height', inf.h], ['Built', inf.built], ['Designed by', inf.by], ['Where', inf.where]], art:{ kind:'lm', peg, wait:0 }, photo:LMPHOTO[p.key] });
 }
 function openPearl(){
   openSheet({ eb:'On the seabed', title:'Pearl', meta:'Grown inside a living shell', text:'A pearl starts when something gets inside a mollusc, usually a tiny parasite or a scrap of tissue, rarely a grain of sand. The animal coats it in layer after layer of nacre to protect itself, and the layers build into a pearl.',
