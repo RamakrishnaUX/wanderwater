@@ -1549,8 +1549,14 @@ function pagodaProf(){
 }
 function sagradaProf(){ const p = [[0, .4], [.012, 1.6], [.024, .9], [.03, 2.4], [.045, 3], [.06, 2.4], [.07, 3.2], [.085, 3.6], [.1, 3], [.11, 2.4], [.12, 2.8]];
   for (let k = 1; k <= 22; k++) { const t = .12 + k / 22 * .88, u = (t - .12) / .88; p.push([t, 2.8 + 10.6 * Math.pow(u, .62)]); } return p; }
-function jinmaoProf(){ const p = [[0, .3], [.07, .6], [.075, 1.4], [.1, 1.8], [.105, 3], [.135, 3.4], [.14, 4.4], [.165, 4.8], [.17, 5.6]], steps = [.2, .24, .28, .325, .375, .43, .5, .58, .68, .8];
-  let last = 5.6; steps.forEach((t, k) => { const w = 6 + 6.4 * (k / (steps.length - 1)); p.push([t, last + .2], [t + .006, w]); last = w; }); p.push([1, last + .4]); return p; }
+// Jin Mao: needle, dark mast, stepped steel crown, then pagoda tiers with ledges that grow taller toward the ground
+const JM_LEDGE = [228, 278, 325, 383, 440, 508, 575, 660, 785, 945, 1115].map(y => (y - 25) / 1255);
+function jinmaoProf(){ const k = .1514, T = y => (y - 25) / 1255, bw = y => { const pts = [[228, 51], [440, 68], [660, 80], [945, 90], [1280, 95]]; for (let i = 0; i < pts.length - 1; i++) if (y <= pts[i + 1][0]) { const f = (y - pts[i][0]) / (pts[i + 1][0] - pts[i][0]); return (pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f) * k; } return 95 * k; };
+  const p = [[0, .2], [T(90), .45], [T(90) + .001, 1.67], [T(145), 1.67]];
+  for (let i = 0; i < 5; i++) { const y0 = 145 + i * 16, w = 2.7 + i * 1.1; p.push([T(y0) + .001, w], [T(y0 + 16), w + .25]); }
+  const ys = [228, 278, 325, 383, 440, 508, 575, 660, 785, 945, 1115];
+  ys.forEach((y, i) => { const w = bw(y); p.push([T(y) - .001, w + .95], [T(y + 8), w + .95], [T(y + 8) + .001, w]); const nx = i < ys.length - 1 ? ys[i + 1] : 1280; p.push([T(nx) - .002, bw(nx)]); });
+  p.push([1, 95 * k]); return p; }
 function t101Prof(){ const p = [[0, .3], [.1, .6], [.105, 1.6], [.13, 2], [.135, 3.2], [.16, 3.6], [.165, 4.8], [.19, 5.2], [.195, 6.4]];
   for (let k = 0; k < 8; k++) { const t0 = .2 + k * .0725, t1 = t0 + .0725; p.push([t0, 9.2], [t0 + .003, 12], [t1 - .003, 9.6]); }
   p.push([.785, 9.8], [.79, 10.6], [.86, 11.6], [.865, 12.6], [1, 14.4]); return p; }
@@ -1817,25 +1823,52 @@ const LM = {
         if (t0 > .3) h.hl(t0, 'rgba(255,255,255,.8)', .7); }
       h.hl(.264, 'rgba(255,255,255,.8)', .7); h.hlines(.27, 1, 2.2, 'rgba(255,255,255,.07)', .4);
       if (night) h.windows(.27, .98, 'rgba(255,240,210,.7)', 50); } },
-  pearl:{ name:'Oriental Pearl Tower', plate:'Oriental Pearl', meta:'Shanghai · 1994', text:'A TV tower with pink pearls strung on giant columns. It was inspired by a Tang dynasty poem about big and small pearls falling onto a jade plate.', fx:'wave', pal:['#e3e6ea', '#c0c6cd', '#828a94'],
-    prof:[[0, .3], [.1, .6], [.105, 1.4], [.13, 1.6], [.135, 3], [.145, 4.6], [.16, 5], [.175, 4.6], [.185, 3], [.19, 1.8], [.25, 2.1], [.255, 4], [.27, 8.5], [.29, 12.4], [.315, 14.8], [.34, 15.6], [.365, 14.8], [.39, 12.4], [.41, 8.5], [.425, 4.4], [.43, 3.6], [.66, 4], [.665, 6], [.68, 11], [.7, 15], [.725, 17.6], [.75, 18.4], [.775, 17.6], [.8, 15], [.82, 11], [.835, 6], [.84, 5.4], [1, 15]], arch:{ w:8, h:20 },
-    detail(p, h){ const sph = (t0, t1) => { h.zone(t0, t1, '#cf5d88', '#f0a2c0', '#8a3255'); const yc = p.tip + LH * (t0 + t1) / 2, w = p.hwAt(yc), y = p.tip + LH * (t0 + (t1 - t0) * .35);
-        const g = ctx.createRadialGradient(p.x - w * .35, y, 0, p.x - w * .35, y, w * .9); g.addColorStop(0, 'rgba(255,255,255,.5)'); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; E(p.x - w * .35, y, w * .9, w * .9); h.hlines(t0, t1, 3.2, 'rgba(120,30,70,.16)', .5); };
-      h.zone(0, .135, '#c9ced4', '#eef0f3', '#848c95'); sph(.135, .19); h.zone(.19, .255, '#d8dce1', '#f4f5f7', '#9aa1a9'); sph(.255, .43); h.zone(.43, .665, '#d8dce1', '#f4f5f7', '#9aa1a9');
-      h.vlines(.43, .665, 5.2, 'rgba(90,100,110,.3)', .8); sph(.665, .84); h.zone(.84, 1, '#d2d7dc', '#eff1f3', '#949ba3'); h.diag(.84, 1, 'rgba(90,100,110,.2)');
-      if (night) h.glow('rgba(255,120,190,.16)'); } },
-  shanghaitower:{ name:'Shanghai Tower', meta:'Shanghai · 2015', text:'632 metres tall, the tallest building in China. Its glass skin twists a third of a turn as it rises, which cuts the push of the wind by about a quarter.', fx:'wave', pal:['#d6e7ea', '#a3c3cc', '#5b8391'],
-    prof:[[0, .6, 5.8], [.03, 4.6, 6.4], [.06, 5.4, 6.8], [1, 13.2, 12.6]],
-    detail(p, h){ h.hlines(.04, 1, 4.4, 'rgba(255,255,255,.2)', .5); h.vlines(.04, 1, 2.2, 'rgba(40,80,95,.16)', .4);
-      const spiral = () => { ctx.beginPath(); for (let k = 0; k <= 40; k++) { const t = k / 40, y = p.tip + LH * t, w = p.hwAt(y), x = p.x + Math.sin(t * 2.1 + .3) * w * .92; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } };
-      spiral(); ctx.lineTo(p.x + 20, p.base); ctx.lineTo(p.x + 20, p.tip); ctx.closePath(); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill();
-      spiral(); ctx.strokeStyle = 'rgba(40,75,90,.55)'; ctx.lineWidth = 1.4; ctx.stroke();
-      if (night) h.windows(.05, .98, 'rgba(220,240,255,.7)', 60); } },
-  jinmao:{ name:'Jin Mao Tower', meta:'Shanghai · 1999', text:'Its stepped tiers echo a traditional Chinese pagoda. It has 88 floors, because 8 is a lucky number in China.', fx:'gleam', pal:['#d6d8d2', '#a9ada6', '#6e736d'],
+  pearl:{ name:'Oriental Pearl Tower', plate:'Oriental Pearl', meta:'Shanghai · 1994', text:'A TV tower with pink pearls strung on giant columns. It was inspired by a Tang dynasty poem about big and small pearls falling onto a jade plate.', fx:'wave', pal:['#e9e4ea', '#cfc8d0', '#8f8a94'],
+    prof:[[0.0, 0.15], [0.0922, 0.45], [0.0925, 1.2], [0.099, 1.2], [0.0993, 0.7], [0.1536, 0.7], [0.1539, 1.1], [0.1604, 1.1], [0.1608, 1.4], [0.2266, 1.4], [0.2314, 2.4], [0.2362, 3.15], [0.241, 3.52], [0.2457, 3.63], [0.2505, 3.52], [0.2553, 3.15], [0.2601, 2.4], [0.2648, 1.4], [0.2652, 1.9], [0.3365, 1.9], [0.3433, 5.09], [0.3502, 6.96], [0.357, 8.22], [0.3638, 9.13], [0.3706, 9.79], [0.3775, 10.25], [0.3843, 10.52], [0.3911, 10.63], [0.398, 10.58], [0.4048, 10.38], [0.4116, 10.0], [0.4184, 9.42], [0.4253, 8.62], [0.4321, 7.52], [0.4389, 5.94], [0.4457, 3.28], [0.4488, 4.9], [0.7734, 4.9], [0.7795, 5.0], [0.7857, 6.87], [0.7918, 8.17], [0.798, 9.14], [0.8041, 9.88], [0.8102, 10.44], [0.8164, 10.85], [0.8225, 11.11], [0.8287, 11.26], [0.8348, 11.28], [0.841, 11.18], [0.8471, 10.95], [0.8532, 10.59], [0.8594, 10.09], [0.8655, 9.41], [0.8717, 8.52], [0.8778, 7.35], [0.884, 5.72], [0.8843, 1.4], [1.0, 1.6]],
+    detail(p, h){ const X = p.x, K = .1297, Y = yr => p.tip + (yr - 15) * K, t = yr => (yr - 15) / 1465;
+      h.zone(0, t(347), '#9aa0a8', '#d9dde2', '#6b717a'); h.hl(t(155), 'rgba(255,255,255,.5)', .8); h.hl(t(245), 'rgba(255,255,255,.5)', .8);
+      h.zone(t(403), t(508), '#ddd2c6', '#f4ece4', '#a8998c');
+      const sph = (c, r, stripes) => { const y0 = c - r, y1 = c + r; h.zone(t(y0), t(y1), '#ebe6ec', '#ffffff', '#a39ea8');
+        ctx.fillStyle = '#c2407f'; for (const [a, b] of stripes) ctx.fillRect(p.minX - 2, Y(c + a * r), p.maxX - p.minX + 4, (b - a) * r * K);
+        ctx.fillStyle = 'rgba(120,124,135,.75)'; ctx.fillRect(p.minX - 2, Y(c + .62 * r), p.maxX - p.minX + 4, .38 * r * K + 1);
+        const w = r * K, g = ctx.createRadialGradient(X - w * .4, Y(c - r * .35), 0, X - w * .4, Y(c - r * .35), w * .9); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(X - w, Y(y0), w * 2, r * 2 * K); };
+      sph(375, 28, [[-.15, .25]]);
+      sph(590, 82, [[-.8, -.72], [-.5, -.3], [-.2, -.05], [.1, .2], [.36, .44]]);
+      // twin columns with a darker core and red rungs
+      ctx.fillStyle = '#7d6f66'; ctx.fillRect(X - 2.6, Y(672), 5.2, (1148 - 672) * K); ctx.fillStyle = '#e8ddd2'; ctx.fillRect(X - .5, Y(672), 1, (1148 - 672) * K);
+      for (const sd of [-1, 1]) { ctx.fillStyle = sd < 0 ? '#f1e8df' : '#c9bcb0'; ctx.fillRect(X + (sd < 0 ? -4.9 : 2.6), Y(672), 2.3, (1148 - 672) * K); }
+      ctx.fillStyle = '#b0284f'; for (let yr = 740; yr < 1120; yr += 80) ctx.fillRect(X - 2.6, Y(yr), 5.2, 1.1);
+      sph(1235, 87, [[-.6, -.48], [-.25, .05], [.15, .22]]);
+      h.zone(t(1310), 1, '#c9c1b8', '#eee6de', '#8c847c'); },
+    after(p){ const X = p.x, K = .1297, Y = yr => p.tip + (yr - 15) * K;
+      for (const sd of [-1, 1]) { const x0 = X + sd * 30 * K, x1 = X + sd * 95 * K, w = 7 * K; const g = ctx.createLinearGradient(x0, 0, x1, 0); g.addColorStop(0, '#d8cfc6'); g.addColorStop(1, sd < 0 ? '#f2ebe4' : '#9c9289'); ctx.fillStyle = g;
+        ctx.beginPath(); ctx.moveTo(x0 - w, Y(1300)); ctx.lineTo(x0 + w, Y(1300)); ctx.lineTo(x1 + w, Y(1480)); ctx.lineTo(x1 - w, Y(1480)); ctx.fill();
+        const cx = X + sd * 70 * K; ctx.fillStyle = '#f7f4f0'; E(cx, Y(1392), 2.3, 1.2); ctx.fillStyle = 'rgba(90,95,105,.5)'; E(cx, Y(1393.5), 2.3, .5); } } },
+  shanghaitower:{ name:'Shanghai Tower', meta:'Shanghai · 2015', text:'632 metres tall, the tallest building in China. Its glass skin twists a third of a turn as it rises, which cuts the push of the wind by about a quarter.', fx:'wave', pal:['#86a8c2', '#5f86a8', '#3a5d7c'],
+    prof:[[0.0, 3.9, -3.9], [0.0184, 4.5, 9.4], [0.0625, 5.7, 9.6], [0.0654, 5.8, 9.6], [0.0662, 9.08, 9.63], [0.0993, 9.61, 9.82], [0.1324, 10.13, 10.01], [0.1654, 10.66, 10.2], [0.1985, 11.18, 10.39], [0.2316, 11.71, 10.57], [0.2647, 12.24, 10.76], [0.2978, 12.48, 10.95], [0.3309, 12.7, 11.14], [0.364, 12.91, 11.33], [0.3971, 13.13, 11.52], [0.4301, 13.34, 11.7], [0.4632, 13.55, 11.89], [0.4963, 13.77, 12.08], [0.5294, 13.98, 12.27], [0.5625, 14.19, 12.46], [0.5956, 14.41, 12.65], [0.6287, 14.62, 12.83], [0.6618, 14.7, 13.02], [0.6949, 14.74, 13.21], [0.7279, 14.77, 13.4], [0.761, 14.81, 13.59], [0.7941, 14.85, 13.78], [0.8272, 14.89, 13.96], [0.8603, 14.93, 14.15], [0.8934, 14.97, 14.34], [0.9265, 15.0, 14.53], [0.9596, 15.04, 14.72], [0.9926, 15.08, 14.91], [1.0, 15.1, 15.0]],
+    detail(p, h){ const K = 190 / 1360, P = (xr, yr) => [p.x + (xr - 133) * K, p.tip + (yr - 35) * K];
+      const path = (pts, close) => { ctx.beginPath(); pts.forEach((q, n) => { const [x, y] = P(q[0], q[1]); n ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); if (close) ctx.closePath(); };
+      ctx.fillStyle = 'rgba(255,255,255,.1)'; for (let yr = 240; yr < 1395; yr += 170) { const [, y] = P(0, yr); ctx.fillRect(p.minX - 2, y, p.maxX - p.minX + 4, 50 * K); }
+      // pale glass strip running down the face
+      path([[100, 40], [112, 400], [135, 800], [158, 1395], [210, 1395], [200, 800], [190, 400], [190, 60]], true); ctx.fillStyle = 'rgba(214,230,240,.62)'; ctx.fill();
+      path([[105, 35], [200, 60], [192, 160], [104, 140]], true); ctx.fillStyle = 'rgba(236,244,250,.55)'; ctx.fill();
+      // the spiral groove
+      ctx.strokeStyle = '#22364a'; ctx.lineWidth = 1.1; path([[92, 118], [110, 400], [150, 700], [190, 950], [228, 1395]], false); ctx.stroke();
+      h.hlines(.05, 1, 2.6, 'rgba(20,40,60,.08)', .4);
+      if (night) h.windows(.06, .98, 'rgba(220,240,255,.7)', 60); } },
+  jinmao:{ name:'Jin Mao Tower', meta:'Shanghai · 1999', text:'Its stepped tiers echo a traditional Chinese pagoda. It has 88 floors, because 8 is a lucky number in China.', fx:'gleam', pal:['#cbbdb3', '#b2a399', '#857870'],
     prof:jinmaoProf(),
-    detail(p, h){ h.zone(0, .17, '#bfc4bf', '#e6e8e3', '#7b817b'); h.winStrips(.17, 1, 2.6, 'rgba(70,78,74,.22)'); h.metal(.17, 1);
-      [.2, .24, .28, .325, .375, .43, .5, .58, .68, .8].forEach(t => { h.hl(t + .004, 'rgba(255,240,200,.7)', .9); h.hl(t + .01, 'rgba(60,60,55,.25)', .6); }); h.hlines(.18, 1, 2.2, 'rgba(255,255,255,.08)', .4);
-      if (night) h.windows(.18, .98, 'rgba(255,220,150,.75)', 55); } },
+    detail(p, h){ const X = p.x, T = y => (y - 25) / 1255;
+      h.zone(0, T(145), '#36424b', '#6b7a84', '#1f282e');
+      h.zone(T(145), T(228), '#80868f', '#b8bec6', '#565c66'); for (let i = 1; i <= 5; i++) h.hl(T(145 + i * 16) - .002, 'rgba(255,255,255,.4)', .6);
+      ctx.fillStyle = 'rgba(30,35,40,.25)'; ctx.beginPath(); ctx.moveTo(X, p.tip + LH * T(145)); ctx.lineTo(X + 8, p.tip + LH * T(228)); ctx.lineTo(X, p.tip + LH * T(228)); ctx.fill();
+      h.zone(T(228), 1, '#b6a79d', '#d6c9c0', '#8d8077');
+      // pilasters running down each tier
+      ctx.strokeStyle = 'rgba(55,45,40,.5)'; ctx.lineWidth = .6; for (const f of [-.62, -.06, .58]) { ctx.beginPath(); for (let y = p.tip + LH * T(236); y < p.base; y += 2) { const x = X + f * p.hwAt(y); y === p.tip + LH * T(236) ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke(); }
+      ctx.fillStyle = 'rgba(255,250,245,.16)'; for (let y = p.tip + LH * T(236); y < p.base; y += 2) { const w = p.hwAt(y); ctx.fillRect(X - .06 * w, y, .64 * w, 2); }
+      // the ledges, each a slab with a lit top edge
+      JM_LEDGE.forEach(t => { h.hl(t + .003, '#86786e', 1.6); h.hl(t, 'rgba(255,245,235,.55)', .5); });
+      if (night) h.windows(T(236), .98, 'rgba(255,220,150,.75)', 55); } },
   taipei101:{ name:'Taipei 101', meta:'Taipei · 2004', text:'Built like a stalk of bamboo: eight sections of eight floors, because eight is lucky. A 660-tonne golden ball hangs inside to steady it in typhoons and earthquakes.', fx:'twinkle', pal:['#9fcdc8', '#76aaa5', '#3f6d6a'],
     prof:t101Prof(),
     detail(p, h){ h.zone(0, .195, '#b8c7c4', '#e4ecea', '#748783'); h.hlines(.2, .785, 1.8, 'rgba(255,255,255,.14)', .4); h.vlines(.2, .785, 2.4, 'rgba(30,70,65,.18)', .4);
@@ -2032,8 +2065,8 @@ const LFX = {
   kltower:{ inside(p, a){ ctx.fillStyle = `rgba(150,215,255,${.45 * a})`; ctx.fillRect(p.minX, p.tip + LH * .275, p.maxX - p.minX, LH * .075); },
     outside(p, a, ph, on){ if (!on) return; ctx.save(); ctx.translate(p.x, p.tip + 2); ctx.rotate(Math.sin(ph * 1.6) * .9 - Math.PI / 2); const g = ctx.createLinearGradient(0, 0, 120, 0); g.addColorStop(0, `rgba(255,250,220,${.55 * a})`); g.addColorStop(1, 'rgba(255,250,220,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(120, -10); ctx.lineTo(120, 10); ctx.fill(); ctx.restore(); } },
   merdeka118:{ inside(p, a, ph){ const k = (ph % 1.8) / 1.8, y = p.base - k * (LH + 40), g = ctx.createLinearGradient(0, y - 20, 0, y + 20); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, `rgba(255,250,215,${.65 * a})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(p.minX, y - 20, p.maxX - p.minX, 40); } },
-  pearl:{ inside(p, a, ph){ ctx.fillStyle = `hsla(${(320 + ph * 70) % 360},90%,62%,${.4 * a})`; [[.135, .19], [.255, .43], [.665, .84]].forEach(([t0, t1]) => ctx.fillRect(p.minX, p.tip + LH * t0, p.maxX - p.minX, LH * (t1 - t0))); } },
-  shanghaitower:{ inside(p, a, ph){ const n = Math.min(40, (ph / 2.4) * 40 | 0); ctx.strokeStyle = `rgba(200,240,255,${.9 * a})`; ctx.lineWidth = 2.2; ctx.beginPath(); for (let k = 0; k <= n; k++) { const t = 1 - k / 40, y = p.tip + LH * t, w = p.hwAt(y), x = p.x + Math.sin(t * 2.1 + .3) * w * .92; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); } },
+  pearl:{ inside(p, a, ph){ ctx.fillStyle = `hsla(${(320 + ph * 70) % 360},90%,62%,${.4 * a})`; [[.2266, .2648], [.3365, .4485], [.7734, .8922]].forEach(([t0, t1]) => ctx.fillRect(p.minX, p.tip + LH * t0, p.maxX - p.minX, LH * (t1 - t0))); } },
+  shanghaitower:{ inside(p, a, ph){ const K = 190 / 1360, q = [[228, 1395], [190, 950], [150, 700], [110, 400], [92, 118]], n = Math.min(1, ph / 2.4) * (q.length - 1); ctx.strokeStyle = `rgba(200,240,255,${.9 * a})`; ctx.lineWidth = 2.2; ctx.beginPath(); for (let k = 0; k <= n; k += .05) { const i = Math.min(q.length - 2, k | 0), f = k - i, xr = q[i][0] + (q[i + 1][0] - q[i][0]) * f, yr = q[i][1] + (q[i + 1][1] - q[i][1]) * f, x = p.x + (xr - 133) * K, y = p.tip + (yr - 35) * K; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); } },
   jinmao:{ inside(p, a, ph){ const y = p.base - Math.min(1, ph / 2.2) * LH, g = ctx.createLinearGradient(0, y, 0, p.base); g.addColorStop(0, `rgba(255,214,120,${.55 * a})`); g.addColorStop(1, `rgba(255,214,120,${.15 * a})`); ctx.fillStyle = g; ctx.fillRect(p.minX, y, p.maxX - p.minX, p.base - y); } },
   taipei101:{ inside(p, a, ph){ for (let k = 0; k < 8; k++) { if (ph * 3 <= 7 - k) continue; ctx.fillStyle = `hsla(${k * 45},85%,62%,${.42 * a})`; ctx.fillRect(p.minX, p.tip + LH * (.2 + k * .0725), p.maxX - p.minX, LH * .0725); } },
     outside(p, a, ph, on){ if (!on) return; for (let k = 0; k < 5; k++) burst(p.x + (k % 2 ? 1 : -1) * (14 + k * 4), p.tip + LH * (.2 + k * .12), ph, .3 + k * .45, (k * 70) % 360, 12, 18); } },
