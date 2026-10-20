@@ -3333,19 +3333,24 @@ function drawPuffer(f, sc){
   ctx.restore();
 }
 /* ---------- the shark ----------
-   Tap a clownfish and a shark glides in from the nearer side, slows to eye it up, lunges, holds it with a
-   little head shake, gulps (you can see the lump go down) and then powers off the far side.
+   Tap a clownfish and a shark glides in from the nearer side, slows right up behind it, lunges, holds it
+   with a head shake, swallows it and powers off the far side. It swims the way a real shark does: a wave
+   runs back along the rear half of the body and grows towards the tail, the tail beats faster the faster
+   it goes, the head barely moves, and it glides with a slow tail while slowing down.
    The clownfish swims back out of its anemone a few seconds later, none the worse. */
 let shark = null; const sharkBack = [];
 const SHK = 120, SHH = 24, shSize = s => s.sc * .58;   // body length in drawing units, and the on-screen scale
-const easeOut = u => 1 - Math.pow(1 - u, 3), easeIn = u => u * u * u;
+const easeOut = u => 1 - Math.pow(1 - u, 3), easeIn = u => u * u;
+const clownLen = f => SP.clown.L * f.size * (.46 + .54 * f.depth);   // a clownfish's half length on screen
 function startShark(f){
   if (shark) return false;
-  const dir = f.x < W / 2 ? 1 : -1, sc = .9 + .25 * f.depth, k = .58 * sc, L = SHK * k;
-  const x0 = dir > 0 ? -L * 1.7 : W + L * 1.7, xs = f.x - dir * (L * .95 + 34);
-  shark = { dir, sc, prey:f, ph:'enter', pt:0, t:0, x:x0, y:f.y + 4, x0, y0:f.y + 4, xs, dur:clamp(Math.abs(xs - x0) / 560, 1, 1.7), jaw:0, rot:0, bulge:-1, vx:0, held:false };
+  const dir = f.x < W / 2 ? 1 : -1, sc = .9 + .25 * f.depth, K = .58 * sc, L = SHK * K;
+  const stop = clownLen(f) * 1.35 + 8;                         // mouth stops just behind the clownfish's tail
+  const x0 = dir > 0 ? -L * 1.9 : W + L * 1.9, xs = f.x - dir * (L * 1.0 + stop);
+  shark = { dir, sc, prey:f, ph:'enter', pt:0, t:0, x:x0, y:f.y + 3 * K, x0, y0:f.y + 3 * K, xs, stop,
+    dur:clamp(Math.abs(xs - x0) / 520, 1.1, 1.8), jaw:0, rot:0, vx:0, spd:0, wph:frand(0, TAU), amp:.3, held:0, swal:0 };
   f.caught = true; f.face = dir; f.ft = dir;
-  swoosh(.9, 180, 700, .1, 1.5); track('shark', { city:city.id });
+  swoosh(1.1, 160, 600, .09, 1.5); track('shark', { city:city.id });
   return true;
 }
 function stepShark(dt){
@@ -3354,79 +3359,99 @@ function stepShark(dt){
     Object.assign(f, { caught:false, x:f.home.x + frand(-6, 6), y:f.home.y - 26, vx:frand(-10, 10), vy:-12, dart:0, idle:0, tgt:null, timer:0 }); fish.push(f);
     f.home.ret = 1.2; for (let k = 0; k < 4; k++) bubble(f.x + frand(-5, 5), f.y, frand(1, 2.2)); }
   const s = shark; if (!s) return;
-  const K = shSize(s), L = SHK * K, prey = s.prey, d = s.dir;
+  const K = shSize(s), L = SHK * K, prey = s.prey, d = s.dir, px = s.x, py = s.y;
   s.t += dt; s.pt += dt;
-  const gone = !fish.includes(prey) && !s.held && (s.ph === 'enter' || s.ph === 'lunge');
-  if (gone) { s.ph = 'exit'; s.pt = 0; s.vx = 120; }   // the city changed under it: just swim on
+  if (!s.held && !fish.includes(prey) && (s.ph === 'enter' || s.ph === 'eye' || s.ph === 'lunge')) { s.ph = 'exit'; s.pt = 0; s.vx = 140; }
   const next = ph => { s.ph = ph; s.pt = 0; };
-  if (s.ph === 'enter') {          // glide in and slow right down, eyeing the fish
+  let fq = 0, amp = 0, rotT = 0;
+  if (s.ph === 'enter') {          // glides in, slowing smoothly as it closes on the fish
     const u = Math.min(1, s.pt / s.dur);
-    s.x = s.x0 + (s.xs - s.x0) * easeOut(u); s.y = s.y0 + (prey.y + 4 - s.y0) * easeOut(u);
-    s.jaw = Math.max(0, (u - .7) / .3) * .45; s.rot = Math.sin(s.t * 3) * .03;
+    s.x = s.x0 + (s.xs - s.x0) * easeOut(u); s.y = s.y0 + (prey.y + 3 * K - s.y0) * easeOut(u);
+    s.jaw = Math.max(0, (u - .75) / .25) * .35;
     if (u >= 1) next('eye');
-  } else if (s.ph === 'eye') {     // a short, menacing pause
-    s.jaw = .45 + Math.sin(s.pt * 9) * .05; s.y += (prey.y + 4 - s.y) * Math.min(1, dt * 6);
-    if (s.pt > .45) { next('lunge'); s.lx = s.x; }
-  } else if (s.ph === 'lunge') {   // mouth wide, a quick snap forward
-    const u = Math.min(1, s.pt / .2); s.jaw = .45 + .55 * u; s.x = s.lx + d * 40 * K / .58 * easeIn(u);
+  } else if (s.ph === 'eye') {     // hangs there for a beat, nosing in
+    s.x += d * Math.sin(s.pt * 5) * 6 * dt; s.y += (prey.y + 3 * K - s.y) * Math.min(1, dt * 6);
+    s.jaw = .35 + Math.sin(s.pt * 7) * .05;
+    if (s.pt > .5) { next('lunge'); s.lx = s.x; }
+  } else if (s.ph === 'lunge') {   // a sharp snap forward, mouth wide
+    const u = Math.min(1, s.pt / .16); s.jaw = .35 + .65 * Math.min(1, u * 1.6); s.x = s.lx + d * (s.stop + clownLen(prey) * .5) * easeIn(u);
     if (u >= 1) {
-      s.held = true; s.jaw = .15; next('shake');
-      fish = fish.filter(f => f !== prey); prey.caught = false; sharkBack.push({ f:prey, at:T + 7 });
+      s.held = 1; s.jaw = .3; next('shake');
+      fish = fish.filter(f => f !== prey); prey.caught = false; prey.ph = 0; sharkBack.push({ f:prey, at:T + 7 });
       tone(170, .08, 'triangle', .24, 60); tone(140, .08, 'triangle', .2, 50, .11);
-      for (let k = 0; k < 10; k++) bubble(s.x + d * L * .95 + frand(-8, 8), s.y + frand(-8, 8), frand(1.5, 3.5));
+      for (let k = 0; k < 8; k++) bubble(s.x + d * L * 1.02 + frand(-6, 6), s.y + frand(-6, 6), frand(1.2, 3));
       if (prey.home) prey.home.ret = 2.8;
       for (const f of fish) { const dx = f.x - s.x, dy = f.y - s.y, dd = Math.hypot(dx, dy) || 1; if (dd < 190) { f.vx += dx / dd * 260; f.vy += dy / dd * 160; f.dart = .9; } }
     }
-  } else if (s.ph === 'shake') {   // holds on and shakes its head side to side
-    const u = s.pt / .9; s.rot = Math.sin(s.pt * 26) * .2 * (1 - u * .6); s.jaw = .12 + Math.abs(Math.sin(s.pt * 13)) * .1;
-    s.x += Math.sin(s.pt * 26) * 12 * dt; if (Math.random() < dt * 14) bubble(s.x + d * L * .9, s.y + frand(-6, 6), frand(1, 2.4));
-    if (u >= 1) { next('gulp'); s.held = false; s.jaw = 0; tone(110, .16, 'sine', .22, 70); }
-  } else if (s.ph === 'gulp') {    // the lump travels down its throat
-    const u = Math.min(1, s.pt / .7); s.bulge = u; s.rot *= Math.exp(-8 * dt); s.jaw = u < .15 ? .2 : 0;
-    if (u >= 1) { next('exit'); s.bulge = -1; s.vx = 60; swoosh(.6, 300, 1100, .1, 2); }
-  } else {                         // powers away, speeding up as it goes
-    s.vx = Math.min(1500, s.vx + 1100 * dt); s.x += d * s.vx * dt; s.rot *= Math.exp(-6 * dt); s.y -= 14 * dt;
-    if (Math.random() < dt * 24) bubble(s.x - d * L * 1.05, s.y + frand(-6, 6), frand(1, 2.2));
-    if ((d > 0 && s.x > W + L * 1.8) || (d < 0 && s.x < -L * 1.8)) shark = null;
+  } else if (s.ph === 'shake') {   // clamps down and thrashes its head, the whole body joining in
+    const u = s.pt / 1; rotT = Math.sin(s.pt * 22) * .16 * (1 - u * .5); s.jaw = .26 + Math.abs(Math.sin(s.pt * 11)) * .08; fq = 3.4; amp = .55;
+    s.x += Math.sin(s.pt * 22 + 1) * 10 * dt;
+    if (Math.random() < dt * 12) bubble(s.x + d * L * 1.0, s.y + frand(-5, 5), frand(1, 2.2));
+    if (u >= 1) { next('gulp'); tone(110, .18, 'sine', .22, 70); }
+  } else if (s.ph === 'gulp') {    // two chews, a tip of the head, and the fish slides in
+    const u = Math.min(1, s.pt / .75); s.swal = easeIn(Math.min(1, u * 1.5)); s.jaw = .22 * Math.max(0, Math.sin(u * Math.PI * 2.4)); rotT = -.07 * Math.sin(u * Math.PI);
+    if (s.swal >= 1) s.held = 0;
+    if (u >= 1) { next('exit'); s.vx = 40; swoosh(.7, 260, 1000, .1, 2); }
+  } else {                         // powers away, tail beating harder as it picks up speed
+    s.vx = Math.min(1400, s.vx + (s.vx < 300 ? 650 : 1000) * dt); s.x += d * s.vx * dt; s.y -= 10 * dt;
+    if (Math.random() < dt * 18) bubble(s.x - d * L * 1.05, s.y + frand(-5, 5), frand(1, 2));
+    if ((d > 0 && s.x > W + L * 2) || (d < 0 && s.x < -L * 2)) { shark = null; return; }
   }
+  // swimming: tail-beat rate follows speed, amplitude follows effort
+  const v = Math.hypot(s.x - px, s.y - py) / Math.max(dt, 1e-3), acc = (v - s.spd) / Math.max(dt, 1e-3); s.spd += (v - s.spd) * Math.min(1, dt * 8);
+  if (!fq) { fq = .7 + s.spd / (L * 3.2); amp = (.2 + .16 * Math.min(1, s.spd / (L * 8))) * (acc < -40 ? .7 : acc > 40 ? 1.25 : 1); }
+  s.fq = (s.fq || fq) + (fq - (s.fq || fq)) * Math.min(1, dt * 5); s.amp += (amp - s.amp) * Math.min(1, dt * 6);
+  s.wph += dt * TAU * s.fq;
+  if (s.ph !== 'shake' && s.ph !== 'gulp') rotT = clamp((s.y - py) / Math.max(dt, 1e-3) * .004, -.12, .12) + Math.sin(s.wph * 2) * .012;
+  s.rot += (rotT - s.rot) * Math.min(1, dt * (s.ph === 'shake' ? 30 : 6));
 }
 function drawShark(){
   const s = shark; if (!s) return;
-  const L = SHK, H = SHH, j = s.jaw, K = shSize(s);
-  const beat = s.ph === 'exit' ? 9 + s.vx / 60 : s.ph === 'enter' ? 9 : 5, amp = s.ph === 'exit' ? .26 : s.ph === 'enter' ? .2 : .1, sw = Math.sin(s.t * beat) * amp;
-  ctx.save(); ctx.translate(s.x, s.y); ctx.scale(s.dir * K, K); ctx.translate(L * .5, 0); ctx.rotate(s.rot); ctx.translate(-L * .5, 0);
-  if (s.ph === 'exit' && s.vx > 600) { ctx.strokeStyle = `rgba(255,255,255,${Math.min(.35, (s.vx - 600) / 2000)})`; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
-    for (const [y, l] of [[-H * .6, 70], [H * .1, 95], [H * .7, 60]]) { ctx.beginPath(); ctx.moveTo(-L * 1.35, y); ctx.lineTo(-L * 1.35 - l, y); ctx.stroke(); } }
-  const top = '#5d7685', side = '#7d95a2', belly = '#e9eef0', fin = '#566e7c';
-  // tail, swinging from the tail stock
-  ctx.save(); ctx.translate(-L * .9, 0); ctx.rotate(sw); ctx.fillStyle = fin; ctx.beginPath();
-  ctx.moveTo(0, -H * .18); ctx.quadraticCurveTo(-L * .18, -H * .9, -L * .36, -H * 1.75); ctx.quadraticCurveTo(-L * .26, -H * .4, -L * .2, 0);
-  ctx.quadraticCurveTo(-L * .27, H * .45, -L * .3, H * 1.1); ctx.quadraticCurveTo(-L * .12, H * .55, 0, H * .18); ctx.closePath(); ctx.fill(); ctx.restore();
+  const L = SHK, H = SHH, j = s.jaw, K = shSize(s), d = s.dir, bob = Math.sin(s.wph * 2) * .8;
+  // local drawing point -> world point, through the shark's position, facing and head-pivoted pitch
+  const piv = L * .45, toW = (lx, ly) => { const c = Math.cos(s.rot), sn = Math.sin(s.rot), rx = piv + (lx - piv) * c - ly * sn, ry = (lx - piv) * sn + ly * c; return [s.x + d * K * rx, s.y + bob + K * ry]; };
+  // the body: a spine with a travelling wave, thin at the tail stock, deepest behind the head, a blunt snout
+  const N = 30, top = [], bot = [], mid = [];
+  for (let i = 0; i <= N; i++) { const u = i / N, x = -L * .94 + u * L * 1.94, tl = 1 - u;
+    const w = s.amp * H * tl * tl * Math.sin(s.wph - 5.2 * tl) - .03 * H * u * Math.sin(s.wph);
+    const ht = H * (.11 + .9 * Math.pow(Math.sin(Math.PI * Math.pow(u, 1.8)), .85)), hb = H * (.11 + .72 * Math.pow(Math.sin(Math.PI * Math.pow(u, 1.36)), .9));
+    top.push([x, w - ht]); bot.push([x, w + hb]); mid.push(w); }
+  const at = (arr, u) => { const f = u * N, k = Math.min(N - 1, Math.floor(f)), r = f - k; return [arr[k][0] + (arr[k + 1][0] - arr[k][0]) * r, arr[k][1] + (arr[k + 1][1] - arr[k][1]) * r]; };
+  const midAt = u => { const f = u * N, k = Math.min(N - 1, Math.floor(f)), r = f - k; return mid[k] + (mid[k + 1] - mid[k]) * r; };
+  // the clownfish in its jaws: drawn first, so the shark's head covers whatever is inside the mouth
+  if (s.held) { const pr = s.prey, fl = clownLen(pr) / K, off = fl * .6 * (1 - s.swal) - fl * 1.6 * s.swal;
+    const [wx, wy] = toW(L * 1.0 + off, midAt(.96) + H * .3); pr.x = wx; pr.y = wy; pr.vx = d * 20; pr.vy = Math.sin(s.t * 24) * 30; pr.ft = d; pr.face = d; pr.ph += .5; drawFish(pr); }
+  ctx.save(); ctx.translate(s.x, s.y + bob); ctx.scale(d * K, K); ctx.translate(piv, 0); ctx.rotate(s.rot); ctx.translate(-piv, 0);
+  if (s.ph === 'exit' && s.vx > 650) { ctx.strokeStyle = `rgba(255,255,255,${Math.min(.3, (s.vx - 650) / 2200)})`; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+    for (const [y, l] of [[-H * .6, 70], [H * .1, 95], [H * .7, 60]]) { ctx.beginPath(); ctx.moveTo(-L * 1.4, y); ctx.lineTo(-L * 1.4 - l, y); ctx.stroke(); } }
+  const topC = '#5d7685', side = '#7d95a2', belly = '#e9eef0', fin = '#566e7c';
+  // tail fin: follows the bend of the tail stock, and narrows as it sweeps towards and away from us
+  const slope = Math.atan2(mid[0] - mid[2], L * 1.94 * 2 / N), sweep = Math.sin(s.wph - 5.2 - .7);
+  ctx.save(); ctx.translate(top[0][0] + 1, mid[0]); ctx.rotate(slope * 1.15 + sweep * .12); ctx.scale(.62 + .38 * Math.abs(Math.cos(s.wph - 5.2)), 1); ctx.fillStyle = fin; ctx.beginPath();
+  ctx.moveTo(4, -H * .2); ctx.quadraticCurveTo(-L * .16, -H * .9, -L * .34, -H * 1.75); ctx.quadraticCurveTo(-L * .24, -H * .45, -L * .17, 0);
+  ctx.quadraticCurveTo(-L * .24, H * .45, -L * .28, H * 1.1); ctx.quadraticCurveTo(-L * .1, H * .55, 4, H * .2); ctx.closePath(); ctx.fill(); ctx.restore();
+  // first dorsal fin rides the back at the deepest point; small second dorsal and anal fins near the tail
   ctx.fillStyle = fin;
-  ctx.beginPath(); ctx.moveTo(L * .18, -H * .82); ctx.quadraticCurveTo(L * .02, -H * 1.5, -L * .1, -H * 2.05); ctx.quadraticCurveTo(-L * .12, -H * 1.2, -L * .28, -H * .72); ctx.closePath(); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(-L * .58, -H * .45); ctx.lineTo(-L * .66, -H * .85); ctx.lineTo(-L * .72, -H * .34); ctx.closePath(); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(-L * .55, H * .42); ctx.lineTo(-L * .64, H * .78); ctx.lineTo(-L * .7, H * .32); ctx.closePath(); ctx.fill();
-  // the gulp: a lump that rides along the belly from throat to middle
-  const bx = s.bulge >= 0 ? L * (.62 - s.bulge * .85) : null, bh = s.bulge >= 0 ? H * (.32 * Math.sin(Math.PI * Math.min(1, s.bulge * 1.15))) : 0;
-  const body = () => { ctx.beginPath(); ctx.moveTo(L, H * .05);
-    ctx.bezierCurveTo(L * .94, -H * .78, L * .45, -H * 1.02, -L * .1, -H * .86); ctx.bezierCurveTo(-L * .5, -H * .62, -L * .78, -H * .28, -L * .94, -H * .12);
-    ctx.lineTo(-L * .94, H * .12); ctx.bezierCurveTo(-L * .72, H * .36, -L * .32, H * .78, L * .2, H * .8); ctx.bezierCurveTo(L * .62, H * .8, L * .9, H * .52, L, H * .05); ctx.closePath();
-    if (bx != null) ctx.ellipse(bx, H * .62, L * .16, H * .22 + bh, 0, 0, TAU); };
-  const g = ctx.createLinearGradient(0, -H, 0, H); g.addColorStop(0, top); g.addColorStop(.55, side); g.addColorStop(1, side);
-  body(); ctx.fillStyle = g; ctx.fill('nonzero');
-  ctx.save(); body(); ctx.clip('nonzero'); ctx.fillStyle = belly; ctx.beginPath(); ctx.moveTo(L * 1.05, H * .12);
-  ctx.bezierCurveTo(L * .6, H * .05, L * .1, H * .32, -L, H * .1); ctx.lineTo(-L, H * 3); ctx.lineTo(L * 1.1, H * 3); ctx.closePath(); ctx.fill();
-  if (j > .02) { ctx.fillStyle = '#2b2026'; ctx.beginPath(); ctx.moveTo(L * 1.02, H * .12); ctx.quadraticCurveTo(L * .7, H * .2, L * .52, H * .46); ctx.quadraticCurveTo(L * .78, H * (.46 + j * .6), L * 1.02, H * (.2 + j * .95)); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#ffffff'; for (let k = 0; k < 6; k++) { const tx = L * (.95 - k * .07), ty = H * (.14 + k * .05); ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx - L * .025, ty); ctx.lineTo(tx - L * .012, ty + H * .16 * j); ctx.closePath(); ctx.fill(); } }
-  else { ctx.strokeStyle = 'rgba(40,40,45,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(L * .98, H * .16); ctx.quadraticCurveTo(L * .74, H * .26, L * .58, H * .42); ctx.stroke(); }
-  ctx.restore();
-  // while it holds on, the clownfish's tail flicks out of the side of its mouth
-  if (s.held) { ctx.save(); ctx.translate(L * .9, H * .32); ctx.rotate(.5 + Math.sin(s.t * 30) * .35); ctx.fillStyle = '#d68c4f';
-    ctx.beginPath(); ctx.moveTo(0, -3); ctx.lineTo(13, -9); ctx.quadraticCurveTo(10, 0, 13, 9); ctx.lineTo(0, 3); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.fillRect(2, -4, 3, 8); ctx.restore(); }
-  ctx.strokeStyle = 'rgba(40,55,65,.45)'; ctx.lineWidth = 1.3; for (let k = 0; k < 3; k++) { const gx = L * (.5 - k * .06); ctx.beginPath(); ctx.moveTo(gx, -H * .35); ctx.quadraticCurveTo(gx - L * .03, 0, gx, H * .35); ctx.stroke(); }
-  ctx.fillStyle = fin; ctx.save(); ctx.translate(L * .3, H * .55); ctx.rotate(Math.sin(s.t * 4) * .12); ctx.beginPath(); ctx.moveTo(L * .06, -H * .05); ctx.quadraticCurveTo(-L * .12, H * .55, -L * .28, H * 1); ctx.quadraticCurveTo(-L * .16, H * .35, -L * .12, H * .03); ctx.closePath(); ctx.fill(); ctx.restore();
-  ctx.fillStyle = '#121619'; E(L * .74, -H * .3, 3.4, 3.4); ctx.fillStyle = 'rgba(255,255,255,.85)'; E(L * .755, -H * .37, 1.2, 1.2);
+  { const a = at(top, .5), b = at(top, .64), m = midAt(.5); ctx.beginPath(); ctx.moveTo(b[0], b[1] + 2); ctx.quadraticCurveTo(a[0] + L * .06, m - H * 1.55, a[0] - L * .06, m - H * 2.05); ctx.quadraticCurveTo(a[0] + L * .01, m - H * 1.2, a[0] - L * .1, a[1] + 2); ctx.closePath(); ctx.fill(); }
+  { const a = at(top, .17), b = at(top, .22); ctx.beginPath(); ctx.moveTo(b[0], b[1] + 1); ctx.lineTo(a[0] - L * .02, a[1] - H * .38); ctx.lineTo(a[0] - L * .03, a[1] + 1); ctx.closePath(); ctx.fill(); }
+  { const a = at(bot, .18), b = at(bot, .24); ctx.beginPath(); ctx.moveTo(b[0], b[1] - 1); ctx.lineTo(a[0] - L * .03, a[1] + H * .34); ctx.lineTo(a[0] - L * .03, a[1] - 1); ctx.closePath(); ctx.fill(); }
+  // body and countershaded belly
+  const outline = () => { ctx.beginPath(); ctx.moveTo(top[0][0], top[0][1]); for (let i = 1; i <= N; i++) ctx.lineTo(top[i][0], top[i][1]);
+    ctx.quadraticCurveTo(L * 1.05, mid[N] + H * .02, bot[N][0], bot[N][1]); for (let i = N; i >= 0; i--) ctx.lineTo(bot[i][0], bot[i][1]); ctx.closePath(); };
+  const g = ctx.createLinearGradient(0, -H, 0, H); g.addColorStop(0, topC); g.addColorStop(.6, side); g.addColorStop(1, side);
+  outline(); ctx.fillStyle = g; ctx.fill();
+  ctx.fillStyle = belly; ctx.beginPath(); let first = true;
+  for (let i = 2; i <= N; i++) { const u = i / N, hb = bot[i][1] - mid[i], y = mid[i] + Math.min(hb - H * .03, H * (.1 + .24 * Math.sin(Math.PI * Math.pow(u, 1.25)))); if (first) { ctx.moveTo(top[i][0], y); first = false; } else ctx.lineTo(top[i][0], y); }
+  ctx.quadraticCurveTo(L * 1.04, mid[N] + H * .06, bot[N][0], bot[N][1]); for (let i = N; i >= 2; i--) ctx.lineTo(bot[i][0], bot[i][1]); ctx.closePath(); ctx.fill();
+  // mouth on the underside of the snout, teeth showing as it opens
+  { const m = midAt(.95); if (j > .02) { ctx.fillStyle = '#2b2026'; ctx.beginPath(); ctx.moveTo(L * 1.03, m + H * .1); ctx.quadraticCurveTo(L * .72, m + H * .2, L * .55, m + H * .46); ctx.quadraticCurveTo(L * .8, m + H * (.46 + j * .62), L * 1.03, m + H * (.18 + j * 1.0)); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#fff'; for (let k = 0; k < 6; k++) { const tx = L * (.97 - k * .07), ty = m + H * (.12 + k * .05); ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx - L * .025, ty); ctx.lineTo(tx - L * .012, ty + H * .16 * j); ctx.closePath(); ctx.fill(); } }
+    else { ctx.strokeStyle = 'rgba(40,40,45,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(L * 1.0, m + H * .14); ctx.quadraticCurveTo(L * .76, m + H * .25, L * .6, m + H * .42); ctx.stroke(); } }
+  // gills, pectoral fin (it angles to steer and brake), eye
+  ctx.strokeStyle = 'rgba(40,55,65,.45)'; ctx.lineWidth = 1.3; for (let k = 0; k < 3; k++) { const u = .73 - k * .03, x = -L * .94 + u * L * 1.94, m = midAt(u); ctx.beginPath(); ctx.moveTo(x, m - H * .35); ctx.quadraticCurveTo(x - L * .03, m, x, m + H * .35); ctx.stroke(); }
+  { const a = at(bot, .64), brake = s.ph === 'enter' ? Math.max(0, (s.pt / s.dur - .5)) * .5 : s.ph === 'eye' ? .3 : 0; ctx.save(); ctx.translate(a[0], a[1] - H * .2); ctx.rotate(Math.sin(s.wph * .5) * .06 - brake);
+    ctx.fillStyle = fin; ctx.beginPath(); ctx.moveTo(L * .06, -H * .05); ctx.quadraticCurveTo(-L * .12, H * .55, -L * .28, H * 1.0); ctx.quadraticCurveTo(-L * .16, H * .35, -L * .12, H * .03); ctx.closePath(); ctx.fill(); ctx.restore(); }
+  { const m = midAt(.88); ctx.fillStyle = '#121619'; E(L * .74, m - H * .3, 3.4, 3.4); ctx.fillStyle = 'rgba(255,255,255,.85)'; E(L * .755, m - H * .37, 1.2, 1.2); }
   ctx.restore();
 }
 function drawFish(f){
