@@ -13,14 +13,14 @@
 <meta property="og:title" content="Wanderwater">
 <meta property="og:description" content="An underwater museum ring toss across fifteen cities. Pump the water, loop rings onto famous landmarks and collect passport stamps.">
 <meta property="og:url" content="https://wanderwater.vercel.app/">
-<meta property="og:image" content="https://wanderwater.vercel.app/og.jpg?v=2">
+<meta property="og:image" content="https://wanderwater.vercel.app/og.jpg?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Wanderwater, an underwater museum ring toss game, shown inside a matte toy water tank">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Wanderwater">
 <meta name="twitter:description" content="An underwater museum ring toss across fifteen cities.">
-<meta name="twitter:image" content="https://wanderwater.vercel.app/og.jpg?v=2">
+<meta name="twitter:image" content="https://wanderwater.vercel.app/og.jpg?v=3">
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVJMZG3NBL"></script>
@@ -954,6 +954,17 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 .log.many div{padding:1.15cqw 0; font-size:2.5cqw}
 .log.many b{font-size:3cqw}
 .slot.blankslot{visibility:hidden}
+
+/* Atlas on phones: a scannable list, photo inset on the left, city on the right */
+@media (max-width: 640px){
+  .galgrid{grid-template-columns:1fr!important; gap:8px!important}
+  .galgrid button{display:grid!important; grid-template-columns:76px 1fr; grid-template-rows:auto auto; gap:3px 16px!important; align-items:center; padding:8px 40px 8px 8px!important; min-height:0!important; border-radius:16px!important}
+  .galgrid .band{grid-row:1 / span 2; grid-column:1; width:76px; height:58px!important; aspect-ratio:auto; margin:0!important; border-radius:11px}
+  .galgrid .n{grid-column:2; align-self:end; font-size:20px!important; line-height:1.1}
+  .galgrid .st{grid-column:2; align-self:start}
+  .galgrid .ok{top:50%!important; right:14px!important; transform:translateY(-50%)}
+  .galgrid button:hover{transform:none}
+}
 </style>
 </head>
 <body>
