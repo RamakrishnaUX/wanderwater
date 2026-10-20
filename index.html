@@ -2230,8 +2230,8 @@ function makePeg(lm, key, x, tip, i, keep){
   }
   let rest = base;
   for (let k = 0; k <= LH; k++) if (Math.max(tabL[k], tabR[k]) >= HOLE - .5) { rest = tip + k; break; }
-  let minX = 1e9, maxX = -1e9; for (const q of pts) { minX = Math.min(minX, q[0]); maxX = Math.max(maxX, q[0]); }
-  const p = { i, x, tip, base, bot:base + 18, lm, key, pts, tabL, tabR, rest, minX, maxX, stack:keep ? keep.stack : [], glow:keep ? keep.glow : 0, fxT:0, seed:seeded(i * 31 + cityIdx * 7 + 3) };
+  let minX = 1e9, maxX = -1e9, top = base; for (const q of pts) { minX = Math.min(minX, q[0]); maxX = Math.max(maxX, q[0]); top = Math.min(top, q[1]); }
+  const p = { i, x, tip, top, base, bot:base + 18, lm, key, pts, tabL, tabR, rest, minX, maxX, stack:keep ? keep.stack : [], glow:keep ? keep.glow : 0, fxT:0, seed:seeded(i * 31 + cityIdx * 7 + 3) };
   p.lAt = y => { const k = clamp(Math.round(y - tip), 0, LH); return tabL[k]; };
   p.rAt = y => { const k = clamp(Math.round(y - tip), 0, LH); return tabR[k]; };
   p.hwAt = y => (y < tip || y > base) ? 0 : Math.max(p.lAt(y), p.rAt(y));
@@ -2536,9 +2536,10 @@ function stepItems(dt){
         if (it.y > p.tip - 4 && it.y < p.rest + 2 && adx < 60) {
           const hw = p.hwAt(Math.max(it.y, p.tip)), inner = HOLE - hw;
           if (adx < inner) { hook(it, p); hooked = true; break; }
-          if (adx < hw + RX) {
+          if (it.y < p.top - 6) { if (it.vy > 0 && adx < RX + 8) it.vx -= dx * 2.6 * dt; }
+          else if (adx < hw + RX) {
             const s = dx < 0 ? -1 : 1;
-            if (it.y < p.tip + 12 && it.vy > 0 && adx < inner + 9) { it.va += s * 60 * dt; it.vx += s * 420 * dt; it.vy *= .8; }
+            if (it.y < p.top + 12 && it.vy > 0 && adx < inner + 9) { it.va += s * 60 * dt; it.vx += s * 420 * dt; it.vy *= .8; }
             else { it.x = p.x + s * (hw + RX); it.vx = s * Math.max(10, Math.abs(it.vx) * .3); it.va += s * 1.2; }
           }
         } else if (it.y >= p.rest + 2) { circlePoly(it, -RX * .8, 6, p); circlePoly(it, 0, 6, p); circlePoly(it, RX * .8, 6, p); }
