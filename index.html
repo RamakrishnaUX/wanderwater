@@ -1750,15 +1750,13 @@ const LM = {
       ctx.fillStyle = '#5a5146'; for (const sd of [-1, 1]) E(p.x + sd * 11, p.tip + LH * .89, 3.4, 2.2); },
     after(p){ const sy = p.tip + LH * .045; ctx.strokeStyle = '#4f483c'; ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.x + 1.8, sy); ctx.lineTo(p.x + 7, sy - 3.4); ctx.stroke(); } },
   petronas:{ name:'Petronas Twin Towers', plate:'Petronas Towers', meta:'Kuala Lumpur · 1998', text:'452 metres tall, the tallest twin towers in the world. Each floor is an eight-pointed star taken from Islamic geometry, and a two-storey skybridge joins the pair.', fx:'twinkle', pal:['#eef2f4', '#c2ccd3', '#7b8891'],
-    prof:[[0, .3], [.1, .5], [.105, 1.1], [.12, 1.3], [.125, 2.3], [.16, 2.9], [.165, 3.7], [.19, 4.1], [.195, 5.1], [.22, 5.3], [.225, 6.3], [.25, 6.5], [.255, 7.5], [.29, 7.7], [.295, 8.7], [.33, 8.9], [.335, 9.9], [1, 10.3]],
+    tower:[[0, .27], [.1, .45], [.105, .99], [.12, 1.17], [.125, 2.07], [.16, 2.61], [.165, 3.33], [.19, 3.69], [.195, 4.59], [.22, 4.77], [.225, 5.67], [.25, 5.85], [.255, 6.75], [.29, 6.93], [.295, 7.83], [.33, 8.01], [.335, 8.91], [1, 9.27]], twin:14,
+    get prof(){ return this.tower.map(([t, w]) => [t, w + this.twin]); },
     detail(p, h){ h.zone(.1, .335, '#d9e0e5', '#f4f7f9', '#8d9aa3'); [.125, .165, .195, .225, .255, .295, .335].forEach(t => h.hl(t, 'rgba(255,255,255,.75)', .7));
       h.vlines(.34, 1, 1.5, 'rgba(70,85,95,.28)', .45); h.hlines(.34, 1, 2.6, 'rgba(255,255,255,.22)', .5); h.metal(.12, 1);
       if (night) h.windows(.34, .98, 'rgba(255,236,190,.8)', 60); },
-    after(p){ const dx = 36, q = Object.assign({}, p, { x:p.x + dx, minX:p.minX + dx, maxX:p.maxX + dx, pts:p.pts.map(([x, y]) => [x + dx, y]), i:p.i + 50 }), [lc, bc, dc] = p.lm.pal;
-      ctx.save(); tracePoly(q.pts); const g = ctx.createLinearGradient(q.minX, 0, q.maxX, 0); g.addColorStop(0, lc); g.addColorStop(.42, bc); g.addColorStop(1, dc); ctx.fillStyle = g; ctx.fill(); ctx.clip(); p.lm.detail(q, helpers(q));
-      const vg = ctx.createLinearGradient(0, q.tip, 0, q.base); vg.addColorStop(0, 'rgba(255,255,255,.05)'); vg.addColorStop(1, 'rgba(0,10,20,.3)'); ctx.fillStyle = vg; ctx.fillRect(q.minX - 2, q.tip, q.maxX - q.minX + 4, LH); ctx.restore();
-      const by = p.tip + LH * .5, x0 = p.x + 10, x1 = q.x - 10; ctx.fillStyle = '#c9d2d8'; ctx.fillRect(x0, by, x1 - x0, 4.2); ctx.fillStyle = 'rgba(40,60,80,.55)'; for (let x = x0 + 1.5; x < x1 - 1; x += 2.6) ctx.fillRect(x, by + 1, 1.4, 2.2);
-      ctx.strokeStyle = '#aab5bd'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo((x0 + x1) / 2, by + 4.2); ctx.lineTo(x0, by + 24); ctx.moveTo((x0 + x1) / 2, by + 4.2); ctx.lineTo(x1, by + 24); ctx.stroke(); } },
+    after(p){ const [A, B] = p.parts, by = p.tip + LH * .5, x0 = A.x + A.hwAt(by) - .5, x1 = B.x - B.hwAt(by) + .5; ctx.fillStyle = '#c9d2d8'; ctx.fillRect(x0, by, x1 - x0, 4.2); ctx.fillStyle = 'rgba(40,60,80,.55)'; for (let x = x0 + 1; x < x1 - 1; x += 2.2) ctx.fillRect(x, by + 1, 1.1, 2.2);
+      ctx.strokeStyle = '#aab5bd'; ctx.lineWidth = 1; const m = (x0 + x1) / 2; ctx.beginPath(); ctx.moveTo(m, by + 4.2); ctx.lineTo(x0, by + 20); ctx.moveTo(m, by + 4.2); ctx.lineTo(x1, by + 20); ctx.stroke(); } },
   kltower:{ name:'KL Tower', meta:'Kuala Lumpur · 1995', text:'Menara Kuala Lumpur is a 421-metre telecoms tower. Its pointed, dome-like pod was inspired by Islamic architecture, and it stands on a hill of protected rainforest.', fx:'wave', pal:['#eef1f2', '#d0d7da', '#8e9aa0'],
     prof:[[0, .3], [.14, .6], [.145, 1.4], [.2, 1.6], [.205, 2.6], [.225, 3.2], [.23, 5], [.255, 8.4], [.275, 14.6], [.295, 18.4], [.33, 18.4], [.35, 14.2], [.37, 8.4], [.38, 5.8], [.385, 4.6], [.9, 5.6], [.905, 8.4], [1, 9]],
     detail(p, h){ h.zone(0, .2, '#b9c1c6', '#e2e7ea', '#7c878d'); h.hl(.08, 'rgba(200,60,50,.8)', 1.6); h.hl(.15, 'rgba(200,60,50,.8)', 1.4);
@@ -2142,6 +2140,7 @@ function makePeg(lm, key, x, tip, i, keep){
   p.lAt = y => { const k = clamp(Math.round(y - tip), 0, LH); return tabL[k]; };
   p.rAt = y => { const k = clamp(Math.round(y - tip), 0, LH); return tabR[k]; };
   p.hwAt = y => (y < tip || y > base) ? 0 : Math.max(p.lAt(y), p.rAt(y));
+  if (lm.twin) p.parts = [-1, 1].map(sd => Object.assign(makePeg({ prof:lm.tower }, key, x + sd * lm.twin, tip, i + (sd > 0 ? 50 : 0)), { lm }));
   return p;
 }
 function buildPegs(){ pegs = [0, 1, 2].map(i => buildPeg(i)); }
@@ -2699,6 +2698,13 @@ function helpers(p){
 function drawLandmark(p){
   const lm = p.lm, [lc, bc, dc] = lm.pal, X = p.x;
   if (p.glow > 0 && !ART) { const g = ctx.createRadialGradient(X, p.rest, 2, X, p.rest, 80); g.addColorStop(0, `rgba(255,246,190,${.45 * p.glow})`); g.addColorStop(1, 'rgba(255,246,190,0)'); ctx.fillStyle = g; ctx.fillRect(X - 80, p.rest - 80, 160, 160); }
+  const fxo = LFX[p.key] || {}, f = p.fxT, ph = 5 - f, fa = f > 0 ? Math.min(1, f, ph * 3) : 0;
+  for (const q of p.parts || [p]) drawBody(q, fxo, fa, ph);
+  if (lm.after) lm.after(p);
+  if (fxo.outside) fxo.outside(p, fa, ph, f > 0);
+}
+function drawBody(p, fxo, fa, ph){
+  const lm = p.lm, [lc, bc, dc] = lm.pal, X = p.x;
   ctx.save(); tracePoly(p.pts);
   const w = Math.max(14, p.maxX - p.minX), g = ctx.createLinearGradient(p.minX, 0, p.maxX, 0); g.addColorStop(0, lc); g.addColorStop(.42, bc); g.addColorStop(1, dc);
   ctx.fillStyle = g; ctx.fill(); ctx.clip();
@@ -2708,14 +2714,12 @@ function drawLandmark(p){
   const vg = ctx.createLinearGradient(0, p.tip, 0, p.base); vg.addColorStop(0, rgba(c[0], .1)); vg.addColorStop(.7, rgba(c[1], .12)); vg.addColorStop(1, 'rgba(0,10,20,.32)'); ctx.fillStyle = vg; ctx.fillRect(p.minX - 2, p.tip, w + 4, LH);
   ctx.fillStyle = 'rgba(255,255,255,.07)'; for (let k = 0; k < 6; k++) { const yy = p.tip + ((k * 37 + T * 14) % LH), xx = X + Math.sin(T * .7 + k * 2) * w * .4; E(xx, yy, 7 + Math.sin(T + k) * 3, 2.6); }
   }
-  const fxo = LFX[p.key] || {}, f = p.fxT, ph = 5 - f, fa = f > 0 ? Math.min(1, f, ph * 3) : 0;
   if (fa > 0 && fxo.inside) fxo.inside(p, fa, ph);
   ctx.restore();
   ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = .9; ctx.beginPath(); const half = p.pts.length >> 1; ctx.moveTo(p.pts[0][0], p.pts[0][1]); for (let i = 1; i < half; i++) ctx.lineTo(p.pts[i][0], p.pts[i][1]); ctx.stroke();
-  if (lm.after) lm.after(p);
-  if (fxo.outside) fxo.outside(p, fa, ph, f > 0);
 }
 function drawSil(lm, x, baseY, sc, col){
+  if (lm.twin) { for (const sd of [-1, 1]) drawSil({ prof:lm.tower }, x + sd * lm.twin * sc, baseY, sc, col); return; }
   ctx.save(); ctx.translate(x, baseY - LH * sc); ctx.scale(sc, sc); ctx.fillStyle = col; ctx.beginPath();
   const pr = lm.prof; ctx.moveTo(-pr[0][1], pr[0][0] * LH); for (const e of pr) ctx.lineTo(-e[1], e[0] * LH);
   if (lm.arch) { for (let k = 0; k <= 12; k++) { const a = Math.PI - k / 12 * Math.PI; ctx.lineTo(Math.cos(a) * lm.arch.w, LH - Math.sin(a) * lm.arch.h); } }
