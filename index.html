@@ -1710,21 +1710,53 @@ const LM = {
       h.zone(.905, 1, '#dcd8ce', '#f3f1ea', '#a8a49a'); h.hl(.905, 'rgba(255,255,255,.6)', .8);
       if (night) [.275, .475, .665].forEach(t => h.hl(t + .006, 'rgba(255,225,150,.75)', 1.4)); },
     after(p){ const y = p.tip - 4; ctx.fillStyle = '#d8b55c'; ctx.beginPath(); ctx.arc(p.x, y, 3, -1.3, 1.3, true); ctx.arc(p.x + 1.5, y, 2.5, 1.55, -1.55, false); ctx.fill(); } },
-  hagiasophia:{ name:'Hagia Sophia', meta:'Istanbul · 537', text:'Built as a cathedral in 537, it had the biggest dome in the world for almost a thousand years. Later it became a mosque, then a museum, and today it is a mosque again.', fx:'gleam', pal:['#dca783', '#c98f6a', '#93603f'],
-    prof:[[0, .35], [.035, .6], [.04, 1.6], [.055, 1.6], [.06, .9], [.07, 1.3], [.075, 3.2], [.095, 8], [.125, 13], [.16, 17.4], [.2, 20.6], [.235, 22.4], [.24, 22.4], [.245, 23.6], [.29, 23.6], [.295, 25], [.3, 25], [.32, 28], [.35, 30.6], [.39, 32.4], [.42, 33], [.425, 34.4], [.44, 34.4], [.445, 33.4], [.6, 33.4], [.605, 36], [.62, 36], [.625, 35], [1, 35]],
-    detail(p, h){ h.zone(0, .075, '#c9a650', '#efd68f', '#8a6a24'); h.zone(.075, .245, '#76848e', '#a2b0b9', '#4d5962');
-      ctx.strokeStyle = 'rgba(40,50,60,.25)'; ctx.lineWidth = .6; const cy = p.tip + LH * .245; for (let k = -6; k <= 6; k++) { ctx.beginPath(); ctx.moveTo(p.x, p.tip + LH * .075); ctx.quadraticCurveTo(p.x + k * 3.2, p.tip + LH * .12, p.x + k * 3.6, cy); ctx.stroke(); }
-      h.zone(.245, .295, '#d7a07c', '#ebbb98', '#a06d4e'); h.arches(.252, .288, 11, 2.2, 'rgba(60,40,35,.62)');
-      h.zone(.295, .425, '#7f8d96', '#a6b3bb', '#56636b'); ctx.fillStyle = '#d39b78'; ctx.fillRect(p.x - 25, p.tip + LH * .295, 50, LH * .13); h.arches(.31, .41, 4, 5, 'rgba(60,40,35,.5)');
-      ctx.strokeStyle = 'rgba(40,50,60,.22)'; for (const sd of [-1, 1]) for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(p.x + sd * 25, p.tip + LH * .3); ctx.quadraticCurveTo(p.x + sd * (25 + k * 2.4), p.tip + LH * .33, p.x + sd * (25 + k * 2.8), p.tip + LH * .425); ctx.stroke(); }
-      h.zone(.425, .445, '#c8916d', '#e2ad8a', '#94603f'); h.zone(.445, 1, '#d39b78', '#e8b896', '#9f6c4f'); h.vlines(.45, 1, 11, 'rgba(140,90,60,.3)', 1.4);
-      h.arches(.5, .59, 6, 4, 'rgba(60,40,35,.5)'); h.zone(.6, .625, '#c8916d', '#e2ad8a', '#94603f'); h.arches(.68, .84, 7, 4.2, 'rgba(60,40,35,.45)'); h.arches(.88, .99, 3, 7, 'rgba(60,40,35,.55)');
-      if (night) h.windows(.25, .29, 'rgba(255,215,140,.85)', 18); },
-    after(p){ for (const sd of [-1, 1]) { const x = p.x + sd * 42, y0 = p.tip + LH * .1, y1 = p.base, brick = sd < 0;
-      const g = ctx.createLinearGradient(x - 3, 0, x + 3, 0); g.addColorStop(0, brick ? '#c47e5c' : '#f2efe8'); g.addColorStop(.5, brick ? '#b06b4b' : '#dcd8cf'); g.addColorStop(1, brick ? '#7d4a33' : '#a8a49a'); ctx.fillStyle = g;
-      ctx.fillRect(x - 2.6, y0, 5.2, y1 - y0); ctx.fillStyle = '#6f7d88'; ctx.beginPath(); ctx.moveTo(x - 3, y0); ctx.lineTo(x, y0 - 20); ctx.lineTo(x + 3, y0); ctx.fill();
-      ctx.fillStyle = '#d8b55c'; ctx.fillRect(x - .5, y0 - 25, 1, 5);
-      for (const t of [.3, .55]) { const yy = y0 + (y1 - y0) * t; ctx.fillStyle = brick ? '#e0a17f' : '#fffdf8'; ctx.fillRect(x - 4.2, yy, 8.4, 2); ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillRect(x - 3, yy + 2, 6, 1.4); } } } },
+  hagiasophia:{ name:'Hagia Sophia Grand Mosque', plate:'Hagia Sophia', meta:'Istanbul · 537', text:'Built in 537, it had the largest dome in the world for almost a thousand years. It became a mosque in 1453, a museum in 1934, and is a mosque again today, open to visitors outside prayer times.', fx:'gleam', pal:['#e6b6a2', '#d79c86', '#a8695a'],
+    prof:[[0.4895, 0.35], [0.5158, 0.6], [0.5316, 1.4], [0.5342, 5.8], [0.5421, 11.2], [0.5526, 15.2], [0.5684, 18.6], [0.5842, 20.4], [0.5974, 21], [0.6, 22.6], [0.6053, 22], [0.6184, 22], [0.6211, 23.4], [0.6474, 23.4], [0.6632, 27.4], [0.6842, 29.8], [0.7105, 31.3], [0.7368, 31.9], [0.7447, 32], [0.7474, 33.6], [0.7579, 33.6], [0.7605, 32.2], [0.8368, 32.2], [0.8395, 36], [1.0, 36]],
+    detail(p, h){ const X = p.x, Yp = y => p.base - y, t = y => 1 - y / LH;
+      const box = (x0, y0, x1, y1, col) => { ctx.fillStyle = col; ctx.fillRect(X + x0, Yp(y1), x1 - x0, y1 - y0); };
+      const arch = (cx, y0, w, ht, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(X + cx - w / 2, Yp(y0)); ctx.lineTo(X + cx - w / 2, Yp(y0 + ht - w / 2)); ctx.arc(X + cx, Yp(y0 + ht - w / 2), w / 2, Math.PI, 0); ctx.lineTo(X + cx + w / 2, Yp(y0)); ctx.fill(); };
+      // lower walls and buttresses, rose plaster
+      h.zone(t(48), 1, '#dca08a', '#f0c6b2', '#a8695a');
+      for (const sd of [-1, 1]) { box(sd < 0 ? -36 : 30, 0, sd < 0 ? -30 : 36, 30.5, 'rgba(120,60,45,.18)'); box(sd < 0 ? -20 : 16, 0, sd < 0 ? -16 : 20, 44, 'rgba(255,235,220,.22)'); }
+      for (let k = 0; k < 7; k++) arch(-27 + k * 9, 7, 3.4, 11, 'rgba(70,40,35,.55)');
+      for (let k = 0; k < 9; k++) arch(-25.6 + k * 6.4, 33, 2.4, 8, 'rgba(70,40,35,.5)');
+      h.hl(t(30.5), 'rgba(255,240,230,.55)', .8); h.hl(t(46), 'rgba(255,240,230,.6)', 1.2); h.hl(t(1), 'rgba(90,50,40,.35)', 2);
+      // half-domes either side, lead grey
+      h.zone(t(67), t(48), '#8e9aa1', '#bcc6cb', '#5f6b72');
+      ctx.strokeStyle = 'rgba(40,50,58,.28)'; ctx.lineWidth = .5; for (const sd of [-1, 1]) for (let k = 1; k <= 4; k++) { ctx.beginPath(); ctx.moveTo(X + sd * 22, Yp(66)); ctx.quadraticCurveTo(X + sd * (22 + k * 2.6), Yp(62), X + sd * (22 + k * 2.6), Yp(48)); ctx.stroke(); }
+      // the great arched wall under the dome, with its orange tympanum
+      box(-19, 46, 19, 67, '#e2ac96'); box(-19, 66, 19, 67, 'rgba(255,240,230,.5)');
+      arch(0, 46, 24, 19, '#d97a52'); arch(0, 46, 24, 19, 'rgba(0,0,0,0)');
+      for (let k = 0; k < 5; k++) arch(-8 + k * 4, 47, 2.2, 6, 'rgba(70,35,25,.6)');
+      for (let k = 0; k < 3; k++) arch(-4 + k * 4, 55, 2, 5, 'rgba(70,35,25,.5)');
+      // tall rose buttress towers flanking the arched wall
+      for (const sd of [-1, 1]) { const a0 = X + sd * 16.5, a1 = X + sd * 23.4; ctx.fillStyle = '#dea691'; ctx.beginPath(); ctx.moveTo(a0, Yp(46)); ctx.lineTo(a0, Yp(72)); ctx.lineTo(a1, Yp(70)); ctx.lineTo(a1, Yp(46)); ctx.fill();
+        ctx.fillStyle = sd < 0 ? 'rgba(255,240,230,.3)' : 'rgba(110,55,40,.25)'; ctx.fillRect(Math.min(a0, a1), Yp(70), 6.9, 24); ctx.fillStyle = 'rgba(255,240,230,.6)'; ctx.fillRect(Math.min(a0, a1), Yp(64), 6.9, .7);
+        arch(sd * 20, 56, 1.8, 5, 'rgba(70,35,25,.5)'); }
+      // window drum: dark ring, pale buttresses, forty small windows
+      h.zone(t(76), t(67), '#5f6970', '#7f8a91', '#3f474d');
+      for (let x = -21; x <= 21; x += 3.5) { box(x - .7, 67, x + .7, 76, 'rgba(225,215,205,.55)'); }
+      for (let x = -19.25; x <= 19.5; x += 3.5) arch(x, 69, 1.6, 5, 'rgba(255,225,160,' + (night ? .85 : .28) + ')');
+      // the dome, lead with ribs
+      h.zone(t(89), t(76), '#9aa6ad', '#d3dade', '#66727a');
+      ctx.strokeStyle = 'rgba(45,55,62,.22)'; ctx.lineWidth = .45; for (let k = -6; k <= 6; k++) { if (!k) continue; ctx.beginPath(); ctx.moveTo(X, Yp(89)); ctx.quadraticCurveTo(X + k * 3, Yp(85.5), X + k * 3.4, Yp(76.5)); ctx.stroke(); }
+      ctx.beginPath(); ctx.moveTo(X, Yp(89)); ctx.lineTo(X, Yp(76.5)); ctx.stroke();
+      h.hl(t(76.3), 'rgba(255,255,255,.55)', .8);
+      // gold finial
+      h.zone(0, t(89), '#c9a650', '#efd68f', '#8a6a24'); },
+    after(p){ const X = p.x, Yp = y => p.base - y;
+      const minaret = (x, y0, top, w, brick, balc, back) => { ctx.save(); if (back) ctx.globalAlpha = .9;
+        const g = ctx.createLinearGradient(X + x - w / 2, 0, X + x + w / 2, 0);
+        if (brick) { g.addColorStop(0, '#cf8063'); g.addColorStop(.5, '#b9664a'); g.addColorStop(1, '#7f4331'); } else { g.addColorStop(0, '#fbfaf6'); g.addColorStop(.5, '#e4e0d7'); g.addColorStop(1, '#aaa59b'); }
+        ctx.fillStyle = g; ctx.fillRect(X + x - w / 2, Yp(top), w, top - y0);
+        if (!back) { ctx.fillStyle = brick ? '#9b5640' : '#d8d3c8'; ctx.fillRect(X + x - w / 2 - .9, Yp(y0 + 14), w + 1.8, 14); }
+        for (const b of balc) { ctx.fillStyle = '#f3f0e8'; ctx.fillRect(X + x - w / 2 - 1.6, Yp(b + 2.2), w + 3.2, 2.2); ctx.fillStyle = 'rgba(60,45,35,.45)'; ctx.fillRect(X + x - w / 2 - 1.6, Yp(b), w + 3.2, .7); }
+        ctx.fillStyle = '#7f8b93'; ctx.beginPath(); ctx.moveTo(X + x - w / 2 - .4, Yp(top)); ctx.lineTo(X + x, Yp(top + 24)); ctx.lineTo(X + x + w / 2 + .4, Yp(top)); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.beginPath(); ctx.moveTo(X + x - w / 2 - .4, Yp(top)); ctx.lineTo(X + x, Yp(top + 24)); ctx.lineTo(X + x - .6, Yp(top)); ctx.fill();
+        ctx.fillStyle = '#d8b55c'; ctx.fillRect(X + x - .35, Yp(top + 27), .7, 3); crescent(X + x, Yp(top + 28.4), 1.5, '#d8b55c'); ctx.restore(); };
+      minaret(-30, 58, 106, 4, false, [88], true); minaret(30, 58, 101, 3.6, false, [85], true);
+      minaret(-41, 0, 116, 5.6, false, [74, 98], false); minaret(41, 0, 110, 5.2, true, [92], false);
+      ctx.fillStyle = '#d8b55c'; ctx.fillRect(X - .4, Yp(99), .8, 3); crescent(X, Yp(100.6), 2.4, '#d8b55c'); } },
   sagrada:{ name:'Sagrada Família', meta:'Barcelona · since 1882', text:'Antoni Gaudí\'s giant church has been under construction since 1882. Its spires are shaped like tall seed pods, topped with bright mosaic fruit and crosses.', fx:'chime', pal:['#dccaa8', '#c6ad86', '#8f7754'],
     prof:sagradaProf(),
     detail(p, h){ const r = seeded(p.i * 7 + 11), cols = ['#c8322b', '#f2c14e', '#f7f3e6', '#d97a2b', '#3b7d4f'];
@@ -1989,7 +2021,7 @@ const LFX = {
   galata:{ inside(p, a){ const y = p.tip + LH * .28, g = ctx.createLinearGradient(0, y, 0, y + LH * .1); g.addColorStop(0, `rgba(255,214,140,${.75 * a})`); g.addColorStop(1, 'rgba(255,214,140,0)'); ctx.fillStyle = g; ctx.fillRect(p.minX, y, p.maxX - p.minX, LH * .1); },
     outside(p, a, ph, on){ if (!on) return; for (let k = 0; k < 3; k++) { const an = ph * 1.4 + k * 2.1, x = p.x + Math.cos(an) * 34, y = p.tip + LH * .14 + Math.sin(an) * 9, f = Math.sin(T * 10 + k) * 2.4; ctx.strokeStyle = `rgba(255,255,255,${a})`; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x - 5, y - f); ctx.quadraticCurveTo(x - 2, y - 2.5, x, y); ctx.quadraticCurveTo(x + 2, y - 2.5, x + 5, y - f); ctx.stroke(); } } },
   bluemosque:{ inside(p, a, ph){ [.275, .475, .665].forEach((t, k) => { const on = Math.sin(ph * 4 - k) > -.2 ? 1 : .4; ctx.fillStyle = `rgba(255,226,150,${.85 * a * on})`; ctx.fillRect(p.minX, p.tip + LH * t, p.maxX - p.minX, 3); }); }, },
-  hagiasophia:{ inside(p, a, ph){ const y = p.tip + LH * .27; for (let k = 0; k < 12; k++) { const x = p.x - 21 + k * 3.8, g = ctx.createLinearGradient(0, y, 0, y + LH * .5); g.addColorStop(0, `rgba(255,220,140,${.35 * a})`); g.addColorStop(1, 'rgba(255,220,140,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 1, y); ctx.lineTo(x + 1, y); ctx.lineTo(x + 6 + Math.sin(ph + k) * 2, y + LH * .5); ctx.lineTo(x - 6, y + LH * .5); ctx.fill(); } } },
+  hagiasophia:{ inside(p, a, ph){ const y = p.base - 72; for (let k = 0; k < 12; k++) { const x = p.x - 21 + k * 3.8, g = ctx.createLinearGradient(0, y, 0, y + LH * .3); g.addColorStop(0, `rgba(255,220,140,${.35 * a})`); g.addColorStop(1, 'rgba(255,220,140,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 1, y); ctx.lineTo(x + 1, y); ctx.lineTo(x + 6 + Math.sin(ph + k) * 2, y + LH * .3); ctx.lineTo(x - 6, y + LH * .3); ctx.fill(); } } },
   sagrada:{ inside(p, a, ph){ const cols = ['255,90,80', '255,200,80', '90,170,255', '120,220,140']; for (let k = 0; k < 4; k++) { const y = p.tip + LH * (.15 + ((ph * .18 + k * .22) % 1) * .85); ctx.fillStyle = `rgba(${cols[k]},${.35 * a})`; ctx.fillRect(p.minX, y, p.maxX - p.minX, 14); } },
     outside(p, a, ph, on){ if (!on) return; const r = seeded(p.i + 3); for (let k = 0; k < 14; k++) { const t = (ph * .5 + r()) % 1, x = p.x + (r() - .5) * 50 + Math.sin(T * 2 + k) * 4, y = p.tip + 10 - t * 60; ctx.fillStyle = `rgba(255,${200 + r() * 55 | 0},${120 + r() * 100 | 0},${a * (1 - t)})`; E(x, y, 1.4, 1.4); } } },
   glories:{ inside(p, a, ph){ for (let y = p.tip; y < p.base; y += 3) { const w = p.hwAt(y); for (let x = -w; x < w; x += 3) { ctx.fillStyle = `hsla(${(ph * 90 + y * 1.4 + x * 4) % 360},95%,62%,${.5 * a})`; ctx.fillRect(p.x + x, y, 2.6, 2.6); } } } },
