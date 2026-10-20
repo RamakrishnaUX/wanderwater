@@ -1877,23 +1877,39 @@ const LM = {
       h.zone(.79, 1, '#8fbcb7', '#b9dad6', '#4d7c78'); h.hlines(.8, 1, 2.6, 'rgba(255,255,255,.14)', .4);
       if (night) h.glow(`hsla(${[0, 30, 55, 120, 200, 240, 280][new Date().getDay()]},80%,60%,.22)`); } },
   cksmemorial:{ name:'Chiang Kai-shek Memorial Hall', plate:'Chiang Kai-shek', meta:'Taipei · 1980', text:'A white marble hall with a blue, eight-sided roof, standing at the end of a huge square. Its 89 steps stand for Chiang Kai-shek\'s age when he died.', fx:'chime', pal:['#f4f3ee', '#e0ded6', '#a9a69c'],
-    prof:[[0, .5], [.03, 1], [.035, 3.2], [.05, 3.2], [.055, 2], [.07, 6], [.17, 21], [.18, 23.4], [.19, 23.4], [.195, 19.6], [.25, 19.6], [.255, 23], [.36, 33], [.37, 35], [.38, 34], [.385, 29.6], [.66, 29.6], [.665, 33], [.7, 33], [.705, 35], [.76, 37], [1, 39]],
-    detail(p, h){ h.zone(0, .07, '#c9a650', '#efd68f', '#8a6a24'); h.zone(.07, .19, '#2e5da6', '#5486cc', '#1b3a6c'); h.vlines(.075, .19, 2.4, 'rgba(255,255,255,.18)', .5); h.hl(.185, '#d9b85a', .9);
-      h.zone(.195, .255, '#f1efe9', '#ffffff', '#b9b6ad'); h.arches(.205, .245, 4, 2, 'rgba(180,150,80,.55)');
-      h.zone(.255, .38, '#2e5da6', '#5486cc', '#1b3a6c'); h.vlines(.26, .38, 2.4, 'rgba(255,255,255,.18)', .5); h.hl(.375, '#d9b85a', 1);
-      h.zone(.385, .66, '#f3f2ed', '#ffffff', '#b3b0a6'); h.arches(.47, .66, 1, 15, 'rgba(45,60,90,.6)'); h.vlines(.39, .66, 6, 'rgba(160,155,145,.25)', .8);
-      h.zone(.665, .705, '#ece9e1', '#fbfaf6', '#aaa69c'); h.zone(.705, 1, '#e7e4dc', '#f8f7f2', '#a39f95'); h.hlines(.71, 1, 2.4, 'rgba(120,115,105,.28)', .5); h.centerStrip(.71, 1, .22, 'rgba(255,255,255,.35)'); } },
-  grandhotel:{ name:'The Grand Hotel', meta:'Taipei · 1973', text:'A 14-storey hotel built like a Chinese palace, with red columns and a golden tiled roof. It sits on a hill above the Keelung River.', fx:'chime', pal:['#cf5a47', '#b8402f', '#7d271b'],
-    prof:[[0, .6], [.012, 2.4], [.018, 6], [.028, 6], [.034, 4.6], [.1, 22], [.106, 26], [.12, 25], [.126, 20], [.17, 20], [.176, 22], [.24, 30], [.246, 32.4], [.262, 31.4], [.268, 26.4], [.7, 26.4], [.705, 30], [.755, 36.4], [.76, 37.6], [.77, 36.6], [.775, 33], [.79, 33], [1, 33.4]],
-    detail(p, h){ h.zone(0, .126, '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(.035, .12, 1.6, 'rgba(120,80,20,.35)', .5); h.zone(.126, .176, '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(.15, 3, 'rgba(200,60,50,.8)', 'rgba(255,230,150,.8)');
-      h.zone(.176, .268, '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(.18, .262, 1.6, 'rgba(120,80,20,.35)', .5); h.zone(.268, .3, '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(.285, 3, 'rgba(200,60,50,.8)', 'rgba(255,230,150,.8)');
-      h.zone(.3, .7, '#efe2c7', '#fbf3e1', '#b7a888'); h.hlines(.32, .7, 4.6, 'rgba(110,90,60,.35)', .6);
-      ctx.fillStyle = 'rgba(70,90,110,.45)'; for (let y = p.tip + LH * .32; y < p.tip + LH * .69; y += 4.6) for (let x = -24; x < 24; x += 4) ctx.fillRect(p.x + x + 1.2, y + .9, 1.6, 2.4);
-      ctx.fillStyle = '#b8322a'; for (let x = -24; x <= 24; x += 8) ctx.fillRect(p.x + x - 1.2, p.tip + LH * .3, 2.4, LH * .4);
-      h.zone(.7, .76, '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(.7, .76, 1.6, 'rgba(120,80,20,.35)', .5); h.zone(.76, .79, '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(.775, 3, 'rgba(200,60,50,.8)', 'rgba(255,230,150,.8)');
-      h.zone(.79, 1, '#efe2c7', '#fbf3e1', '#b7a888'); ctx.fillStyle = '#b8322a'; for (let x = -32; x <= 32; x += 8) ctx.fillRect(p.x + x - 1.4, p.tip + LH * .79, 2.8, LH * .21); h.hl(.79, 'rgba(255,255,255,.4)', .8);
-      if (night) h.windows(.32, .69, 'rgba(255,220,150,.85)', 50); },
-    after(p){ ctx.fillStyle = '#d9a83a'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(p.x + sd * 6, p.tip + 3); ctx.quadraticCurveTo(p.x + sd * 9, p.tip - 2, p.x + sd * 7.5, p.tip - 5); ctx.lineTo(p.x + sd * 6.2, p.tip + 1); ctx.fill(); } } }
+    prof:[[0.4211, 0.3], [0.4526, 0.9], [0.4684, 1.6], [0.4711, 2.2], [0.4947, 7], [0.5263, 13], [0.5447, 18], [0.55, 19.2], [0.5547, 19.2], [0.5568, 14], [0.5863, 14], [0.5884, 16], [0.6158, 21.5], [0.6368, 26.5], [0.6421, 27.6], [0.6474, 27.6], [0.6495, 21], [0.8389, 21], [0.8411, 28], [0.8811, 28], [0.8832, 33], [0.9337, 33], [0.9358, 38], [1.0, 38]],
+    detail(p, h){ const X = p.x, Yp = y => p.base - y, t = y => 1 - y / LH;
+      h.zone(0, t(100.5), '#c9a650', '#efd68f', '#8a6a24');
+      h.zone(t(100.5), t(84.6), '#2e5da6', '#5a8ad0', '#1b3a6c'); h.vlines(t(100), t(85), 2.2, 'rgba(255,255,255,.16)', .45); h.hl(t(85), '#d9b85a', 1);
+      h.zone(t(84.2), t(78.6), '#f2f1ec', '#ffffff', '#b9b6ad'); h.hl(t(84), '#d9b85a', .8); ctx.fillStyle = 'rgba(60,80,110,.45)'; for (let x = -11; x <= 9; x += 4) ctx.fillRect(X + x, Yp(83), 2, 3);
+      h.zone(t(78.2), t(67), '#2e5da6', '#5a8ad0', '#1b3a6c'); h.vlines(t(78), t(67.5), 2.2, 'rgba(255,255,255,.16)', .45); h.hl(t(67.6), '#d9b85a', 1.1);
+      // the hall: white marble, frieze, great arched doorway
+      h.zone(t(66.6), t(30.6), '#f3f2ed', '#ffffff', '#b3b0a6'); h.zone(t(66.6), t(61), '#dfe3e8', '#f6f8fa', '#a8afb8'); ctx.fillStyle = '#d9b85a'; for (let x = -18; x <= 18; x += 4.5) ctx.fillRect(X + x - .5, Yp(64.2), 1, 1);
+      ctx.fillStyle = '#41597b'; ctx.beginPath(); ctx.moveTo(X - 6, Yp(30.6)); ctx.lineTo(X - 6, Yp(52)); ctx.arc(X, Yp(52), 6, Math.PI, 0); ctx.lineTo(X + 6, Yp(30.6)); ctx.fill();
+      ctx.fillStyle = 'rgba(255,240,200,' + (night ? .55 : .18) + ')'; ctx.fillRect(X - 4, Yp(48), 8, 16);
+      for (const sd of [-1, 1]) { ctx.fillStyle = 'rgba(150,145,135,.22)'; ctx.fillRect(X + sd * 14 - 1, Yp(60), 2, 29); }
+      // three terraces and the long central stair
+      h.zone(t(30.2), 1, '#ecebe6', '#fbfaf7', '#aaa79e'); for (const y of [30.2, 22.2, 12.2]) h.hl(t(y), 'rgba(255,255,255,.8)', .8); for (const y of [22.6, 12.6]) h.hl(t(y), 'rgba(120,115,105,.35)', .8);
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.moveTo(X - 6, Yp(30.6)); ctx.lineTo(X + 6, Yp(30.6)); ctx.lineTo(X + 11, Yp(0)); ctx.lineTo(X - 11, Yp(0)); ctx.fill();
+      ctx.strokeStyle = 'rgba(120,115,105,.3)'; ctx.lineWidth = .4; ctx.beginPath(); for (let y = 1; y < 30; y += 1.6) { const w = 6 + 5 * (30.6 - y) / 30.6; ctx.moveTo(X - w, Yp(y)); ctx.lineTo(X + w, Yp(y)); } ctx.stroke(); } },
+  grandhotel:{ name:'The Grand Hotel', meta:'Taipei · 1973', text:'A 14-storey hotel built like a Chinese palace, with red columns and a golden tiled roof. It sits on a hill above the Keelung River.', fx:'chime', pal:['#efe2c7', '#e2d3b4', '#b7a888'],
+    prof:[[0.5526, 14], [0.5605, 18], [0.5842, 24.5], [0.6158, 30.5], [0.6316, 34], [0.6368, 35.4], [0.6389, 27], [0.6779, 26], [0.68, 31], [0.7, 35.5], [0.7158, 38], [0.72, 39], [0.7221, 34], [0.9442, 34], [0.9463, 38], [1.0, 38]],
+    detail(p, h){ const X = p.x, Yp = y => p.base - y, t = y => 1 - y / LH;
+      const gold = (y0, y1) => { h.zone(t(y1), t(y0), '#d9a83a', '#f2cc68', '#946a1c'); h.vlines(t(y1), t(y0), 1.6, 'rgba(120,80,20,.32)', .5); };
+      const brackets = (y0, y1) => { h.zone(t(y1), t(y0), '#2f7a63', '#4f9e85', '#1b4c3d'); h.band(t((y0 + y1) / 2), 1.6, 'rgba(200,60,50,.85)', 'rgba(255,230,150,.85)'); };
+      gold(69, 86); h.hl(t(84.6), '#7d5a18', 1.2); h.hl(t(69.4), 'rgba(190,50,40,.75)', .9);
+      h.zone(t(68.6), t(61.2), '#efe2c7', '#fbf3e1', '#b7a888'); brackets(65.8, 68.6); ctx.fillStyle = '#b8322a'; for (let x = -22.5; x <= 22.5; x += 5) ctx.fillRect(X + x - .8, Yp(65.8), 1.6, 4.6);
+      gold(53.2, 60.8); h.hl(t(53.6), 'rgba(190,50,40,.75)', .9); brackets(49.8, 52.8);
+      // fourteen storeys of cream wall, windows and red columns
+      h.zone(t(49.8), t(10.6), '#efe2c7', '#fbf3e1', '#b7a888');
+      ctx.fillStyle = 'rgba(70,90,110,.42)'; for (let y = 12.4; y < 48; y += 2.6) for (let x = -32; x < 31.5; x += 3.6) ctx.fillRect(X + x + .9, Yp(y + 1.6), 1.6, 1.4);
+      ctx.fillStyle = '#b8322a'; for (let x = -32; x <= 32; x += 6.4) ctx.fillRect(X + x - 1, Yp(49.8), 2, 39.2);
+      ctx.fillStyle = 'rgba(184,50,42,.9)'; ctx.fillRect(X - 6, Yp(22), 12, 11.4); ctx.fillStyle = '#d9a83a'; ctx.fillRect(X - 6, Yp(22.6), 12, 1);
+      h.zone(t(10.2), 1, '#b9b2a6', '#d8d2c6', '#8a8478'); h.hlines(t(10), 1, 2.4, 'rgba(80,70,60,.3)', .4); h.hl(t(10.2), 'rgba(255,255,255,.5)', .7);
+      if (night) h.windows(t(48), t(13), 'rgba(255,220,150,.8)', 55); },
+    after(p){ const X = p.x, Yp = y => p.base - y; ctx.fillStyle = '#e8b84a';
+      for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(X + sd * 12, Yp(84.6)); ctx.quadraticCurveTo(X + sd * 15, Yp(85), X + sd * 15.5, Yp(88)); ctx.lineTo(X + sd * 13.6, Yp(85.6)); ctx.fill();
+        for (const [x, y] of [[35.4, 69], [39, 53.2]]) { ctx.beginPath(); ctx.moveTo(X + sd * (x - 3), Yp(y)); ctx.quadraticCurveTo(X + sd * x, Yp(y), X + sd * (x + 1.2), Yp(y + 3)); ctx.lineTo(X + sd * (x - 1.5), Yp(y + .8)); ctx.fill(); } } } },
 };
 
 const CITIES = [
@@ -2070,9 +2086,9 @@ const LFX = {
   jinmao:{ inside(p, a, ph){ const y = p.base - Math.min(1, ph / 2.2) * LH, g = ctx.createLinearGradient(0, y, 0, p.base); g.addColorStop(0, `rgba(255,214,120,${.55 * a})`); g.addColorStop(1, `rgba(255,214,120,${.15 * a})`); ctx.fillStyle = g; ctx.fillRect(p.minX, y, p.maxX - p.minX, p.base - y); } },
   taipei101:{ inside(p, a, ph){ for (let k = 0; k < 8; k++) { if (ph * 3 <= 7 - k) continue; ctx.fillStyle = `hsla(${k * 45},85%,62%,${.42 * a})`; ctx.fillRect(p.minX, p.tip + LH * (.2 + k * .0725), p.maxX - p.minX, LH * .0725); } },
     outside(p, a, ph, on){ if (!on) return; for (let k = 0; k < 5; k++) burst(p.x + (k % 2 ? 1 : -1) * (14 + k * 4), p.tip + LH * (.2 + k * .12), ph, .3 + k * .45, (k * 70) % 360, 12, 18); } },
-  cksmemorial:{ inside(p, a, ph){ const k = (ph % 1.6) / 1.6, sx = p.minX - 20 + k * (p.maxX - p.minX + 40); ctx.fillStyle = `rgba(255,255,255,${.35 * a})`; ctx.fillRect(sx, p.tip, 6, LH * .39); },
+  cksmemorial:{ inside(p, a, ph){ const k = (ph % 1.6) / 1.6, sx = p.minX - 20 + k * (p.maxX - p.minX + 40); ctx.fillStyle = `rgba(255,255,255,${.35 * a})`; ctx.fillRect(sx, p.base - 110, 6, 110); },
     outside(p, a, ph, on){ if (!on) return; lanterns(p, a, ph, '255,180,80'); } },
-  grandhotel:{ inside(p, a){ ctx.fillStyle = `rgba(255,214,140,${.3 * a})`; ctx.fillRect(p.minX, p.tip + LH * .3, p.maxX - p.minX, LH * .66); },
+  grandhotel:{ inside(p, a){ ctx.fillStyle = `rgba(255,214,140,${.3 * a})`; ctx.fillRect(p.minX, p.base - 50, p.maxX - p.minX, 40); },
     outside(p, a, ph, on){ if (!on) return; lanterns(p, a, ph, '230,70,50'); } }
 };
 
