@@ -969,7 +969,8 @@ body:has(#sheet.open) #coachTip, body:has(#sheet.open) #hints{opacity:0!importan
 }
 
 /* landmark pop-up: a real photo filling the frame, cropped on the landmark */
-#shPh{--ar:1; position:relative; margin:0; overflow:hidden; border-radius:20px; background:#d9e3e6; width:min(100%, calc(500px * var(--ar))); justify-self:center; aspect-ratio:var(--ar); height:auto; min-height:0; align-self:center}
+#shPh{--ar:1; position:relative; margin:0; overflow:hidden; border-radius:20px; background:#d9e3e6; width:100%; aspect-ratio:var(--ar); height:auto; min-height:0; align-self:start}
+#shPh:not([hidden]) ~ .shInfo{align-self:start}
 #shPh img{position:absolute; inset:0; width:100%; height:100%; display:block}
 #shPh .bg{display:none}
 #shPh .fg{object-fit:cover; opacity:0; transition:opacity .45s ease}
@@ -3688,8 +3689,23 @@ function openSheet(o){
     phI.alt = 'Photo of ' + o.title; phI.src = commonsImg(f, 1280);
     const c = $('shPhC'); c.textContent = 'Photo: ' + by + ' · ' + lic; c.href = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(f.replace(/ /g, '_'));
     ph.hidden = false; shCv.hidden = true; sheetArt = null; }
+  fitPhoto();
   sheet.style.transform = ''; sheet.classList.add('open'); $('shBack').classList.add('on'); sheetOn = true; sheetAt = performance.now();
 }
+// size the photo column so the photo is as tall as the text beside it: even padding on every side, nothing cropped
+function fitPhoto(){
+  const body = $('shBody'), ph = $('shPh'), info = body.querySelector('.shInfo'); body.style.gridTemplateColumns = ''; ph.style.aspectRatio = '';
+  if (ph.hidden || !matchMedia('(min-width: 601px)').matches) return;
+  const ar = parseFloat(ph.style.getPropertyValue('--ar')) || 1, maxH = Math.min(560, innerHeight * .88 - 40);
+  let lo = .34, hi = .64;
+  for (let k = 0; k < 9; k++) { const m = (lo + hi) / 2; body.style.gridTemplateColumns = `minmax(0, ${m}fr) minmax(0, ${1 - m}fr)`;
+    const h = ph.offsetWidth / ar; if (h > maxH || h > info.offsetHeight) hi = m; else lo = m; }
+  body.style.gridTemplateColumns = `minmax(0, ${lo}fr) minmax(0, ${1 - lo}fr)`;
+  // a wide photo can still come up short of the text: let it grow a little taller, trimming only a sliver off its sides, never the top or bottom
+  const w = ph.offsetWidth, need = Math.min(info.offsetHeight, maxH);
+  if (w / ar < need - 2) ph.style.aspectRatio = String(Math.max(w / need, ar * .8));
+}
+window.addEventListener('resize', () => { if (sheetOn) fitPhoto(); });
 function closeSheet(){ if (!sheetOn) return; sheet.style.transform = ''; sheet.classList.remove('open'); $('shBack').classList.remove('on'); sheetOn = false; setTimeout(() => { if (!sheetOn) sheetArt = null; }, 360); }
 $('shX').addEventListener('click', closeSheet);
 const gear = $('gearBtn'), icons = $('icons');
