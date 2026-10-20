@@ -2848,6 +2848,21 @@ function drawSil(lm, x, baseY, sc, col){
   for (let i = pr.length - 1; i >= 0; i--) ctx.lineTo(pr[i].length > 2 ? pr[i][2] : pr[i][1], pr[i][0] * LH);
   ctx.closePath(); ctx.fill(); ctx.restore();
 }
+// skyline: each landmark's real drawing (body, roofs, spires and all) pressed flat into one colour, so the outline matches it exactly
+const silCache = {};
+function silImg(key, col){
+  const id = key + col; if (silCache[id]) return silCache[id];
+  const PAD = 140, SW = 460, SH = LH + PAD + 10, c = document.createElement('canvas'); c.width = SW; c.height = SH;
+  const p = makePeg(LM[key], key, SW / 2, PAD, 90), keep = ctx, art = ART;
+  ctx = c.getContext('2d'); ART = true;
+  try { for (const q of p.parts || [p]) drawBody(q, {}, 0, 0); if (p.lm.after) p.lm.after(p); }
+  catch(e) {} finally { ctx = keep; ART = art; }
+  const g = c.getContext('2d'); g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, SW, SH);
+  return silCache[id] = { c, ox:SW / 2, oy:PAD + LH };
+}
+function drawSkySil(key, x, baseY, sc, col){
+  const s = silImg(key, col); ctx.drawImage(s.c, x - s.ox * sc, baseY - s.oy * sc, s.c.width * sc, s.c.height * sc);
+}
 function drawPegs(){
   for (const p of pegs) {
     const fy = floorY(p.x) - 4, sway = Math.sin(T * .6 + p.i) * 3;
@@ -3527,7 +3542,7 @@ function drawSky(){
   else { const sg = ctx.createRadialGradient(W * .84, 50, 4, W * .84, 50, 70); sg.addColorStop(0, 'rgba(255,248,214,1)'); sg.addColorStop(.25, 'rgba(255,240,190,.8)'); sg.addColorStop(1, 'rgba(255,240,190,0)'); ctx.fillStyle = sg; ctx.fillRect(W * .84 - 70, -20, 140, 140); }
   const hc = night ? '#13222c' : '#B2C2C4';
   ctx.fillStyle = hc; for (const b of horizon) ctx.fillRect(b[0], SURF - 2 - b[2], b[1], b[2] + 20);
-  drawSil(LM[city.lms[0]], W * .62, SURF + 4, .5, hc); drawSil(LM[city.lms[2]], W * .36, SURF + 4, .38, hc);
+  drawSkySil(city.lms[0], W * .62, SURF + 4, .5, hc); drawSkySil(city.lms[2], W * .36, SURF + 4, .38, hc);
   if (night) { ctx.fillStyle = 'rgba(255,214,120,.8)'; for (const b of horizon) if (b[3] > .55) R(b[0] + b[1] * .4, SURF - b[2] + 4, 1.6, 1.6); }
   for (const s of sparks) if (s.sky) { ctx.globalAlpha = Math.max(0, s.life); ctx.fillStyle = s.col; E(s.x, s.y, 1.6, 1.6); } ctx.globalAlpha = 1;
   for (const m of shooters) { const k = m.t / m.life, fade = k < .15 ? k / .15 : 1 - Math.max(0, (k - .55) / .45), sp = Math.hypot(m.vx, m.vy), tl = Math.min(120, 30 + m.t * 220), tx = m.x - m.vx / sp * tl, ty = m.y - m.vy / sp * tl;
