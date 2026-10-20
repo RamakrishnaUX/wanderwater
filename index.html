@@ -1763,12 +1763,28 @@ const LM = {
       h.zone(.23, .275, '#e9edef', '#ffffff', '#a3adb3'); h.zone(.275, .35, '#3e6f93', '#6f9fc2', '#23435e'); h.hlines(.28, .35, 2.6, 'rgba(255,255,255,.25)', .5); h.vlines(.28, .35, 3.2, 'rgba(255,255,255,.14)', .5);
       h.muq(.35, 'rgba(70,90,110,.45)'); h.zone(.355, .385, '#e9edef', '#ffffff', '#a3adb3'); h.zone(.385, .9, '#e6eaec', '#fbfcfc', '#a2acb2'); h.vlines(.39, .9, 2.4, 'rgba(120,135,145,.18)', .5); h.zone(.905, 1, '#d6dcdf', '#eef1f2', '#98a3a9');
       if (night) h.windows(.28, .35, 'rgba(160,220,255,.85)', 26); } },
-  merdeka118:{ name:'Merdeka 118', meta:'Kuala Lumpur · 2023', text:'679 metres tall, one of the tallest buildings in the world. Its faceted glass skin is inspired by songket, the glittering Malay fabric woven with gold thread.', fx:'gleam', pal:['#d3e6ec', '#99bccb', '#56798b'],
-    prof:[[0, .25], [.15, .6], [.155, 1.5], [.19, 1.9], [.195, 2.9], [.23, 3.5], [.24, 4.8], [.28, 6.2], [.33, 7.3], [.45, 8.6], [.6, 9.4], [1, 10.4]],
-    detail(p, h){ h.zone(0, .195, '#c3d2d8', '#eef4f6', '#7e939c'); ctx.strokeStyle = 'rgba(30,70,90,.32)'; ctx.lineWidth = .5; const y0 = p.tip + LH * .2;
-      for (let k = 0; k < 24; k++) { const y = y0 + k * 7; ctx.beginPath(); ctx.moveTo(p.x - 14, y); ctx.lineTo(p.x + 14, y + 16); ctx.moveTo(p.x + 14, y); ctx.lineTo(p.x - 14, y + 16); ctx.stroke(); }
-      const r = seeded(p.i + 21); for (let y = y0; y < p.base; y += 4) { const w = p.hwAt(y); for (let x = -w; x < w; x += 4) { const v = r(); if (v > .5) continue; ctx.fillStyle = `rgba(255,255,255,${v * .28})`; ctx.beginPath(); ctx.moveTo(p.x + x, y); ctx.lineTo(p.x + x + 2, y + 2); ctx.lineTo(p.x + x, y + 4); ctx.lineTo(p.x + x - 2, y + 2); ctx.fill(); } }
-      h.hl(.24, 'rgba(255,255,255,.6)', .8); if (night) h.windows(.25, .98, 'rgba(255,240,210,.7)', 50); } },
+  merdeka118:{ name:'Merdeka 118', meta:'Kuala Lumpur · 2023', text:'679 metres tall, one of the tallest buildings in the world. Its faceted glass skin is inspired by songket, the glittering Malay fabric woven with gold thread.', fx:'gleam', pal:['#c2d9e2', '#8cb0c1', '#4d7486'],
+    // the spire rises from the left shoulder, so the outline is lopsided (negative right = left of centre)
+    prof:[[0, 9.1, -8.7], [.197, 10.4, -7.3], [.199, 12.4, -7.3], [.216, 12.2, -7.3], [.218, 12.2, 7.9], [.264, 11.8, 8.3], [.513, 10.8, 9.9], [.637, 10.6, 10.2], [.803, 10.4, 12.8], [.975, 9.9, 16.2], [1, 9.9, 16.7]],
+    detail(p, h){ const X = p.x, Y = t => p.tip + LH * t, Lx = t => X - p.lAt(Y(t)), Rx = t => X + p.rAt(Y(t));
+      const face = (pts, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (const q of pts.slice(1)) ctx.lineTo(q[0], q[1]); ctx.closePath(); ctx.fill(); };
+      h.zone(0, .199, '#a9c1cc', '#e6f0f4', '#6f8c9a');
+      // crown: a sloped facet running down from the spire to the right shoulder
+      face([[Lx(.2), Y(.199)], [X + 7.9, Y(.218)], [X + 3, Y(.264)], [Lx(.264), Y(.264)]], 'rgba(235,245,250,.35)');
+      face([[X - 6.5, Y(.199)], [X + 7.9, Y(.218)], [X + 7.9, Y(.24)]], 'rgba(30,60,80,.22)');
+      // the dark left flank
+      face([[Lx(.22), Y(.22)], [Lx(.22) + 3, Y(.26)], [Lx(1) + 4, Y(1)], [Lx(1), Y(1)]], 'rgba(30,55,75,.3)');
+      // songket facets: big crossed panels between three white bands
+      const bands = [.264, .508, .746, 1];
+      for (let k = 0; k < 3; k++) { const t0 = bands[k], t1 = bands[k + 1], l0 = Lx(t0), l1 = Lx(t1), r0 = Rx(t0), r1 = Rx(t1), c0 = (l0 + r0) / 2, c1 = (l1 + r1) / 2, y0 = Y(t0), y1 = Y(t1), ym = (y0 + y1) / 2, cm = (c0 + c1) / 2;
+        face([[c0, y0], [r0, y0], [(cm + (r0 + r1) / 2) / 2, ym]], 'rgba(240,250,255,.26)');
+        face([[(cm + (l0 + l1) / 2) / 2, ym], [c1, y1], [l1, y1]], 'rgba(30,60,80,.2)');
+        face([[(cm + (r0 + r1) / 2) / 2, ym], [r1, y1], [c1, y1]], 'rgba(220,238,246,.18)');
+        ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = .7; ctx.beginPath();
+        ctx.moveTo(l0, y0); ctx.lineTo(c1, y1); ctx.moveTo(c0, y0); ctx.lineTo(l1, y1); ctx.moveTo(c0, y0); ctx.lineTo(r1, y1); ctx.moveTo(r0, y0); ctx.lineTo(c1, y1); ctx.stroke();
+        if (t0 > .3) h.hl(t0, 'rgba(255,255,255,.8)', .7); }
+      h.hl(.264, 'rgba(255,255,255,.8)', .7); h.hlines(.27, 1, 2.2, 'rgba(255,255,255,.07)', .4);
+      if (night) h.windows(.27, .98, 'rgba(255,240,210,.7)', 50); } },
   pearl:{ name:'Oriental Pearl Tower', plate:'Oriental Pearl', meta:'Shanghai · 1994', text:'A TV tower with pink pearls strung on giant columns. It was inspired by a Tang dynasty poem about big and small pearls falling onto a jade plate.', fx:'wave', pal:['#e3e6ea', '#c0c6cd', '#828a94'],
     prof:[[0, .3], [.1, .6], [.105, 1.4], [.13, 1.6], [.135, 3], [.145, 4.6], [.16, 5], [.175, 4.6], [.185, 3], [.19, 1.8], [.25, 2.1], [.255, 4], [.27, 8.5], [.29, 12.4], [.315, 14.8], [.34, 15.6], [.365, 14.8], [.39, 12.4], [.41, 8.5], [.425, 4.4], [.43, 3.6], [.66, 4], [.665, 6], [.68, 11], [.7, 15], [.725, 17.6], [.75, 18.4], [.775, 17.6], [.8, 15], [.82, 11], [.835, 6], [.84, 5.4], [1, 15]], arch:{ w:8, h:20 },
     detail(p, h){ const sph = (t0, t1) => { h.zone(t0, t1, '#cf5d88', '#f0a2c0', '#8a3255'); const yc = p.tip + LH * (t0 + t1) / 2, w = p.hwAt(yc), y = p.tip + LH * (t0 + (t1 - t0) * .35);
@@ -1912,8 +1928,7 @@ const LFX = {
   qutub:{ inside(p, a, ph){ [.88, .78, .7, .597, .55, .5, .427, .38, .33, .267, .21, .152, .1].forEach((t, i) => { const k = clamp(ph * 3.2 - i * .35, 0, 1); if (k <= 0) return; const y = p.tip + t * LH; ctx.fillStyle = `rgba(255,214,130,${.75 * k * a})`; ctx.fillRect(p.minX, y - 1.6, p.maxX - p.minX, 3.2); ctx.fillStyle = `rgba(255,200,120,${.14 * k * a})`; ctx.fillRect(p.minX, y - 8, p.maxX - p.minX, 16); }); } },
   ironpillar:{ inside(p, a, ph){ const y = p.base - ((ph % 1.6) / 1.6) * (LH + 20); const g = ctx.createLinearGradient(0, y - 14, 0, y + 14); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, `rgba(230,240,255,${.55 * a})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(p.minX, y - 14, p.maxX - p.minX, 28);
       ctx.fillStyle = `rgba(255,215,140,${.4 * a})`; ctx.fillRect(p.minX, p.tip + LH * .36, p.maxX - p.minX, LH * .08); } },
-  tajminaret:{ inside(p, a, ph){ const k = clamp(ph / 4.2, 0, 1), c = k < .5 ? [255, 190 + k * 2 * 60, 205 + k * 2 * 50] : [255, 250 - (k - .5) * 2 * 40, 255 - (k - .5) * 2 * 135]; ctx.fillStyle = `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${.42 * a})`; ctx.fillRect(p.minX, p.tip, p.maxX - p.minX, LH); },
-    outside(p, a, ph, on){ if (!on) return; const g = ctx.createRadialGradient(p.x + 22, p.tip + 6, 2, p.x + 22, p.tip + 6, 40); g.addColorStop(0, `rgba(250,248,230,${.9 * a})`); g.addColorStop(.25, `rgba(240,240,220,${.4 * a})`); g.addColorStop(1, 'rgba(240,240,220,0)'); ctx.fillStyle = g; E(p.x + 22, p.tip + 6, 40, 40); } },
+  tajminaret:{ inside(p, a, ph){ const k = clamp(ph / 4.2, 0, 1), c = k < .5 ? [255, 190 + k * 2 * 60, 205 + k * 2 * 50] : [255, 250 - (k - .5) * 2 * 40, 255 - (k - .5) * 2 * 135]; ctx.fillStyle = `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${.42 * a})`; ctx.fillRect(p.minX, p.tip, p.maxX - p.minX, LH); }, },
   empire:{ inside(p, a, ph){ const sets = [['#c65f59', '#ffffff', '#4f74b8'], ['#4ba670', '#d9bc5e', '#e388ad'], ['#d68c4f', '#ffffff', '#5ea8d9']], s = sets[((ph / 1.3) | 0) % 3]; [[.14, .17], [.17, .205], [.205, .3]].forEach(([t0, t1], i) => { ctx.fillStyle = s[i]; ctx.globalAlpha = .75 * a; ctx.fillRect(p.minX, p.tip + t0 * LH, p.maxX - p.minX, (t1 - t0) * LH); }); ctx.globalAlpha = 1; },
     outside(p, a, ph, on){ if (!on) return; if (Math.sin(ph * 9) > 0) { ctx.fillStyle = `rgba(255,70,60,${a})`; E(p.x, p.tip + 1, 2.4, 2.4); } } },
   chrysler:{ inside(p, a, ph){ const rows = 6; for (let r = 0; r < rows; r++) { const k = clamp(ph * 2.2 - (rows - r) * .3, 0, 1); if (k <= 0) continue; const y0 = p.tip + LH * (.2 + (.375 - .2) * r / rows); ctx.fillStyle = `rgba(255,232,160,${.35 * k * a})`; ctx.fillRect(p.minX, y0, p.maxX - p.minX, LH * .175 / rows); } } },
@@ -1973,8 +1988,7 @@ const LFX = {
       for (let i = 1; i <= n; i++) { const t = i / 60; ctx.lineTo(p.x + 10 + t * 60 + Math.sin(t * 18) * 6, p.tip - 6 - Math.cos(t * 18) * 8 + t * 4); } ctx.stroke(); } },
   galata:{ inside(p, a){ const y = p.tip + LH * .28, g = ctx.createLinearGradient(0, y, 0, y + LH * .1); g.addColorStop(0, `rgba(255,214,140,${.75 * a})`); g.addColorStop(1, 'rgba(255,214,140,0)'); ctx.fillStyle = g; ctx.fillRect(p.minX, y, p.maxX - p.minX, LH * .1); },
     outside(p, a, ph, on){ if (!on) return; for (let k = 0; k < 3; k++) { const an = ph * 1.4 + k * 2.1, x = p.x + Math.cos(an) * 34, y = p.tip + LH * .14 + Math.sin(an) * 9, f = Math.sin(T * 10 + k) * 2.4; ctx.strokeStyle = `rgba(255,255,255,${a})`; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x - 5, y - f); ctx.quadraticCurveTo(x - 2, y - 2.5, x, y); ctx.quadraticCurveTo(x + 2, y - 2.5, x + 5, y - f); ctx.stroke(); } } },
-  bluemosque:{ inside(p, a, ph){ [.275, .475, .665].forEach((t, k) => { const on = Math.sin(ph * 4 - k) > -.2 ? 1 : .4; ctx.fillStyle = `rgba(255,226,150,${.85 * a * on})`; ctx.fillRect(p.minX, p.tip + LH * t, p.maxX - p.minX, 3); }); },
-    outside(p, a, ph, on){ if (!on) return; const x = p.x + 24, y = p.tip + 14 - Math.min(1, ph / 2) * 8; ctx.fillStyle = `rgba(255,240,190,${a})`; ctx.beginPath(); ctx.arc(x, y, 6, -1.3, 1.3, true); ctx.arc(x + 3, y, 5, 1.55, -1.55, false); ctx.fill(); } },
+  bluemosque:{ inside(p, a, ph){ [.275, .475, .665].forEach((t, k) => { const on = Math.sin(ph * 4 - k) > -.2 ? 1 : .4; ctx.fillStyle = `rgba(255,226,150,${.85 * a * on})`; ctx.fillRect(p.minX, p.tip + LH * t, p.maxX - p.minX, 3); }); }, },
   hagiasophia:{ inside(p, a, ph){ const y = p.tip + LH * .27; for (let k = 0; k < 12; k++) { const x = p.x - 21 + k * 3.8, g = ctx.createLinearGradient(0, y, 0, y + LH * .5); g.addColorStop(0, `rgba(255,220,140,${.35 * a})`); g.addColorStop(1, 'rgba(255,220,140,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 1, y); ctx.lineTo(x + 1, y); ctx.lineTo(x + 6 + Math.sin(ph + k) * 2, y + LH * .5); ctx.lineTo(x - 6, y + LH * .5); ctx.fill(); } } },
   sagrada:{ inside(p, a, ph){ const cols = ['255,90,80', '255,200,80', '90,170,255', '120,220,140']; for (let k = 0; k < 4; k++) { const y = p.tip + LH * (.15 + ((ph * .18 + k * .22) % 1) * .85); ctx.fillStyle = `rgba(${cols[k]},${.35 * a})`; ctx.fillRect(p.minX, y, p.maxX - p.minX, 14); } },
     outside(p, a, ph, on){ if (!on) return; const r = seeded(p.i + 3); for (let k = 0; k < 14; k++) { const t = (ph * .5 + r()) % 1, x = p.x + (r() - .5) * 50 + Math.sin(T * 2 + k) * 4, y = p.tip + 10 - t * 60; ctx.fillStyle = `rgba(255,${200 + r() * 55 | 0},${120 + r() * 100 | 0},${a * (1 - t)})`; E(x, y, 1.4, 1.4); } } },
@@ -3392,11 +3406,16 @@ function drawBubbles(){
     ctx.strokeStyle = `rgba(255,255,255,${.6 * (1 - r.t / .7)})`; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(r.x, r.y, 8 + r.t * 90, 0, TAU); ctx.stroke(); }
   for (const w of waves) { ctx.strokeStyle = `rgba(255,240,200,${.5 * (1 - w.t / 1.6)})`; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(w.x, w.y, 10 + w.t * 70, 0, TAU); ctx.stroke(); }
 }
+// mosque and other Islamic landmarks get a crescent moon in the day sky instead of the sun
+const CRESCENT_SKY = new Set(['bluemosque', 'hagiasophia', 'minaret', 'qutub', 'tajminaret']), crescentCity = () => city.lms.some(k => CRESCENT_SKY.has(k));
+function crescent(x, y, R, col){ ctx.save(); ctx.translate(x, y); ctx.rotate(-.35); ctx.scale(R / 14, R / 14); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, 14, -1.3, 1.3, true); ctx.arc(7, 0, 11.6, 1.55, -1.55, false); ctx.fill(); ctx.restore(); }
 function drawSky(){
   ctx.save(); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); for (let x = W; x >= -WSP; x -= WSP) ctx.lineTo(x, surfY(x)); ctx.closePath();
   const g = ctx.createLinearGradient(0, 0, 0, SURF); if (night) { g.addColorStop(0, '#07111a'); g.addColorStop(1, '#1a2b36'); } else { g.addColorStop(0, '#C7D6D7'); g.addColorStop(1, '#EEF1EC'); }
   ctx.fillStyle = g; ctx.fill(); ctx.clip();
-  if (night) { for (const s of skyStars) { ctx.globalAlpha = .4 + .6 * Math.abs(Math.sin(T * .8 + s.tw)); ctx.fillStyle = '#fff'; E(s.x, s.y, s.r, s.r); } ctx.globalAlpha = 1; ctx.fillStyle = '#e7e5d1'; E(W * .84, 48, 15, 15); ctx.fillStyle = '#060e22'; E(W * .84 + 6, 44, 13, 13); }
+  if (night) { for (const s of skyStars) { ctx.globalAlpha = .4 + .6 * Math.abs(Math.sin(T * .8 + s.tw)); ctx.fillStyle = '#fff'; E(s.x, s.y, s.r, s.r); } ctx.globalAlpha = 1; if (crescentCity()) crescent(W * .84, 48, 15, '#e7e5d1'); else { ctx.fillStyle = '#e7e5d1'; E(W * .84, 48, 15, 15); ctx.fillStyle = '#060e22'; E(W * .84 + 6, 44, 13, 13); } }
+  else if (crescentCity()) { const mx = W * .84, my = 50, sg = ctx.createRadialGradient(mx, my, 4, mx, my, 60); sg.addColorStop(0, 'rgba(255,252,236,.75)'); sg.addColorStop(1, 'rgba(255,252,236,0)'); ctx.fillStyle = sg; ctx.fillRect(mx - 60, my - 60, 120, 120);
+    crescent(mx, my, 14, '#fbf6e2'); }
   else { const sg = ctx.createRadialGradient(W * .84, 50, 4, W * .84, 50, 70); sg.addColorStop(0, 'rgba(255,248,214,1)'); sg.addColorStop(.25, 'rgba(255,240,190,.8)'); sg.addColorStop(1, 'rgba(255,240,190,0)'); ctx.fillStyle = sg; ctx.fillRect(W * .84 - 70, -20, 140, 140); }
   const hc = night ? '#13222c' : '#B2C2C4';
   ctx.fillStyle = hc; for (const b of horizon) ctx.fillRect(b[0], SURF - 2 - b[2], b[1], b[2] + 20);
@@ -3598,8 +3617,8 @@ function drawSheetArt(dt){
       const sky = ctx.createLinearGradient(0, 0, 0, VH);
       if (night) { sky.addColorStop(0, '#19233a'); sky.addColorStop(.75, '#33415d'); sky.addColorStop(1, '#3a4d74'); } else { sky.addColorStop(0, '#a3cadb'); sky.addColorStop(.7, '#cee4e9'); sky.addColorStop(1, '#eee2c8'); }
       ctx.fillStyle = sky; ctx.fillRect(0, 0, VW, VH);
-      if (night) { const rr = seeded(7); ctx.fillStyle = 'rgba(255,255,255,.7)'; for (let k = 0; k < 40; k++) E(rr() * VW, rr() * 150, .6 + rr() * .7, .6 + rr() * .7); ctx.fillStyle = '#e7e5d1'; E(VW - 46, 42, 13, 13); }
-      else { ctx.fillStyle = 'rgba(255,244,200,.9)'; E(VW - 50, 46, 18, 18); ctx.fillStyle = 'rgba(255,255,255,.75)'; for (const [cx0, cy0, k] of [[VW * .18, 54, 1], [VW * .7, 86, .8]]) { E(cx0, cy0, 26 * k, 8 * k); E(cx0 + 14 * k, cy0 - 6 * k, 15 * k, 9 * k); } }
+      if (night) { const rr = seeded(7); ctx.fillStyle = 'rgba(255,255,255,.7)'; for (let k = 0; k < 40; k++) E(rr() * VW, rr() * 150, .6 + rr() * .7, .6 + rr() * .7); if (crescentCity()) crescent(VW - 46, 42, 13, '#e7e5d1'); else { ctx.fillStyle = '#e7e5d1'; E(VW - 46, 42, 13, 13); } }
+      else { if (crescentCity()) crescent(VW - 50, 46, 16, 'rgba(255,250,228,.95)'); else { ctx.fillStyle = 'rgba(255,244,200,.9)'; E(VW - 50, 46, 18, 18); } ctx.fillStyle = 'rgba(255,255,255,.75)'; for (const [cx0, cy0, k] of [[VW * .18, 54, 1], [VW * .7, 86, .8]]) { E(cx0, cy0, 26 * k, 8 * k); E(cx0 + 14 * k, cy0 - 6 * k, 15 * k, 9 * k); } }
       const others = city.lms.filter(k => k !== a.peg.key), hc = night ? 'rgba(160,190,230,.18)' : 'rgba(80,120,140,.16)';
       if (others[0]) drawSil(LM[others[0]], mid - VW * .3, 236, .55, hc); if (others[1]) drawSil(LM[others[1]], mid + VW * .3, 236, .45, hc);
       ctx.fillStyle = night ? '#24324a' : '#cdbf9c'; ctx.fillRect(0, 236, VW, VH - 236); ctx.fillStyle = night ? 'rgba(255,255,255,.05)' : 'rgba(255,255,255,.35)'; ctx.fillRect(0, 236, VW, 2);
