@@ -1961,7 +1961,7 @@ const CITIES = [
   { id:'shanghai', name:'Shanghai', code:'SHA', lms:['pearl', 'shanghaitower', 'jinmao'], water:['#c7d3d8', '#6a8fa0', '#2b4554'], sand:'#cfc2a8', facts:["Shanghai means \"upon the sea\".", "The Bund is a riverside row of grand old banks and trading houses, looking across the Huangpu River at the towers of Pudong.", "Pudong was mostly farmland until the 1990s.", "Xiaolongbao, soup dumplings, come from Nanxiang, a town that is now part of Shanghai.", "The Shanghai Metro is one of the longest metro systems in the world.", "Yu Garden is a classical Chinese garden of rocks, ponds and pavilions, first laid out in the 1500s.", "Shanghai's Maglev train floats above its track on magnets and runs to the airport at about 300 km/h.", "The Jin Mao Tower has 88 floors, because 8 is a lucky number in China.", "The three tallest towers in Pudong stand side by side. Locals jokingly call them the bottle opener, the syringe and the whisk."] },
   { id:'taipei', name:'Taipei', code:'TPE', lms:['cksmemorial', 'taipei101', 'grandhotel'], water:['#bfdcd4', '#4e9a8e', '#244f52'], sand:'#d4c7a8', facts:["Taipei 101 was the tallest building in the world from 2004 to 2010.", "A 660-tonne golden steel ball hangs inside Taipei 101 and sways to keep the tower steady in typhoons.", "Every New Year's Eve, fireworks shoot out from the sides of Taipei 101.", "Bubble tea was invented in Taiwan in the 1980s.", "Night markets like Shilin are famous for street food, from oyster omelettes to stinky tofu.", "The National Palace Museum holds nearly 700,000 treasures from Chinese history.", "Garbage trucks in Taipei play classical music, so people know to bring their rubbish out.", "Beitou, in the north of the city, is full of natural hot springs.", "The Maokong Gondola carries you over the hills to tea farms south of the city."] }
 ];
-CITIES.forEach(c => { c.water = c.water.map((h, i) => mix(h, ['#A4C2C4', '#3e646e', '#1c333f'][i], [.58, .6, .52][i])); c.nightWater = c.water.map((h, i) => mix(h, '#030c14', [.62, .66, .7][i])); });
+CITIES.forEach(c => { c.water = c.water.map((h, i) => mix(h, ['#86d8d2', '#2a8d96', '#0e3e4e'][i], [.72, .74, .7][i])); c.nightWater = c.water.map((h, i) => mix(h, ['#0b2a3a', '#071d2b', '#030d17'][i], [.66, .7, .74][i])); }); // turquoise shallows into deep teal, like a lit lagoon
 
 /* ---------- landmark knowledge for the bottom sheet ---------- */
 const INFO = {
@@ -2891,9 +2891,13 @@ function drawPegs(){
 function drawWater(){
   const c = pal(), g = ctx.createLinearGradient(0, SURF - 20, 0, H); g.addColorStop(0, c[0]); g.addColorStop(.32, c[1]); g.addColorStop(1, c[2]);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  if (lite()) return;
-  ctx.save(); ctx.globalAlpha = night ? .035 : .085; ctx.fillStyle = '#ffffff';
-  for (let i = 0; i < Math.ceil(W / 260); i++) { const x0 = (i + .3) * 260 + Math.sin(T * .25 + i * 1.7) * 30; ctx.beginPath(); ctx.moveTo(x0 - 10, SURF); ctx.lineTo(x0 + 26, SURF); ctx.lineTo(x0 + 140, H * .92); ctx.lineTo(x0 + 30, H * .92); ctx.closePath(); ctx.fill(); }
+  // a soft glow just under the surface, where the light comes in
+  const sg = ctx.createLinearGradient(0, SURF - 10, 0, SURF + 170); sg.addColorStop(0, `rgba(220,255,250,${night ? .08 : .3})`); sg.addColorStop(1, 'rgba(220,255,250,0)'); ctx.fillStyle = sg; ctx.fillRect(0, SURF - 10, W, 180);
+  // god rays: wide slanted shafts, bright at the top and dissolving with depth, slowly breathing
+  const rg = ctx.createLinearGradient(0, SURF, 0, H * .95); rg.addColorStop(0, `rgba(235,255,250,${night ? .07 : .2})`); rg.addColorStop(.55, `rgba(235,255,250,${night ? .025 : .07})`); rg.addColorStop(1, 'rgba(235,255,250,0)');
+  ctx.save(); ctx.fillStyle = rg; const n = Math.ceil(W / (lite() ? 170 : 210));
+  for (let i = 0; i < n; i++) { const w0 = (i % 3 === 0 ? 46 : i % 3 === 1 ? 22 : 34) * (lite() ? .7 : 1), x0 = (i + .25) * W / n + Math.sin(T * .22 + i * 1.7) * 26, sk = W * .09, br = .55 + .45 * Math.sin(T * .35 + i * 2.3);
+    ctx.globalAlpha = br; ctx.beginPath(); ctx.moveTo(x0, SURF); ctx.lineTo(x0 + w0, SURF); ctx.lineTo(x0 + w0 * 2.6 + sk, H * .95); ctx.lineTo(x0 + sk - w0 * .4, H * .95); ctx.closePath(); ctx.fill(); }
   ctx.restore();
 }
 function drawReef(){
@@ -2913,9 +2917,18 @@ function drawSnow(near){ ctx.fillStyle = night ? 'rgba(170,240,255,.5)' : 'rgba(
 function drawParcels(){ for (const p of parcels) { if (p.s < .05) continue; const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 1.3); g.addColorStop(0, `rgba(255,255,255,${.1 * p.s})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(p.x - p.r * 1.3, p.y - p.r * 1.3, p.r * 2.6, p.r * 2.6); } }
 function drawFloor(){
   ctx.beginPath(); ctx.moveTo(0, H); for (let x = 0; x <= W + 6; x += 6) ctx.lineTo(x, floorY(x)); ctx.lineTo(W, H); ctx.closePath();
-  const sandC = night ? mix(city.sand, '#06121e', .6) : city.sand;
-  const g = ctx.createLinearGradient(0, FB - 170, 0, H); g.addColorStop(0, sandC); g.addColorStop(1, mix(sandC, pal()[2], .55)); ctx.fillStyle = g; ctx.fill();
+  const sandC = night ? mix(mix(city.sand, '#cfeee9', .45), '#06121e', .62) : mix(city.sand, '#d8f4ee', .62);
+  const g = ctx.createLinearGradient(0, FB - 170, 0, H); g.addColorStop(0, sandC); g.addColorStop(1, mix(sandC, pal()[1], night ? .5 : .32)); ctx.fillStyle = g; ctx.fill();
   ctx.save(); ctx.clip();
+  // caustics: the rippling net of light the surface throws onto the sand, a wobbling web of bright cells
+  { const cw = lite() ? 44 : 56, y0 = FB - 175, rows = [], ny = 8; ctx.lineJoin = 'round';
+    for (let r = 0; r < ny; r++) { const yy = y0 + r * (18 + r * 3.2), row = []; for (let c = -1; c <= Math.ceil(W / cw) + 1; c++) { const ph = c * 1.7 + r * 2.3;
+      row.push([c * cw + (r % 2) * cw * .5 + Math.sin(T * .9 + ph) * cw * .22, yy + Math.sin(T * .75 + ph * 1.3) * 7]); } rows.push(row); }
+    for (let r = 0; r < ny; r++) { const k = r / (ny - 1), a = (night ? .05 : .26) * (.55 + .45 * k); ctx.strokeStyle = `rgba(255,255,255,${a})`; ctx.lineWidth = 1 + k * 1.4; ctx.beginPath();
+      const row = rows[r], nx = rows[r + 1];
+      for (let c = 0; c < row.length; c++) { const q = row[c]; if (c + 1 < row.length) { const t = row[c + 1]; ctx.moveTo(q[0], q[1]); ctx.quadraticCurveTo((q[0] + t[0]) / 2, (q[1] + t[1]) / 2 + Math.sin(T * 1.1 + c * 2 + r) * 6, t[0], t[1]); }
+        if (nx) { const o = r % 2 ? 0 : -1; for (const d of [o, o + 1]) { const t = nx[c + d]; if (t) { ctx.moveTo(q[0], q[1]); ctx.quadraticCurveTo((q[0] + t[0]) / 2 + Math.sin(T + c) * 4, (q[1] + t[1]) / 2, t[0], t[1]); } } } }
+      ctx.stroke(); } }
   ctx.strokeStyle = 'rgba(255,255,255,' + (night ? .04 : .12) + ')'; ctx.lineWidth = 1.2;
   for (let x = 0; x < W; x += 34) { const y = floorY(x) + 10 + (x % 3) * 6; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 10, y - 3, x + 22, y); ctx.stroke(); }
   ctx.fillStyle = 'rgba(255,255,255,' + (night ? .03 : .1) + ')';
@@ -3416,7 +3429,7 @@ function drawShark(){
   ctx.save(); ctx.translate(s.x, s.y + bob); ctx.scale(d * K, K); ctx.translate(piv, 0); ctx.rotate(s.rot); ctx.translate(-piv, 0);
   if (s.ph === 'exit' && s.vx > 650) { ctx.strokeStyle = `rgba(255,255,255,${Math.min(.3, (s.vx - 650) / 2200)})`; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
     for (const [y, l] of [[-H * .6, 70], [H * .1, 95], [H * .7, 60]]) { ctx.beginPath(); ctx.moveTo(-L * 1.4, y); ctx.lineTo(-L * 1.4 - l, y); ctx.stroke(); } }
-  const topC = '#5d7685', side = '#7d95a2', belly = '#e9eef0', fin = '#566e7c';
+  const topC = night ? '#173947' : '#1f4a5b', side = night ? '#1c4251' : '#255667', belly = night ? '#9fd6d6' : '#c6f3f0', fin = night ? '#132f3c' : '#1a3f4e';   // flat, graphic: dark teal back, bright aqua belly
   // tail fin: follows the bend of the tail stock, and narrows as it sweeps towards and away from us
   const slope = Math.atan2(mid[0] - mid[2], L * 1.94 * 2 / N), sweep = Math.sin(s.wph - 5.2 - .7);
   ctx.save(); ctx.translate(top[0][0] + 1, mid[0]); ctx.rotate(slope * 1.15 + sweep * .12); ctx.scale(.62 + .38 * Math.abs(Math.cos(s.wph - 5.2)), 1); ctx.fillStyle = fin; ctx.beginPath();
@@ -3430,10 +3443,10 @@ function drawShark(){
   // body and countershaded belly
   const outline = () => { ctx.beginPath(); ctx.moveTo(top[0][0], top[0][1]); for (let i = 1; i <= N; i++) ctx.lineTo(top[i][0], top[i][1]);
     ctx.quadraticCurveTo(L * 1.05, mid[N] + H * .02, bot[N][0], bot[N][1]); for (let i = N; i >= 0; i--) ctx.lineTo(bot[i][0], bot[i][1]); ctx.closePath(); };
-  const g = ctx.createLinearGradient(0, -H, 0, H); g.addColorStop(0, topC); g.addColorStop(.6, side); g.addColorStop(1, side);
+  const g = ctx.createLinearGradient(0, -H, 0, H); g.addColorStop(0, topC); g.addColorStop(1, side);
   outline(); ctx.fillStyle = g; ctx.fill();
   ctx.fillStyle = belly; ctx.beginPath(); let first = true;
-  for (let i = 2; i <= N; i++) { const u = i / N, hb = bot[i][1] - mid[i], y = mid[i] + Math.min(hb - H * .03, H * (.1 + .24 * Math.sin(Math.PI * Math.pow(u, 1.25)))); if (first) { ctx.moveTo(top[i][0], y); first = false; } else ctx.lineTo(top[i][0], y); }
+  for (let i = 2; i <= N; i++) { const u = i / N, hb = bot[i][1] - mid[i], y = mid[i] + Math.min(hb - H * .05, H * (.04 + .16 * Math.sin(Math.PI * Math.pow(u, 1.25)))); if (first) { ctx.moveTo(top[i][0], y); first = false; } else ctx.lineTo(top[i][0], y); }
   ctx.quadraticCurveTo(L * 1.04, mid[N] + H * .06, bot[N][0], bot[N][1]); for (let i = N; i >= 2; i--) ctx.lineTo(bot[i][0], bot[i][1]); ctx.closePath(); ctx.fill();
   // mouth: tucked under the snout, with a hinged lower jaw that drops open to show a deep slate gullet and teeth
   { const hU = .79, fU = .965, M = 7, hp = at(bot, hU), fx = -L * .94 + fU * L * 1.94, hx = hp[0], mH = midAt(hU), mF = midAt(fU);
@@ -3454,14 +3467,18 @@ function drawShark(){
       ctx.fillStyle = belly; ctx.beginPath(); ctx.moveTo(jaw[0][0], jaw[0][1]); for (const q of jaw) ctx.lineTo(q[0], q[1]); ctx.closePath(); ctx.fill();
       ctx.strokeStyle = 'rgba(30,45,55,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(low[0][0], low[0][1]); for (const q of low) ctx.lineTo(q[0], q[1]); ctx.stroke();
     }
-    ctx.strokeStyle = 'rgba(30,45,55,.5)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(lip[0][0], lip[0][1]); for (const q of lip) ctx.lineTo(q[0], q[1]); ctx.stroke();
-    if (a <= .01) { ctx.beginPath(); ctx.moveTo(hx, hy); ctx.quadraticCurveTo(hx - L * .03, hy + H * .02, hx - L * .05, hy - H * .06); ctx.stroke(); } }
+    if (a <= .01) { // closed: a cheeky grin of interlocking teeth along the jaw line
+      ctx.fillStyle = '#16303b'; ctx.beginPath(); ctx.moveTo(lip[0][0], lip[0][1] - H * .1); for (const q of lip) ctx.lineTo(q[0], q[1] - H * .1); for (let k = M; k >= 0; k--) ctx.lineTo(lip[k][0], lip[k][1] + H * .1); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#ffffff'; for (let k = 1; k < M; k++) { const [x, y] = lip[k], w = (lip[k + 1][0] - lip[k][0]) * .5;
+        ctx.beginPath(); ctx.moveTo(x - w, y - H * .1); ctx.lineTo(x + w, y - H * .1); ctx.lineTo(x, y + H * .08); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x, y + H * .1); ctx.lineTo(x + w * 2, y + H * .1); ctx.lineTo(x + w, y - H * .08); ctx.closePath(); ctx.fill(); }
+      ctx.strokeStyle = '#16303b'; ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.quadraticCurveTo(hx - L * .03, hy + H * .02, hx - L * .05, hy - H * .07); ctx.stroke(); }
+    else { ctx.strokeStyle = 'rgba(22,48,59,.6)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(lip[0][0], lip[0][1]); for (const q of lip) ctx.lineTo(q[0], q[1]); ctx.stroke(); } }
   // gills, pectoral fin (it angles to steer and brake), eye
-  ctx.strokeStyle = 'rgba(40,55,65,.45)'; ctx.lineWidth = 1.3; for (let k = 0; k < 3; k++) { const u = .73 - k * .03, x = -L * .94 + u * L * 1.94, m = midAt(u); ctx.beginPath(); ctx.moveTo(x, m - H * .35); ctx.quadraticCurveTo(x - L * .03, m, x, m + H * .35); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(10,30,40,.35)'; ctx.lineWidth = 1.2; for (let k = 0; k < 3; k++) { const u = .73 - k * .03, x = -L * .94 + u * L * 1.94, m = midAt(u); ctx.beginPath(); ctx.moveTo(x, m - H * .35); ctx.quadraticCurveTo(x - L * .03, m, x, m + H * .35); ctx.stroke(); }
   { const a = at(bot, .64), brake = s.ph === 'enter' ? Math.max(0, (s.pt / s.dur - .5)) * .3 : 0; ctx.save(); ctx.translate(a[0], a[1] - H * .2); ctx.rotate(Math.sin(s.wph * .5) * .06 - brake);
     ctx.fillStyle = fin; ctx.beginPath(); ctx.moveTo(L * .06, -H * .05); ctx.quadraticCurveTo(-L * .12, H * .55, -L * .28, H * 1.0); ctx.quadraticCurveTo(-L * .16, H * .35, -L * .12, H * .03); ctx.closePath(); ctx.fill(); ctx.restore(); }
-  { const m = midAt(.88); ctx.fillStyle = '#121619'; E(L * .74, m - H * .3, 3.4, 3.4); ctx.fillStyle = 'rgba(255,255,255,.85)'; E(L * .755, m - H * .37, 1.2, 1.2); }
+  { const m = midAt(.88); ctx.fillStyle = '#ffffff'; E(L * .745, m - H * .3, 4.4, 4.4); ctx.fillStyle = '#0b1820'; E(L * .755, m - H * .3, 3.1, 3.1); ctx.fillStyle = '#ffffff'; E(L * .765, m - H * .37, 1.1, 1.1); }
   ctx.restore();
 }
 function drawFish(f){
@@ -3693,7 +3710,7 @@ function drawStars(){
 }
 function drawSky(){
   ctx.save(); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); for (let x = W; x >= -WSP; x -= WSP) ctx.lineTo(x, surfY(x)); ctx.closePath();
-  const g = ctx.createLinearGradient(0, 0, 0, SURF); if (night) { g.addColorStop(0, '#07111a'); g.addColorStop(1, '#1a2b36'); } else { g.addColorStop(0, '#C7D6D7'); g.addColorStop(1, '#EEF1EC'); }
+  const g = ctx.createLinearGradient(0, 0, 0, SURF); if (night) { g.addColorStop(0, '#07111a'); g.addColorStop(1, '#1a2b36'); } else { g.addColorStop(0, '#9fd6d9'); g.addColorStop(1, '#e2f4ef'); }
   ctx.fillStyle = g; ctx.fill(); ctx.clip();
   if (night) { drawStars(); if (crescentCity()) crescent(W * .84, 48, 15, '#e7e5d1'); else fullMoon(W * .84, 48, 14); }
   else if (crescentCity()) { const mx = W * .84, my = 50, sg = ctx.createRadialGradient(mx, my, 4, mx, my, 60); sg.addColorStop(0, 'rgba(255,252,236,.75)'); sg.addColorStop(1, 'rgba(255,252,236,0)'); ctx.fillStyle = sg; ctx.fillRect(mx - 60, my - 60, 120, 120);
